@@ -11,6 +11,7 @@
   "recommended_players": 4,
   "max_players": 12,
   "difficulty_class": 14,
+  "compliance_frameworks": ["NIST CSF ID.AM", "ISO 27001 A.14", "FCA Cloud Guidance", "DORA Art.28"],
   "roles": [
     {
       "name": "Incident Commander",

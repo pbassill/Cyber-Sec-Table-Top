@@ -11,6 +11,7 @@
   "recommended_players": 4,
   "max_players": 12,
   "difficulty_class": 13,
+  "compliance_frameworks": ["NIST CSF PR.PT", "ISO 27001 A.13", "PRA SS1/21"],
   "roles": [
     {
       "name": "Incident Commander",
