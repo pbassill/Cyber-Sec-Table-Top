@@ -51,6 +51,9 @@ $csrfToken = generateCsrfToken();
                     <li class="nav-item">
                         <a class="nav-link" href="player.php"><i class="bi bi-people"></i> Player View</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="history.php"><i class="bi bi-clock-history"></i> History</a>
+                    </li>
                 </ul>
             </div>
         </div>

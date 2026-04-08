@@ -4,6 +4,7 @@
  * Final debrief and action capture page
  */
 require_once 'includes/functions.php';
+require_once 'includes/database.php';
 
 $session = getSessionData();
 
@@ -21,6 +22,21 @@ foreach ($session['scenarios'] as $sId) {
     $s = loadScenario($sId);
     if ($s) $campaignScenarios[] = $s;
 }
+
+// Load existing saved data if available
+$exerciseId = null;
+$savedGaps = [];
+$savedEvals = [];
+if (!empty($session['session_code'])) {
+    $exercise = getExerciseByCode($session['session_code']);
+    if ($exercise) {
+        $exerciseId = (int)$exercise['id'];
+        $savedGaps = getActionItems($exerciseId);
+        $savedEvals = getEvaluations($exerciseId);
+    }
+}
+
+$sessionCode = $session['session_code'] ?? '';
 ?>
 
 <div class="container py-4">
@@ -189,9 +205,34 @@ foreach ($session['scenarios'] as $sId) {
 
             <!-- Actions -->
             <div class="text-center mb-5">
+                <?php if ($sessionCode): ?>
+                <div class="mb-3">
+                    <button class="btn btn-gold btn-lg me-2" id="saveDebriefBtn">
+                        <i class="bi bi-save"></i> Save Debrief Data
+                    </button>
+                    <button class="btn btn-gold btn-lg me-2" onclick="window.print()">
+                        <i class="bi bi-printer"></i> Print Report
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <a href="api/export.php?type=full&code=<?php echo urlencode($sessionCode); ?>" class="btn btn-outline-gold me-1">
+                        <i class="bi bi-file-earmark-spreadsheet"></i> Export Full Report (CSV)
+                    </a>
+                    <a href="api/export.php?type=gaps&code=<?php echo urlencode($sessionCode); ?>" class="btn btn-outline-gold me-1">
+                        <i class="bi bi-download"></i> Export Gaps
+                    </a>
+                    <a href="api/export.php?type=notes&code=<?php echo urlencode($sessionCode); ?>" class="btn btn-outline-gold me-1">
+                        <i class="bi bi-download"></i> Export Notes
+                    </a>
+                    <a href="api/export.php?type=evaluations&code=<?php echo urlencode($sessionCode); ?>" class="btn btn-outline-gold me-1">
+                        <i class="bi bi-download"></i> Export Evaluations
+                    </a>
+                </div>
+                <?php else: ?>
                 <button class="btn btn-gold btn-lg me-2" onclick="window.print()">
                     <i class="bi bi-printer"></i> Print Report
                 </button>
+                <?php endif; ?>
                 <form method="POST" action="session.php" class="d-inline">
                     <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="action" value="reset">
@@ -229,7 +270,72 @@ document.querySelectorAll('.star-rating').forEach(function(rating) {
                 s.textContent = i < value ? '★' : '☆';
                 s.classList.toggle('active', i < value);
             });
+            this.parentElement.dataset.rating = value;
         });
+    });
+});
+
+// Save debrief data to database
+document.getElementById('saveDebriefBtn')?.addEventListener('click', function() {
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving...';
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+    // Collect gap data
+    const gapData = new FormData();
+    gapData.append('csrf_token', csrfToken);
+    gapData.append('action', 'save_gaps');
+    const gapRows = document.getElementById('gapTable')?.querySelectorAll('tbody tr') || [];
+    gapRows.forEach(function(row) {
+        const inputs = row.querySelectorAll('input');
+        if (inputs.length >= 4) {
+            gapData.append('gap[]', inputs[0].value);
+            gapData.append('remediation[]', inputs[1].value);
+            gapData.append('owner[]', inputs[2].value);
+            gapData.append('target_date[]', inputs[3].value);
+            gapData.append('status[]', 'open');
+        }
+    });
+
+    // Collect evaluation data
+    const evalData = new FormData();
+    evalData.append('csrf_token', csrfToken);
+    evalData.append('action', 'save_evaluations');
+    document.querySelectorAll('.star-rating').forEach(function(rating) {
+        const question = rating.closest('tr')?.querySelector('td')?.textContent?.trim() || '';
+        const score = rating.dataset.rating || '0';
+        if (question) {
+            evalData.append('eval_question[]', question);
+            evalData.append('eval_rating[]', score);
+        }
+    });
+
+    // Save both
+    Promise.all([
+        fetch('api/debrief.php', { method: 'POST', body: gapData }),
+        fetch('api/debrief.php', { method: 'POST', body: evalData })
+    ]).then(function(responses) {
+        return Promise.all(responses.map(function(r) { return r.json(); }));
+    }).then(function() {
+        btn.innerHTML = '<i class="bi bi-check-circle"></i> Saved!';
+        btn.classList.remove('btn-gold');
+        btn.classList.add('btn-success');
+        setTimeout(function() {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-save"></i> Save Debrief Data';
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-gold');
+        }, 2000);
+    }).catch(function() {
+        btn.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Save Failed';
+        btn.classList.add('btn-danger');
+        setTimeout(function() {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-save"></i> Save Debrief Data';
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-gold');
+        }, 2000);
     });
 });
 </script>
