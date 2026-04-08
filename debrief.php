@@ -3,8 +3,7 @@
  * Cyber Quest — Campaign Debrief
  * Final debrief and action capture page
  */
-$pageTitle = 'Cyber Quest — Campaign Debrief';
-require_once 'includes/header.php';
+require_once 'includes/functions.php';
 
 $session = getSessionData();
 
@@ -12,6 +11,9 @@ if (!$session['started'] || empty($session['scenarios'])) {
     header('Location: index.php');
     exit;
 }
+
+$pageTitle = 'Cyber Quest — Campaign Debrief';
+require_once 'includes/header.php';
 
 // Collect all scenario data
 $campaignScenarios = [];

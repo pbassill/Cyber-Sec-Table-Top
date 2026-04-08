@@ -131,12 +131,7 @@ foreach ($session['participants'] ?? [] as $p) {
 }
 
 // Determine the player URL
-$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
-$playerUrl = $session['session_code']
-    ? $protocol . '://' . $host . $basePath . '/player.php?code=' . urlencode($session['session_code'])
-    : '';
+$playerUrl = buildPlayerUrl($session['session_code'] ?? '');
 ?>
 
 <div class="container py-4">

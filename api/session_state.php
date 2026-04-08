@@ -6,6 +6,7 @@
  */
 header('Content-Type: application/json');
 header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
 
 require_once '../includes/functions.php';
 

@@ -68,7 +68,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             case 'save_note':
                 $note = trim($_POST['note'] ?? '');
+                $note = mb_substr($note, 0, 500);
                 if ($note !== '') {
+                    // Cap session notes to prevent unbounded growth
+                    if (count($session['notes']) >= 500) {
+                        array_shift($session['notes']);
+                    }
                     $session['notes'][] = [
                         'text' => $note,
                         'scenario' => $session['current_scenario'],
@@ -299,10 +304,7 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
             <!-- Session Code & Player URL -->
             <?php if (!empty($session['session_code'])): ?>
             <?php
-                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-                $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-                $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
-                $playerUrl = $protocol . '://' . $host . $basePath . '/player.php?code=' . urlencode($session['session_code']);
+                $playerUrl = buildPlayerUrl($session['session_code']);
             ?>
             <div class="dnd-card mb-4">
                 <div class="dnd-card-header">

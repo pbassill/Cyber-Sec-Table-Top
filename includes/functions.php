@@ -5,6 +5,25 @@
  */
 
 /**
+ * Configure and start the PHP session with hardened settings.
+ * Call this early, before any session access.
+ */
+function initSecureSession(): void {
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        return;
+    }
+    $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'secure'   => $isSecure,
+        'httponly'  => true,
+        'samesite'  => 'Strict',
+    ]);
+    session_start();
+}
+
+/**
  * Load campaign category definitions from templates/campaigns.json
  */
 function loadCampaigns(): array {
@@ -205,6 +224,22 @@ function generateSessionCode(): string {
 }
 
 /**
+ * Build the player URL for a given session code.
+ * Sanitises the HTTP_HOST to prevent host-header injection.
+ */
+function buildPlayerUrl(string $sessionCode): string {
+    if ($sessionCode === '') {
+        return '';
+    }
+    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    // Strip anything that is not a valid hostname/port character
+    $host = preg_replace('/[^a-zA-Z0-9.\-:\[\]]/', '', $host);
+    $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+    return $protocol . '://' . $host . $basePath . '/player.php?code=' . urlencode($sessionCode);
+}
+
+/**
  * Get the path to a shared session file
  */
 function getSharedSessionPath(string $code): string {
@@ -235,6 +270,8 @@ function saveSharedSession(array $data): void {
     $result = file_put_contents($path, json_encode($sharedState, JSON_PRETTY_PRINT), LOCK_EX);
     if ($result === false) {
         error_log('Cyber Quest: Failed to write shared session file: ' . $path);
+    } else {
+        chmod($path, 0600);
     }
 }
 
@@ -264,9 +301,7 @@ function deleteSharedSession(string $code): void {
  * Get session data or initialize
  */
 function getSessionData(): array {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    initSecureSession();
 
     if (!isset($_SESSION['campaign'])) {
         $_SESSION['campaign'] = [
@@ -288,9 +323,7 @@ function getSessionData(): array {
  * Save session data
  */
 function saveSessionData(array $data): void {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    initSecureSession();
     $_SESSION['campaign'] = $data;
 
     // Also update shared session file for participant access
@@ -303,9 +336,7 @@ function saveSessionData(array $data): void {
  * Generate a CSRF token
  */
 function generateCsrfToken(): string {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    initSecureSession();
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
@@ -316,8 +347,6 @@ function generateCsrfToken(): string {
  * Validate a CSRF token
  */
 function validateCsrfToken(string $token): bool {
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    initSecureSession();
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }

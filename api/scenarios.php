@@ -5,10 +5,11 @@
  */
 header('Content-Type: application/json');
 header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
 
 require_once '../includes/functions.php';
 
-$action = $_GET['action'] ?? 'list';
+$action = isset($_GET['action']) ? preg_replace('/[^a-z_]/', '', $_GET['action']) : 'list';
 
 switch ($action) {
     case 'list':
