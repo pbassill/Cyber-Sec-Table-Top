@@ -33,6 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $session['roll_history'] = [];
                     $session['notes'] = [];
                     $session['started'] = true;
+                    if (empty($session['session_code'])) {
+                        $session['session_code'] = generateSessionCode();
+                    }
                     saveSessionData($session);
                 }
                 break;
@@ -77,12 +80,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
 
             case 'reset':
+                $oldCode = $session['session_code'] ?? '';
+                if ($oldCode !== '') {
+                    deleteSharedSession($oldCode);
+                }
                 $session = [
                     'scenarios' => [],
                     'current_scenario' => 0,
                     'current_inject' => 0,
                     'roll_history' => [],
                     'notes' => [],
+                    'participants' => [],
+                    'session_code' => '',
+                    'event_name' => '',
                     'started' => false
                 ];
                 saveSessionData($session);
@@ -286,6 +296,73 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
 
         <!-- Sidebar -->
         <div class="col-lg-4">
+            <!-- Session Code & Player URL -->
+            <?php if (!empty($session['session_code'])): ?>
+            <?php
+                $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+                $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+                $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+                $playerUrl = $protocol . '://' . $host . $basePath . '/player.php?code=' . urlencode($session['session_code']);
+            ?>
+            <div class="dnd-card mb-4">
+                <div class="dnd-card-header">
+                    <h5 class="mb-0"><i class="bi bi-broadcast"></i> Session Info</h5>
+                </div>
+                <div class="dnd-card-body text-center">
+                    <?php if (!empty($session['event_name'])): ?>
+                    <p class="mb-2"><strong><?php echo htmlspecialchars($session['event_name'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
+                    <?php endif; ?>
+                    <div class="session-code-value mb-2">
+                        <?php echo htmlspecialchars($session['session_code'], ENT_QUOTES, 'UTF-8'); ?>
+                    </div>
+                    <div class="input-group input-group-sm mb-2">
+                        <input type="text" class="form-control dnd-input" value="<?php echo htmlspecialchars($playerUrl, ENT_QUOTES, 'UTF-8'); ?>" readonly id="sessionPlayerUrl">
+                        <button type="button" class="btn btn-outline-gold" onclick="navigator.clipboard.writeText(document.getElementById('sessionPlayerUrl').value);" title="Copy URL">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                    </div>
+                    <small class="text-muted">Share this with participants</small>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <!-- Party Members -->
+            <?php
+                $departments = getDefaultDepartments();
+                $participantsByDept = [];
+                foreach ($departments as $key => $label) {
+                    $participantsByDept[$key] = [];
+                }
+                foreach ($session['participants'] ?? [] as $p) {
+                    $dept = $p['department'] ?? '';
+                    if (isset($participantsByDept[$dept])) {
+                        $participantsByDept[$dept][] = $p;
+                    }
+                }
+                $participantsByDept = array_filter($participantsByDept, function($members) {
+                    return !empty($members);
+                });
+            ?>
+            <?php if (!empty($participantsByDept)): ?>
+            <div class="dnd-card mb-4">
+                <div class="dnd-card-header">
+                    <h5 class="mb-0"><i class="bi bi-people-fill"></i> Party Members</h5>
+                </div>
+                <div class="dnd-card-body">
+                    <?php foreach ($participantsByDept as $deptKey => $members): ?>
+                    <div class="dept-card mb-3">
+                        <h6 class="dept-card-title"><?php echo htmlspecialchars($departments[$deptKey] ?? $deptKey, ENT_QUOTES, 'UTF-8'); ?></h6>
+                        <ul class="dept-member-list">
+                            <?php foreach ($members as $m): ?>
+                            <li><?php echo htmlspecialchars($m['name'], ENT_QUOTES, 'UTF-8'); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <!-- Quick Dice Roller -->
             <div class="dnd-card mb-4">
                 <div class="dnd-card-header">

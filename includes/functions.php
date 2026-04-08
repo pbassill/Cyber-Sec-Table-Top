@@ -165,6 +165,89 @@ function sanitizeId(string $id): string {
 }
 
 /**
+ * Get the default list of departments for participant assignment
+ */
+function getDefaultDepartments(): array {
+    return [
+        'it_security' => 'IT Security',
+        'it_operations' => 'IT Operations',
+        'legal' => 'Legal',
+        'compliance' => 'Compliance',
+        'communications' => 'Communications',
+        'management' => 'Senior Management',
+        'business_ops' => 'Business Operations',
+        'hr' => 'Human Resources'
+    ];
+}
+
+/**
+ * Generate a unique session code for participant access
+ */
+function generateSessionCode(): string {
+    $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    $code = '';
+    for ($i = 0; $i < 6; $i++) {
+        $code .= $chars[random_int(0, strlen($chars) - 1)];
+    }
+    return $code;
+}
+
+/**
+ * Get the path to a shared session file
+ */
+function getSharedSessionPath(string $code): string {
+    $safeCode = preg_replace('/[^A-Z0-9]/', '', strtoupper($code));
+    return __DIR__ . '/../data/sessions/' . $safeCode . '.json';
+}
+
+/**
+ * Save shared session state to a file so participants can read it
+ */
+function saveSharedSession(array $data): void {
+    if (empty($data['session_code'])) return;
+
+    $path = getSharedSessionPath($data['session_code']);
+    $sharedState = [
+        'session_code' => $data['session_code'],
+        'event_name' => $data['event_name'] ?? '',
+        'scenarios' => $data['scenarios'] ?? [],
+        'current_scenario' => $data['current_scenario'] ?? 0,
+        'current_inject' => $data['current_inject'] ?? 0,
+        'participants' => $data['participants'] ?? [],
+        'started' => $data['started'] ?? false,
+        'notes' => $data['notes'] ?? [],
+        'updated_at' => time()
+    ];
+
+    $result = file_put_contents($path, json_encode($sharedState, JSON_PRETTY_PRINT), LOCK_EX);
+    if ($result === false) {
+        error_log('Cyber Quest: Failed to write shared session file: ' . $path);
+    }
+}
+
+/**
+ * Load shared session state by session code
+ */
+function loadSharedSession(string $code): ?array {
+    $path = getSharedSessionPath($code);
+    if (!file_exists($path)) return null;
+
+    $content = file_get_contents($path);
+    $data = json_decode($content, true);
+    return is_array($data) ? $data : null;
+}
+
+/**
+ * Delete shared session file
+ */
+function deleteSharedSession(string $code): void {
+    $path = getSharedSessionPath($code);
+    if (file_exists($path)) {
+        unlink($path);
+    }
+}
+
+/**
  * Get session data or initialize
  */
 function getSessionData(): array {
@@ -179,6 +262,8 @@ function getSessionData(): array {
             'current_inject' => 0,
             'roll_history' => [],
             'notes' => [],
+            'participants' => [],
+            'session_code' => '',
             'started' => false
         ];
     }
@@ -194,6 +279,11 @@ function saveSessionData(array $data): void {
         session_start();
     }
     $_SESSION['campaign'] = $data;
+
+    // Also update shared session file for participant access
+    if (!empty($data['session_code'])) {
+        saveSharedSession($data);
+    }
 }
 
 /**

@@ -1068,3 +1068,116 @@ body {
         font-size: 0.75rem;
     }
 }
+
+/* ════════════════════════════════════════════
+   Path Selection Cards (Landing Page)
+   ════════════════════════════════════════════ */
+.path-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.path-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.path-icon {
+    font-size: 4rem;
+}
+
+/* ════════════════════════════════════════════
+   Session Code Display
+   ════════════════════════════════════════════ */
+.session-code-value {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--gold-bright);
+    text-shadow: 0 0 20px rgba(232, 200, 74, 0.4);
+    letter-spacing: 8px;
+    padding: 0.5rem 0;
+}
+
+.session-code-display {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-ornate);
+    border-radius: 6px;
+    padding: 1.5rem;
+}
+
+/* ════════════════════════════════════════════
+   Department Cards & Participant Roster
+   ════════════════════════════════════════════ */
+.dept-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-ornate);
+    border-left: 3px solid var(--gold-dark);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+}
+
+.dept-card-title {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.dept-member-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dept-member-list li {
+    padding: 0.2rem 0;
+    font-size: 0.9rem;
+    color: var(--ink);
+    border-bottom: 1px solid rgba(90, 74, 58, 0.3);
+}
+
+.dept-member-list li:last-child {
+    border-bottom: none;
+}
+
+.dept-member-list li::before {
+    content: '⚔ ';
+    color: var(--gold-dark);
+    font-size: 0.75rem;
+}
+
+/* ════════════════════════════════════════════
+   Participant Row (Setup Page)
+   ════════════════════════════════════════════ */
+.participant-row {
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-ornate);
+    border-radius: 4px;
+}
+
+/* ════════════════════════════════════════════
+   Player View — Event Header & Auto-refresh
+   ════════════════════════════════════════════ */
+.player-event-header {
+    background: var(--bg-card);
+    border: 1px solid var(--border-ornate);
+    border-radius: 6px;
+    padding: 0.75rem 1.25rem;
+}
+
+.player-auto-refresh {
+    text-align: center;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.player-spin {
+    display: inline-block;
+    animation: spin 2s linear infinite;
+}
