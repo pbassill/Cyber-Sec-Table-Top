@@ -5,6 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     initCampaignBuilder();
+    initSetupPage();
     initDiceRollers();
     initRandomEventGenerators();
     initComplicationCards();
@@ -106,6 +107,221 @@ function initCampaignBuilder() {
         if (selectedScenarios.length === 0) {
             selectedContainer.innerHTML = '<p class="dropzone-text text-muted text-center py-4"><i class="bi bi-arrow-left"></i> Add quests from the available list</p>';
         }
+    }
+}
+
+/* ════════════════════════════════════════════
+   Setup Page — Event Configuration
+   ════════════════════════════════════════════ */
+function initSetupPage() {
+    var addBtn = document.getElementById('addParticipantBtn');
+    var participantList = document.getElementById('participantList');
+    var copyUrlBtn = document.getElementById('copyUrlBtn');
+
+    if (!participantList) return;
+
+    // Department options HTML
+    var deptData = window.departmentData || {};
+    var deptOptionsHtml = '';
+    for (var key in deptData) {
+        deptOptionsHtml += '<option value="' + escapeHtml(key) + '">' + escapeHtml(deptData[key]) + '</option>';
+    }
+
+    // Add participant button
+    if (addBtn) {
+        addBtn.addEventListener('click', function() {
+            addParticipantRow('', '', deptOptionsHtml);
+            updateDeptSummary();
+        });
+    }
+
+    // Initialise remove handlers for existing rows
+    attachRemoveHandlers();
+
+    // Update department summary on load and on changes
+    participantList.addEventListener('change', updateDeptSummary);
+    participantList.addEventListener('input', updateDeptSummary);
+    updateDeptSummary();
+
+    // Copy URL button
+    if (copyUrlBtn) {
+        copyUrlBtn.addEventListener('click', function() {
+            var urlInput = document.getElementById('playerUrl');
+            if (urlInput) {
+                navigator.clipboard.writeText(urlInput.value).then(function() {
+                    copyUrlBtn.innerHTML = '<i class="bi bi-check"></i>';
+                    setTimeout(function() {
+                        copyUrlBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+                    }, 2000);
+                });
+            }
+        });
+    }
+
+    // Restore preselected scenarios on setup page
+    if (window.preselectedScenarios && window.preselectedScenarios.length > 0) {
+        var selectedContainer = document.getElementById('selectedScenarios');
+        var orderInput = document.getElementById('scenarioOrder');
+        if (selectedContainer && orderInput && window.scenarioData) {
+            // Remove placeholder
+            var placeholder = selectedContainer.querySelector('.dropzone-text');
+            if (placeholder) placeholder.remove();
+
+            selectedContainer.innerHTML = '';
+
+            window.preselectedScenarios.forEach(function(id) {
+                var scenario = window.scenarioData[id];
+                if (!scenario) return;
+
+                var item = document.createElement('div');
+                item.className = 'scenario-card-mini campaign-item';
+                item.dataset.id = id;
+                item.innerHTML =
+                    '<div class="d-flex align-items-center w-100">' +
+                        '<span class="me-2" style="cursor: grab; color: var(--gold);">☰</span>' +
+                        '<span class="scenario-icon me-2">' + scenario.icon + '</span>' +
+                        '<div class="flex-grow-1">' +
+                            '<h6 class="mb-0">' + escapeHtml(scenario.title) + '</h6>' +
+                            '<small class="text-muted">' + scenario.estimated_duration_minutes + ' min — DC ' + scenario.difficulty_class + '</small>' +
+                        '</div>' +
+                        '<button type="button" class="btn btn-sm btn-outline-danger remove-scenario-btn ms-2" data-id="' + escapeHtml(id) + '">' +
+                            '<i class="bi bi-x"></i>' +
+                        '</button>' +
+                    '</div>';
+
+                selectedContainer.appendChild(item);
+            });
+
+            // Set up scenario removal and recount
+            rebindSetupScenarioHandlers();
+            updateSetupDuration();
+        }
+    }
+
+    function addParticipantRow(name, dept, deptOptions) {
+        var row = document.createElement('div');
+        row.className = 'participant-row mb-2';
+        row.innerHTML =
+            '<div class="row g-2 align-items-center">' +
+                '<div class="col-md-5">' +
+                    '<input type="text" class="form-control dnd-input" name="participant_name[]" ' +
+                        'value="' + escapeHtml(name) + '" placeholder="Participant name" maxlength="100">' +
+                '</div>' +
+                '<div class="col-md-5">' +
+                    '<select class="form-select dnd-input" name="participant_dept[]">' +
+                        deptOptions +
+                    '</select>' +
+                '</div>' +
+                '<div class="col-md-2">' +
+                    '<button type="button" class="btn btn-outline-danger btn-sm w-100 remove-participant-btn">' +
+                        '<i class="bi bi-trash"></i>' +
+                    '</button>' +
+                '</div>' +
+            '</div>';
+
+        // Set selected department
+        if (dept) {
+            var select = row.querySelector('select');
+            if (select) select.value = dept;
+        }
+
+        participantList.appendChild(row);
+        attachRemoveHandlers();
+    }
+
+    function attachRemoveHandlers() {
+        participantList.querySelectorAll('.remove-participant-btn').forEach(function(btn) {
+            btn.onclick = function() {
+                this.closest('.participant-row').remove();
+                updateDeptSummary();
+            };
+        });
+    }
+
+    function updateDeptSummary() {
+        var summaryDiv = document.getElementById('deptSummary');
+        var cardsDiv = document.getElementById('deptSummaryCards');
+        if (!summaryDiv || !cardsDiv) return;
+
+        var rows = participantList.querySelectorAll('.participant-row');
+        var deptMap = {};
+
+        rows.forEach(function(row) {
+            var nameInput = row.querySelector('input[name="participant_name[]"]');
+            var deptSelect = row.querySelector('select[name="participant_dept[]"]');
+            if (!nameInput || !deptSelect) return;
+
+            var name = nameInput.value.trim();
+            var dept = deptSelect.value;
+            if (name === '') return;
+
+            if (!deptMap[dept]) deptMap[dept] = [];
+            deptMap[dept].push(name);
+        });
+
+        var hasParticipants = Object.keys(deptMap).length > 0;
+        summaryDiv.style.display = hasParticipants ? 'block' : 'none';
+
+        if (!hasParticipants) return;
+
+        var html = '';
+        for (var deptKey in deptMap) {
+            var label = deptData[deptKey] || deptKey;
+            html += '<div class="col-md-4"><div class="dept-card">';
+            html += '<h6 class="dept-card-title">' + escapeHtml(label) + ' <span class="badge bg-secondary">' + deptMap[deptKey].length + '</span></h6>';
+            html += '<ul class="dept-member-list">';
+            deptMap[deptKey].forEach(function(name) {
+                html += '<li>' + escapeHtml(name) + '</li>';
+            });
+            html += '</ul></div></div>';
+        }
+        cardsDiv.innerHTML = html;
+    }
+
+    function rebindSetupScenarioHandlers() {
+        var selectedContainer = document.getElementById('selectedScenarios');
+        if (!selectedContainer) return;
+
+        selectedContainer.querySelectorAll('.remove-scenario-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var removeId = this.dataset.id;
+                var items = selectedContainer.querySelectorAll('.campaign-item');
+                items.forEach(function(item) {
+                    if (item.dataset.id === removeId) item.remove();
+                });
+                updateSetupOrderInput();
+                updateSetupDuration();
+
+                if (selectedContainer.querySelectorAll('.campaign-item').length === 0) {
+                    selectedContainer.innerHTML = '<p class="dropzone-text text-muted text-center py-4"><i class="bi bi-arrow-left"></i> Add quests from the available list</p>';
+                }
+            });
+        });
+    }
+
+    function updateSetupOrderInput() {
+        var orderInput = document.getElementById('scenarioOrder');
+        var selectedContainer = document.getElementById('selectedScenarios');
+        if (!orderInput || !selectedContainer) return;
+
+        var ids = [];
+        selectedContainer.querySelectorAll('.campaign-item').forEach(function(item) {
+            ids.push(item.dataset.id);
+        });
+        orderInput.value = ids.join(',');
+    }
+
+    function updateSetupDuration() {
+        var durationBadge = document.getElementById('campaignDuration');
+        var selectedContainer = document.getElementById('selectedScenarios');
+        if (!durationBadge || !selectedContainer || !window.scenarioData) return;
+
+        var total = 0;
+        selectedContainer.querySelectorAll('.campaign-item').forEach(function(item) {
+            var s = window.scenarioData[item.dataset.id];
+            if (s) total += s.estimated_duration_minutes;
+        });
+        durationBadge.textContent = total + ' min';
     }
 }
 

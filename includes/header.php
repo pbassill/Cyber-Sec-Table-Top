@@ -33,10 +33,16 @@ $csrfToken = generateCsrfToken();
                         <a class="nav-link" href="index.php"><i class="bi bi-house-door"></i> Tavern</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="setup.php"><i class="bi bi-gear"></i> Event Setup</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="scenarios.php"><i class="bi bi-journal-text"></i> Quest Board</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="session.php"><i class="bi bi-shield-exclamation"></i> War Room</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="player.php"><i class="bi bi-people"></i> Player View</a>
                     </li>
                 </ul>
             </div>

@@ -1,7 +1,7 @@
 <?php
 /**
  * Cyber Quest — Incident Response Tabletop Exercise Framework
- * Landing Page / Campaign Setup
+ * Landing Page — Choose your path
  */
 $pageTitle = 'Cyber Quest — The Tavern';
 require_once 'includes/header.php';
@@ -29,64 +29,60 @@ $session = getSessionData();
         </div>
     </div>
 
-    <!-- Campaign Builder -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-lg-10">
-            <div class="dnd-card">
-                <div class="dnd-card-header">
-                    <h3><i class="bi bi-map"></i> Campaign Builder — Forge Your Quest</h3>
+    <!-- Choose Your Path -->
+    <div class="row justify-content-center mb-5 g-4">
+        <div class="col-lg-5">
+            <div class="dnd-card path-card h-100">
+                <div class="dnd-card-header text-center">
+                    <h3><i class="bi bi-shield-shaded"></i> Dungeon Master</h3>
                 </div>
-                <div class="dnd-card-body">
-                    <p class="card-flavor-text">
-                        Select and order the scenarios for your tabletop session. Drag to reorder.
-                        Each quest will be played in sequence, with dice rolls determining the twists of fate.
+                <div class="dnd-card-body text-center d-flex flex-column">
+                    <div class="path-icon mb-3">🧙‍♂️</div>
+                    <h4 class="dnd-section-title">Facilitate an Event</h4>
+                    <p class="flex-grow-1">
+                        Set up a new tabletop exercise event. Configure scenarios, add participants
+                        to their departments, and generate a unique event URL for your players.
                     </p>
-
-                    <form id="campaignForm" method="POST" action="session.php">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                        <input type="hidden" name="action" value="start_campaign">
-                        <input type="hidden" name="scenario_order" id="scenarioOrder" value="">
-
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <h5 class="dnd-section-title">Available Quests</h5>
-                                <div id="availableScenarios" class="scenario-list">
-                                    <?php foreach ($scenarios as $id => $scenario): ?>
-                                    <div class="scenario-card-mini" data-id="<?php echo htmlspecialchars($id, ENT_QUOTES, 'UTF-8'); ?>">
-                                        <div class="d-flex align-items-center">
-                                            <span class="scenario-icon me-3"><?php echo $scenario['icon']; ?></span>
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-0"><?php echo htmlspecialchars($scenario['title'], ENT_QUOTES, 'UTF-8'); ?></h6>
-                                                <small class="text-muted">
-                                                    <?php echo htmlspecialchars($scenario['subtitle'], ENT_QUOTES, 'UTF-8'); ?>
-                                                    — <?php echo $scenario['estimated_duration_minutes']; ?> min
-                                                    — DC <?php echo $scenario['difficulty_class']; ?>
-                                                </small>
-                                            </div>
-                                            <button type="button" class="btn btn-sm btn-outline-gold add-scenario-btn" data-id="<?php echo htmlspecialchars($id, ENT_QUOTES, 'UTF-8'); ?>">
-                                                <i class="bi bi-plus-lg"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <?php endforeach; ?>
-                                </div>
+                    <div class="mt-3">
+                        <a href="setup.php" class="btn btn-gold btn-lg w-100">
+                            <i class="bi bi-plus-circle"></i> Create Event
+                        </a>
+                        <?php if ($session['started']): ?>
+                        <a href="session.php" class="btn btn-outline-gold w-100 mt-2">
+                            <i class="bi bi-play-circle"></i> Resume Active Campaign
+                        </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="dnd-card path-card h-100">
+                <div class="dnd-card-header text-center">
+                    <h3><i class="bi bi-people-fill"></i> Player</h3>
+                </div>
+                <div class="dnd-card-body text-center d-flex flex-column">
+                    <div class="path-icon mb-3">⚔️</div>
+                    <h4 class="dnd-section-title">Join an Event</h4>
+                    <p class="flex-grow-1">
+                        Enter the session code provided by your Dungeon Master to join an event.
+                        Follow along in real-time as the exercise unfolds.
+                    </p>
+                    <div class="mt-3">
+                        <form action="player.php" method="GET" class="mb-0">
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control dnd-input text-center" name="code"
+                                       placeholder="SESSION CODE" maxlength="6" pattern="[A-Za-z0-9]{6}"
+                                       style="font-family: 'Cinzel', serif; letter-spacing: 3px; font-size: 1.1rem;">
+                                <button type="submit" class="btn btn-gold">
+                                    <i class="bi bi-door-open"></i> Join
+                                </button>
                             </div>
-                            <div class="col-md-6">
-                                <h5 class="dnd-section-title">Your Campaign <span id="campaignDuration" class="badge bg-secondary ms-2">0 min</span></h5>
-                                <div id="selectedScenarios" class="scenario-list campaign-dropzone">
-                                    <p class="dropzone-text text-muted text-center py-4">
-                                        <i class="bi bi-arrow-left"></i> Add quests from the available list
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-gold btn-lg" id="startCampaign" disabled>
-                                <i class="bi bi-shield-exclamation"></i> Begin Campaign
-                            </button>
-                        </div>
-                    </form>
+                        </form>
+                        <a href="player.php" class="btn btn-outline-gold w-100">
+                            <i class="bi bi-search"></i> Enter Session Code
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -175,8 +171,8 @@ $session = getSessionData();
                         <div class="col-md-6">
                             <h5 class="dnd-label">🏰 How a Campaign Works</h5>
                             <ol class="dnd-list">
-                                <li><strong>Build Your Campaign:</strong> Select and order scenarios from the quest board.</li>
-                                <li><strong>Assign Roles:</strong> Each participant takes a role (War Chief, Shadow Watcher, etc.).</li>
+                                <li><strong>Set Up Event:</strong> The Dungeon Master creates an event, selects scenarios, and adds participants.</li>
+                                <li><strong>Share the Link:</strong> Participants join via the unique event URL to follow along.</li>
                                 <li><strong>Play Through Injects:</strong> The facilitator reads each inject aloud, then guides discussion.</li>
                                 <li><strong>Roll the Dice:</strong> At key moments, dice determine outcomes, complications, and twists.</li>
                                 <li><strong>Debrief:</strong> After each scenario, assess what went well and what needs improvement.</li>
@@ -197,10 +193,5 @@ $session = getSessionData();
         </div>
     </div>
 </div>
-
-<script>
-    // Pass scenario data to JS
-    window.scenarioData = <?php echo json_encode($scenarios, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
-</script>
 
 <?php require_once 'includes/footer.php'; ?>
