@@ -233,8 +233,12 @@ function buildPlayerUrl(string $sessionCode): string {
     }
     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    // Strip anything that is not a valid hostname/port character
-    $host = preg_replace('/[^a-zA-Z0-9.\-:\[\]]/', '', $host);
+    // Validate host to prevent host-header injection
+    $host = strtolower($host);
+    if (filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) === false
+        && !preg_match('/^\[?[a-f0-9:]+\]?(:\d+)?$/', $host)) {
+        $host = 'localhost';
+    }
     $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
     return $protocol . '://' . $host . $basePath . '/player.php?code=' . urlencode($sessionCode);
 }
