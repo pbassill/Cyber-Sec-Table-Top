@@ -1,0 +1,1070 @@
+/**
+ * Cyber Quest — D&D Themed Tabletop Exercise Framework
+ * Dungeons & Dragons inspired dark medieval styling
+ */
+
+/* ════════════════════════════════════════════
+   CSS Variables — The Colour Palette of the Realm
+   ════════════════════════════════════════════ */
+:root {
+    --parchment: #2a1f14;
+    --parchment-light: #3d2e1f;
+    --parchment-dark: #1a1209;
+    --gold: #c9a94e;
+    --gold-bright: #e8c84a;
+    --gold-dark: #8a6d2b;
+    --blood-red: #8b1a1a;
+    --dragon-red: #dc3545;
+    --ink: #e0d5c1;
+    --ink-muted: #9c917e;
+    --shadow: rgba(0, 0, 0, 0.6);
+    --border-ornate: #5a4a3a;
+    --bg-dark: #0d0b08;
+    --bg-card: #1e1710;
+    --bg-card-header: #2a2015;
+    --accent-blue: #4a7fb5;
+    --accent-green: #4a8b5c;
+    --accent-orange: #c97b2a;
+}
+
+/* ════════════════════════════════════════════
+   Base Styles — The Foundation Stones
+   ════════════════════════════════════════════ */
+body {
+    background-color: var(--bg-dark);
+    background-image:
+        radial-gradient(ellipse at 20% 50%, rgba(42, 31, 20, 0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 50%, rgba(42, 31, 20, 0.2) 0%, transparent 50%);
+    color: var(--ink);
+    font-family: 'Spectral', Georgia, 'Times New Roman', serif;
+    min-height: 100vh;
+}
+
+/* ════════════════════════════════════════════
+   Navbar — The Banner of the Realm
+   ════════════════════════════════════════════ */
+.dnd-navbar {
+    background: linear-gradient(180deg, var(--parchment-dark) 0%, var(--parchment) 100%);
+    border-bottom: 2px solid var(--gold-dark);
+    box-shadow: 0 4px 20px var(--shadow);
+}
+
+.dnd-brand {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--gold) !important;
+    text-shadow: 0 0 10px rgba(201, 169, 78, 0.3);
+    letter-spacing: 2px;
+}
+
+.brand-icon {
+    font-size: 1.3rem;
+}
+
+.dnd-navbar .nav-link {
+    font-family: 'Cinzel', serif;
+    color: var(--ink-muted) !important;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.dnd-navbar .nav-link:hover,
+.dnd-navbar .nav-link.active {
+    color: var(--gold) !important;
+    text-shadow: 0 0 8px rgba(201, 169, 78, 0.4);
+}
+
+/* ════════════════════════════════════════════
+   Typography — The Runes of Communication
+   ════════════════════════════════════════════ */
+.dnd-title {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(201, 169, 78, 0.2), 2px 2px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: 3px;
+}
+
+.dnd-subtitle {
+    font-family: 'Cinzel', serif;
+    font-weight: 400;
+    color: var(--ink-muted);
+    letter-spacing: 2px;
+    font-size: 1.2rem;
+}
+
+.dnd-section-title {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.dnd-label {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+
+.section-ornament {
+    font-size: 0.8em;
+    vertical-align: middle;
+}
+
+/* ════════════════════════════════════════════
+   Hero Section — The Great Hall
+   ════════════════════════════════════════════ */
+.dnd-hero {
+    padding: 3rem 2rem;
+    background:
+        linear-gradient(135deg, rgba(42, 31, 20, 0.8) 0%, rgba(13, 11, 8, 0.9) 100%);
+    border: 1px solid var(--border-ornate);
+    border-radius: 8px;
+    position: relative;
+}
+
+.hero-ornament {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    letter-spacing: 1rem;
+}
+
+.hero-divider {
+    color: var(--gold-dark);
+    font-size: 1.2rem;
+    margin: 1rem 0;
+    letter-spacing: 2px;
+}
+
+.dnd-intro {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--ink);
+    font-style: italic;
+    max-width: 700px;
+    margin: 1rem auto 0;
+}
+
+/* ════════════════════════════════════════════
+   Cards — The Parchment Scrolls
+   ════════════════════════════════════════════ */
+.dnd-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-ornate);
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+}
+
+.dnd-card-header {
+    background: var(--bg-card-header);
+    border-bottom: 1px solid var(--border-ornate);
+    padding: 1rem 1.5rem;
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+}
+
+.dnd-card-header h3,
+.dnd-card-header h4,
+.dnd-card-header h5 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    margin: 0;
+}
+
+.dnd-card-body {
+    padding: 1.5rem;
+}
+
+.card-flavor-text {
+    font-style: italic;
+    color: var(--ink-muted);
+    border-left: 3px solid var(--gold-dark);
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ════════════════════════════════════════════
+   Quest Cards — The Bounty Board
+   ════════════════════════════════════════════ */
+.dnd-quest-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border-ornate);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+}
+
+.dnd-quest-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.quest-card-header {
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.quest-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.quest-icon-lg {
+    font-size: 3.5rem;
+}
+
+.quest-title {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.quest-severity {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+.quest-card-body {
+    padding: 1rem 1.5rem 1.5rem;
+}
+
+.quest-description {
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+    line-height: 1.6;
+    font-style: italic;
+}
+
+.quest-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+.quest-stats .stat {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Cinzel', serif;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1rem;
+    color: var(--gold);
+    font-weight: 700;
+    font-family: 'Cinzel', serif;
+}
+
+.quest-stats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+}
+
+.stat-item i {
+    font-size: 1.2rem;
+}
+
+/* ════════════════════════════════════════════
+   Role Badges
+   ════════════════════════════════════════════ */
+.role-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.role-badge {
+    background: var(--parchment-dark);
+    border: 1px solid var(--gold-dark);
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.75rem;
+}
+
+.role-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-ornate);
+    border-radius: 6px;
+    padding: 1rem;
+    height: 100%;
+}
+
+.role-card h6 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+}
+
+.role-required {
+    border-left: 3px solid var(--dragon-red);
+}
+
+.role-optional {
+    border-left: 3px solid var(--ink-muted);
+}
+
+/* ════════════════════════════════════════════
+   Scenario Selection & Campaign Builder
+   ════════════════════════════════════════════ */
+.scenario-list {
+    min-height: 100px;
+}
+
+.scenario-card-mini {
+    background: var(--parchment-dark);
+    border: 1px solid var(--border-ornate);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.5rem;
+    transition: background 0.2s ease;
+}
+
+.scenario-card-mini:hover {
+    background: var(--parchment);
+}
+
+.scenario-card-mini h6 {
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+}
+
+.scenario-icon {
+    font-size: 1.5rem;
+}
+
+.campaign-dropzone {
+    border: 2px dashed var(--border-ornate);
+    border-radius: 6px;
+    min-height: 150px;
+    padding: 0.5rem;
+}
+
+.campaign-dropzone .scenario-card-mini {
+    border-color: var(--gold-dark);
+}
+
+.campaign-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dropzone-text {
+    font-style: italic;
+}
+
+/* ════════════════════════════════════════════
+   Campaign Progress
+   ════════════════════════════════════════════ */
+.campaign-progress {
+    background: var(--bg-card);
+    border: 1px solid var(--border-ornate);
+    border-radius: 6px;
+    padding: 1rem 1.5rem;
+}
+
+.progress-scenarios {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.progress-scenario {
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-ornate);
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+}
+
+.progress-scenario.active {
+    opacity: 1;
+    border-color: var(--gold);
+    background: rgba(201, 169, 78, 0.1);
+    color: var(--gold);
+}
+
+.progress-scenario.completed {
+    opacity: 0.7;
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+}
+
+.progress-icon {
+    margin-right: 0.25rem;
+}
+
+.progress-label {
+    font-size: 0.75rem;
+}
+
+.progress .progress-bar.bg-gold {
+    background-color: var(--gold) !important;
+}
+
+/* ════════════════════════════════════════════
+   Inject Cards — The Scenario Injects
+   ════════════════════════════════════════════ */
+.inject-card {
+    border: 2px solid var(--border-ornate);
+}
+
+.inject-header {
+    background: linear-gradient(135deg, rgba(139, 26, 26, 0.2), transparent);
+}
+
+.inject-badge {
+    display: inline-block;
+    background: var(--gold-dark);
+    color: var(--bg-dark);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    margin-right: 0.5rem;
+}
+
+.inject-narrative {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-ornate);
+    border-radius: 6px;
+    padding: 1.5rem;
+    position: relative;
+}
+
+.narrative-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.narrative-label {
+    font-family: 'Cinzel', serif;
+    color: var(--dragon-red);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    margin-bottom: 1rem;
+}
+
+.narrative-text {
+    line-height: 1.8;
+    font-size: 1.05rem;
+}
+
+.narrative-text p {
+    margin-bottom: 1rem;
+}
+
+.narrative-text p:last-child {
+    margin-bottom: 0;
+}
+
+/* Facilitator Prompts */
+.prompt-list {
+    list-style: none;
+    padding: 0;
+}
+
+.prompt-item {
+    padding: 0.75rem 1rem;
+    border-left: 3px solid var(--gold-dark);
+    margin-bottom: 0.5rem;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 0 4px 4px 0;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.prompt-item:hover {
+    border-left-color: var(--gold);
+    background: rgba(201, 169, 78, 0.05);
+}
+
+.prompt-item i {
+    color: var(--gold);
+    margin-right: 0.5rem;
+}
+
+/* ════════════════════════════════════════════
+   Dice — The Instruments of Fate
+   ════════════════════════════════════════════ */
+.dice-event-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-ornate);
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.dice-display {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.dice-display::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--parchment-dark);
+    border: 2px solid var(--gold-dark);
+    transform: rotate(45deg);
+    border-radius: 12px;
+}
+
+.dice-value {
+    position: relative;
+    z-index: 1;
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--gold);
+    text-shadow: 0 0 10px rgba(201, 169, 78, 0.5);
+}
+
+.dice-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.dice-result {
+    padding: 1rem;
+    border-radius: 6px;
+    animation: fadeInSlide 0.5s ease;
+}
+
+@keyframes fadeInSlide {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dice-rolling {
+    animation: diceRoll 0.6s ease;
+}
+
+@keyframes diceRoll {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(90deg) scale(1.2); }
+    50% { transform: rotate(180deg) scale(0.9); }
+    75% { transform: rotate(270deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+.roll-history {
+    max-height: 150px;
+    overflow-y: auto;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+}
+
+.roll-history-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.25rem 0.5rem;
+    border-bottom: 1px solid rgba(90, 74, 58, 0.3);
+}
+
+.roll-history-item .roll-value {
+    font-weight: 700;
+}
+
+/* Outcome Classes */
+.outcome-critical-fail {
+    background: rgba(139, 26, 26, 0.3);
+    border: 1px solid var(--blood-red);
+    color: #ff6b6b;
+}
+
+.outcome-fail {
+    background: rgba(201, 123, 42, 0.2);
+    border: 1px solid var(--accent-orange);
+    color: #e8a950;
+}
+
+.outcome-partial {
+    background: rgba(74, 127, 181, 0.2);
+    border: 1px solid var(--accent-blue);
+    color: #7db3e0;
+}
+
+.outcome-success {
+    background: rgba(74, 139, 92, 0.2);
+    border: 1px solid var(--accent-green);
+    color: #7dcea0;
+}
+
+.outcome-critical-success {
+    background: rgba(201, 169, 78, 0.2);
+    border: 1px solid var(--gold);
+    color: var(--gold-bright);
+}
+
+.outcome-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.outcome-item {
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-family: 'Cinzel', serif;
+}
+
+/* ════════════════════════════════════════════
+   Complication Cards
+   ════════════════════════════════════════════ */
+.complication-result,
+.random-event-result {
+    padding: 1rem;
+    border-radius: 6px;
+    animation: fadeInSlide 0.5s ease;
+}
+
+.complication-card {
+    background: rgba(139, 26, 26, 0.15);
+    border: 1px solid var(--blood-red);
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.event-card {
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.event-positive {
+    background: rgba(74, 139, 92, 0.15);
+    border: 1px solid var(--accent-green);
+}
+
+.event-negative {
+    background: rgba(139, 26, 26, 0.15);
+    border: 1px solid var(--blood-red);
+}
+
+.event-neutral {
+    background: rgba(74, 127, 181, 0.15);
+    border: 1px solid var(--accent-blue);
+}
+
+/* ════════════════════════════════════════════
+   Timeline
+   ════════════════════════════════════════════ */
+.inject-timeline {
+    position: relative;
+    padding-left: 3rem;
+}
+
+.inject-timeline::before {
+    content: '';
+    position: absolute;
+    left: 1.25rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--gold-dark);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -3rem;
+    top: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.timeline-marker::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--parchment-dark);
+    border: 2px solid var(--gold-dark);
+    transform: rotate(45deg);
+    border-radius: 4px;
+}
+
+.phase-number {
+    position: relative;
+    z-index: 1;
+    font-family: 'Cinzel Decorative', serif;
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 0.9rem;
+}
+
+.timeline-content {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-ornate);
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.timeline-content h5 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1rem;
+}
+
+.inject-preview {
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+.inject-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.meta-item {
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+}
+
+.meta-item i {
+    color: var(--gold-dark);
+    margin-right: 0.25rem;
+}
+
+/* ════════════════════════════════════════════
+   Scenario Header
+   ════════════════════════════════════════════ */
+.scenario-header {
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border-radius: 4px;
+}
+
+.scenario-header h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+/* ════════════════════════════════════════════
+   Notes
+   ════════════════════════════════════════════ */
+.note-item {
+    padding: 0.5rem;
+    border-bottom: 1px solid rgba(90, 74, 58, 0.3);
+    font-size: 0.9rem;
+}
+
+.note-item small {
+    font-family: 'Cinzel', serif;
+    margin-right: 0.5rem;
+}
+
+/* ════════════════════════════════════════════
+   Debrief
+   ════════════════════════════════════════════ */
+.debrief-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-ornate);
+    border-radius: 6px;
+    padding: 1.5rem;
+}
+
+.debrief-card h5 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+}
+
+.debrief-section {
+    border-color: var(--accent-green);
+}
+
+/* Star Rating */
+.star-rating {
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.star-rating .star {
+    color: var(--gold-dark);
+    transition: color 0.2s;
+}
+
+.star-rating .star:hover,
+.star-rating .star.active {
+    color: var(--gold-bright);
+    text-shadow: 0 0 8px rgba(201, 169, 78, 0.5);
+}
+
+/* ════════════════════════════════════════════
+   Buttons — The Enchanted Actions
+   ════════════════════════════════════════════ */
+.btn-gold {
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+    color: var(--bg-dark);
+    border: 1px solid var(--gold);
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+    background: linear-gradient(135deg, var(--gold), var(--gold-bright));
+    color: var(--bg-dark);
+    box-shadow: 0 0 15px rgba(201, 169, 78, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn-outline-gold {
+    border: 1px solid var(--gold-dark);
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-gold:hover {
+    background: rgba(201, 169, 78, 0.15);
+    border-color: var(--gold);
+    color: var(--gold-bright);
+}
+
+/* ════════════════════════════════════════════
+   Forms & Tables
+   ════════════════════════════════════════════ */
+.dnd-input {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid var(--border-ornate) !important;
+    color: var(--ink) !important;
+    font-family: 'Spectral', serif;
+}
+
+.dnd-input:focus {
+    border-color: var(--gold-dark) !important;
+    box-shadow: 0 0 5px rgba(201, 169, 78, 0.2) !important;
+}
+
+.dnd-input::placeholder {
+    color: var(--ink-muted) !important;
+    font-style: italic;
+}
+
+.dnd-table {
+    --bs-table-bg: transparent;
+    --bs-table-hover-bg: rgba(201, 169, 78, 0.05);
+    font-family: 'Spectral', serif;
+}
+
+.dnd-table thead th {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    border-bottom: 2px solid var(--gold-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+}
+
+.dnd-table td {
+    border-bottom: 1px solid rgba(90, 74, 58, 0.3);
+    color: var(--ink);
+}
+
+/* ════════════════════════════════════════════
+   Lists
+   ════════════════════════════════════════════ */
+.dnd-list {
+    line-height: 1.8;
+}
+
+.dnd-list li {
+    padding: 0.25rem 0;
+}
+
+/* ════════════════════════════════════════════
+   Footer
+   ════════════════════════════════════════════ */
+.dnd-footer {
+    background: var(--parchment-dark);
+    border-top: 2px solid var(--gold-dark);
+}
+
+.footer-divider {
+    color: var(--gold-dark);
+    letter-spacing: 3px;
+}
+
+.footer-text {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.footer-subtext {
+    color: var(--ink-muted);
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+/* ════════════════════════════════════════════
+   Main Content Area
+   ════════════════════════════════════════════ */
+.main-content {
+    padding: 0;
+}
+
+/* ════════════════════════════════════════════
+   Scrollbar Styling
+   ════════════════════════════════════════════ */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-ornate);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-dark);
+}
+
+/* ════════════════════════════════════════════
+   Print Styles
+   ════════════════════════════════════════════ */
+@media print {
+    .dnd-navbar,
+    .dnd-footer,
+    .btn,
+    .dice-buttons,
+    .dice-display,
+    form {
+        display: none !important;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    .dnd-card {
+        border: 1px solid #ccc;
+        box-shadow: none;
+        break-inside: avoid;
+    }
+
+    .dnd-card-header {
+        background: #f5f5f5;
+    }
+
+    .dnd-title,
+    .dnd-subtitle,
+    .dnd-section-title,
+    .dnd-label,
+    .dnd-card-header h3,
+    .dnd-card-header h4,
+    .dnd-card-header h5 {
+        color: #333;
+    }
+}
+
+/* ════════════════════════════════════════════
+   Responsive Adjustments
+   ════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .dnd-title {
+        font-size: 2rem;
+    }
+
+    .dnd-hero {
+        padding: 2rem 1rem;
+    }
+
+    .quest-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .quest-stats-bar {
+        gap: 1rem;
+    }
+
+    .dice-display {
+        width: 80px;
+        height: 80px;
+    }
+
+    .dice-value {
+        font-size: 1.8rem;
+    }
+
+    .inject-timeline {
+        padding-left: 2.5rem;
+    }
+
+    .timeline-marker {
+        left: -2.5rem;
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .phase-number {
+        font-size: 0.75rem;
+    }
+}
