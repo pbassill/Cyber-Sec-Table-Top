@@ -1206,3 +1206,164 @@ body {
     display: inline-block;
     animation: spin 2s linear infinite;
 }
+
+/* ════════════════════════════════════════════
+   Light Theme — Boardroom Mode
+   ════════════════════════════════════════════ */
+body.light-theme {
+    --parchment: #f5f3ef;
+    --parchment-light: #faf9f7;
+    --parchment-dark: #e8e4de;
+    --gold: #8b6914;
+    --gold-bright: #a07d1c;
+    --gold-dark: #6b5010;
+    --blood-red: #c0392b;
+    --dragon-red: #e74c3c;
+    --ink: #2c3e50;
+    --ink-muted: #6c757d;
+    --shadow: rgba(0, 0, 0, 0.1);
+    --border-ornate: #d1c8b8;
+    --bg-dark: #f8f9fa;
+    --bg-card: #ffffff;
+    --bg-card-header: #f5f3ef;
+
+    background-color: #f8f9fa;
+    background-image: none;
+    color: #2c3e50;
+}
+
+body.light-theme .dnd-navbar {
+    background: linear-gradient(180deg, #f5f3ef 0%, #e8e4de 100%);
+    border-bottom: 2px solid #d1c8b8;
+}
+
+body.light-theme .dnd-brand {
+    color: #8b6914 !important;
+    text-shadow: none;
+}
+
+body.light-theme .dnd-navbar .nav-link {
+    color: #555 !important;
+}
+
+body.light-theme .dnd-navbar .nav-link:hover,
+body.light-theme .dnd-navbar .nav-link.active {
+    color: #8b6914 !important;
+    text-shadow: none;
+}
+
+body.light-theme .dnd-card {
+    background: #ffffff;
+    border-color: #d1c8b8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+body.light-theme .dnd-card-header {
+    background: #f5f3ef;
+    border-color: #d1c8b8;
+}
+
+body.light-theme .dnd-card-body {
+    color: #2c3e50;
+}
+
+body.light-theme .table-dark {
+    --bs-table-bg: #ffffff;
+    --bs-table-color: #2c3e50;
+    --bs-table-border-color: #dee2e6;
+    --bs-table-hover-bg: #f5f3ef;
+    --bs-table-hover-color: #2c3e50;
+}
+
+body.light-theme .dnd-input {
+    background: #ffffff;
+    border-color: #d1c8b8;
+    color: #2c3e50;
+}
+
+body.light-theme .btn-gold {
+    background: linear-gradient(135deg, #8b6914, #a07d1c);
+    color: #fff;
+}
+
+body.light-theme .btn-outline-gold {
+    border-color: #8b6914;
+    color: #8b6914;
+}
+
+body.light-theme .btn-outline-gold:hover {
+    background: #8b6914;
+    color: #fff;
+}
+
+body.light-theme .dnd-hero,
+body.light-theme .dnd-title,
+body.light-theme .dnd-subtitle {
+    color: #2c3e50;
+    text-shadow: none;
+}
+
+body.light-theme .hero-divider {
+    color: #8b6914;
+}
+
+body.light-theme .dnd-footer {
+    background: #f5f3ef;
+    border-top: 1px solid #d1c8b8;
+}
+
+body.light-theme .dnd-footer .footer-text,
+body.light-theme .dnd-footer .footer-subtext {
+    color: #6c757d;
+}
+
+body.light-theme .dnd-quest-card {
+    background: #ffffff;
+}
+
+body.light-theme .inject-narrative {
+    background: #f5f3ef;
+    border-color: #d1c8b8;
+}
+
+body.light-theme .session-code-value {
+    color: #8b6914;
+}
+
+body.light-theme .dnd-label,
+body.light-theme .dnd-section-title {
+    color: #4a3b22;
+}
+
+body.light-theme .text-muted {
+    color: #6c757d !important;
+}
+
+body.light-theme .note-item {
+    border-color: #e8e4de;
+}
+
+body.light-theme .dept-card {
+    background: #f5f3ef;
+    border-color: #d1c8b8;
+}
+
+body.light-theme .dice-event-card {
+    background: #f5f3ef;
+    border-color: #d1c8b8;
+}
+
+body.light-theme .badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+body.light-theme .campaign-progress .progress-scenario {
+    background: #f5f3ef;
+    border-color: #d1c8b8;
+    color: #2c3e50;
+}
+
+body.light-theme .campaign-progress .progress-scenario.active {
+    background: #e8e4de;
+    border-color: #8b6914;
+}

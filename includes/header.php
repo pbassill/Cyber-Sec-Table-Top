@@ -54,6 +54,11 @@ $csrfToken = generateCsrfToken();
                     <li class="nav-item">
                         <a class="nav-link" href="history.php"><i class="bi bi-clock-history"></i> History</a>
                     </li>
+                    <li class="nav-item ms-2">
+                        <button class="btn btn-sm btn-outline-gold nav-link border-0" id="themeToggle" title="Toggle Light/Dark Mode" style="cursor:pointer;">
+                            <i class="bi bi-sun-fill" id="themeIcon"></i>
+                        </button>
+                    </li>
                 </ul>
             </div>
         </div>
