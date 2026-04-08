@@ -1,0 +1,250 @@
+{
+  "id": "ddos",
+  "title": "The Siege of a Thousand Arrows",
+  "subtitle": "Distributed Denial of Service Attack",
+  "description": "An unrelenting barrage of dark energy hammers against your fortress gates. Wave after wave of phantom warriors assault your realm's defences, seeking not to breach the walls but to ensure no one may pass through them. As the siege intensifies, your subjects are locked out and the enemy's true purpose may be more sinister than it appears.",
+  "severity": "P2 — High",
+  "theme_color": "#198754",
+  "icon": "🟢",
+  "estimated_duration_minutes": 45,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 13,
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the response team, coordinates technical and business response",
+      "required": true
+    },
+    {
+      "name": "IT Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Manages network infrastructure, coordinates with ISP and DDoS mitigation provider",
+      "required": true
+    },
+    {
+      "name": "SOC Analyst",
+      "title": "Shadow Watcher",
+      "description": "Analyses attack traffic patterns, monitors for secondary attacks masked by the DDoS",
+      "required": true
+    },
+    {
+      "name": "Business Continuity Manager",
+      "title": "Keeper of the Contingency",
+      "description": "Manages service degradation, activates fallback channels for client services",
+      "required": true
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Town Crier",
+      "description": "Manages external communications, social media response, client notifications",
+      "required": false
+    },
+    {
+      "name": "Client Relations",
+      "title": "Herald of the Realm",
+      "description": "Handles client escalations, manages relationship impact assessment",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive decision authority, manages regulatory communication",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "F1",
+      "title": "The First Volley — Walls Under Siege",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "It is 10:30 UTC on a Thursday — the bank's busiest day for online transactions. The Network Operations Centre (NOC) detects a sudden and massive spike in inbound traffic to the bank's internet-facing infrastructure. Within minutes, the online banking portal becomes unresponsive, the mobile banking app returns timeout errors, and the bank's public website goes offline.\n\nInitial analysis shows a volumetric DDoS attack peaking at 85 Gbps — far exceeding the bank's 10 Gbps internet bandwidth. The attack traffic comprises a mix of UDP amplification (DNS and NTP reflection) and HTTP flood requests targeting the online banking login page.\n\nThe bank's internet-facing services are effectively offline. The attack is also saturating the upstream ISP link, meaning even non-targeted services sharing the same internet circuit are affected, including the secure email gateway and the FTP service used for regulatory reporting.\n\nThe DDoS mitigation service (contracted but not in always-on mode) requires manual activation with a typical rerouting time of 15–30 minutes.",
+      "facilitator_prompts": [
+        "What is the immediate technical response? Do we activate the DDoS mitigation service immediately?",
+        "Why was the DDoS mitigation service not in always-on mode? Was this a deliberate cost decision?",
+        "What client-facing services are affected and what alternative channels can clients use?",
+        "Should we notify the ISP and request upstream filtering while the mitigation service activates?",
+        "Is there any indication this is a diversion for a more targeted attack? What secondary monitoring should we deploy?",
+        "What are our regulatory notification obligations for a service outage of this nature?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "mitigation_activation",
+          "description": "Roll to determine how quickly and effectively the DDoS mitigation service responds",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Mitigation Failure",
+              "description": "The DDoS mitigation provider's BGP rerouting fails due to an expired route object in the bank's IRR records. Traffic cannot be diverted through their scrubbing centres. The provider estimates 2–4 hours to resolve the routing issue. Meanwhile, the attack intensifies to 120 Gbps.",
+              "modifier": "Mitigation failed. Attack escalating. No protection for 2–4 hours."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Partial Mitigation",
+              "description": "The DDoS mitigation service activates after 25 minutes but is only filtering the volumetric UDP traffic. The HTTP flood component bypasses the scrubbing centre because it mimics legitimate HTTPS traffic. The website loads intermittently but the online banking login remains overwhelmed.",
+              "modifier": "Volumetric attack mitigated. Application-layer attack continues. Online banking still degraded."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Mitigation Activating",
+              "description": "The DDoS mitigation service reroutes successfully after 20 minutes. Most attack traffic is scrubbed, but the bank's infrastructure takes an additional 15 minutes to stabilise. Total downtime is approximately 35 minutes. Some legitimate traffic is being incorrectly blocked by the scrubbing rules.",
+              "modifier": "Attack largely mitigated. Some false positives blocking legitimate clients."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Effective Mitigation",
+              "description": "The DDoS mitigation service activates within 15 minutes. BGP rerouting is clean, scrubbing rules are accurate, and attack traffic is effectively filtered. Services recover within 20 minutes of the attack starting. Minimal legitimate traffic is affected.",
+              "modifier": "Attack mitigated effectively. Services restored in 20 minutes."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Counter-Strike",
+              "description": "The mitigation service not only absorbs the attack but their threat intelligence team identifies the botnet's command and control infrastructure. They coordinate with law enforcement and the attack is shut down at source within 45 minutes. The bank's services are fully restored.",
+              "modifier": "Attack neutralised at source. Botnet C2 identified. Law enforcement engaged."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The DDoS mitigation service's emergency contact number routes to a voicemail system. The bank's account manager is in a different time zone and not immediately available.",
+        "The ISP refuses to apply upstream filtering without a formal change request, citing their standard change management process with a 4-hour SLA.",
+        "A branch manager calls the IT Service Desk reporting that their card payment terminals have stopped working — the payment gateway also shares the affected internet circuit.",
+        "The bank's DNS records are hosted with the same provider as the primary internet circuit, meaning even DNS resolution is failing for all the bank's domains."
+      ]
+    },
+    {
+      "id": "F2",
+      "title": "The Hidden Dagger — A Second Front Opens",
+      "phase": 2,
+      "time_offset": "T+20 Minutes",
+      "narrative": "Two hours into the DDoS attack, the SOC identifies something deeply concerning. While the entire security team has been focused on the volumetric attack and service restoration, a separate alert from the intrusion detection system (IDS) has been sitting in the queue unreviewed.\n\nThe alert, triggered 30 minutes after the DDoS attack began, shows a successful exploitation of a known vulnerability in the bank's VPN concentrator — a vulnerability that was identified in last month's scan but patching was deferred to the next maintenance window.\n\nFurther investigation reveals an active session from an external IP address through the VPN, with the attacker having gained access to the internal network. They have already accessed a file server containing board papers and strategic planning documents. Network flow data suggests approximately 500 MB of data has been exfiltrated.\n\nThe DDoS attack was a smokescreen. The real attack was happening behind it.",
+      "facilitator_prompts": [
+        "The DDoS was a diversion. How do we now manage two concurrent incidents with limited resources?",
+        "The VPN vulnerability was known but unpatched. How does this affect our liability and insurance position?",
+        "What is the scope of the data exfiltration? What was on the file server and how sensitive are the board papers?",
+        "Do we shut down the VPN entirely, even though it will prevent remote staff from working?",
+        "How do we determine if the attacker has established persistence beyond the VPN access?",
+        "Should we engage external incident response support given we are now managing a complex multi-vector attack?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "intrusion_scope",
+          "description": "Roll to determine the extent of the network intrusion behind the DDoS smokescreen",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Deep Compromise",
+              "description": "The attacker has been inside the network for longer than initially thought — the VPN exploit was used days ago, and the DDoS was launched to cover their final exfiltration. They have compromised a domain admin account, accessed the core banking application's database, and planted a backdoor in the web application server. This is a sophisticated, planned operation.",
+              "modifier": "Advanced persistent threat identified. Days of undetected access. Core systems compromised."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Significant Lateral Movement",
+              "description": "The attacker moved laterally from the VPN to three internal servers. In addition to the board papers, they accessed the HR system containing employee personal data and the finance shared drive with acquisition target valuations — material non-public information.",
+              "modifier": "MNPI potentially exfiltrated. Insider trading risk. Multiple data categories compromised."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Limited But Concerning",
+              "description": "The attacker's access was confined to the file server segment. They accessed and exfiltrated board papers and some strategic documents but were unable to move laterally due to network segmentation. The VPN session has been terminated and the vulnerability patched.",
+              "modifier": "Access limited to file server. Board papers compromised. No lateral movement."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Quick Containment",
+              "description": "The SOC identified the intrusion alert within minutes of the initial triage of the DDoS. The VPN session was terminated, the vulnerability was emergency-patched, and forensic analysis shows the attacker accessed the file server but did not have time to exfiltrate significant data before being cut off.",
+              "modifier": "Intrusion contained quickly. Minimal data exposure."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Attacker Identified",
+              "description": "The SOC's automated playbook detected the VPN anomaly immediately and contained the session before any data was accessed. The attacker's infrastructure has been correlated with a known threat actor, and NCSC confirms this is part of a campaign targeting financial services. The bank's intelligence is critical to a multi-agency takedown operation.",
+              "modifier": "Attack prevented. Threat actor identified. Contributing to law enforcement operation."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The vulnerability scan report that identified the VPN flaw was emailed to the IT Director, who has been on sick leave. No one else reviewed it or escalated the patching.",
+        "The board papers exfiltrated include details of a planned acquisition that has not been publicly announced. If leaked, this could constitute market abuse.",
+        "The DDoS attack pauses for 30 minutes, leading some team members to believe it is over and stand down — only for it to resume at double intensity.",
+        "An employee working from home reports that their VPN client is connecting to an unusual server address — suggesting the attacker may have redirected VPN traffic."
+      ]
+    },
+    {
+      "id": "F3",
+      "title": "The Reckoning — Counting the Cost",
+      "phase": 3,
+      "time_offset": "T+35 Minutes",
+      "narrative": "The DDoS attack has subsided after 8 hours. The network intrusion has been contained. The immediate crisis is over, but the bank must now deal with the consequences.\n\nKey issues requiring resolution:\n\n1. The online banking service was unavailable for a total of 3.5 hours. During this period, the bank estimates that approximately 12,000 client transactions were prevented. Some clients missed payment deadlines, and two corporate clients missed CHAPS same-day payment cut-offs for time-sensitive property completions.\n\n2. The data exfiltration of board papers and strategic documents may require notification to the Information Commissioner's Office. If the documents contain material non-public information about a planned acquisition, the FCA must also be notified.\n\n3. The unpatched VPN vulnerability is now a focal point. Internal audit is questioning why a critical vulnerability remained unpatched for 30 days. The bank's vulnerability management policy requires critical patches within 14 days.\n\n4. The bank has received a ransom demand. An email from the threat actor demands £2 million in cryptocurrency, threatening to publish the exfiltrated board papers and launch further attacks if the demand is not met.",
+      "facilitator_prompts": [
+        "Clients missed critical payment deadlines due to our service outage. What is our liability and how do we make them whole?",
+        "We have received a ransom demand. What is our policy on ransom payments and who makes this decision?",
+        "How do we assess whether the exfiltrated documents contain material non-public information triggering FCA notification?",
+        "The unpatched vulnerability breached our own policy. How does this affect our regulatory standing and insurance claim?",
+        "What improvements to our DDoS protection should be implemented immediately? Should mitigation be always-on?",
+        "How do we prevent a DDoS attack from being used as a diversion again?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "ransom_resolution",
+          "description": "Roll to determine the outcome of the ransom situation",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Data Published",
+              "description": "The threat actor publishes the exfiltrated board papers online within 24 hours, including details of the planned acquisition. Trading in the target company's shares is suspended by the FCA. The bank faces a multi-agency investigation into the data breach and potential market abuse.",
+              "modifier": "Board papers published. Market abuse investigation. Share trading suspended."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Escalating Threats",
+              "description": "The threat actor increases the ransom demand to £5 million and begins sending redacted excerpts from the board papers to financial journalists as 'proof of possession.' Media speculation about the bank's acquisition plans begins to circulate.",
+              "modifier": "Ransom demand increased. Partial leaks to media. Speculation growing."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Stalemate",
+              "description": "The bank refuses to pay the ransom. The threat actor makes no further contact for 72 hours, creating uncertainty about whether the data will be published. Law enforcement advises patience but cannot guarantee the data will not surface.",
+              "modifier": "Uncertain situation. Data publication threat remains. Ongoing monitoring required."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Law Enforcement Progress",
+              "description": "The National Crime Agency identifies the threat actor group and their infrastructure. A coordinated international operation seizes the servers hosting the exfiltrated data before it can be published. The ransom demand becomes moot.",
+              "modifier": "Data recovered by law enforcement. Threat actor infrastructure seized."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Threat Neutralised",
+              "description": "Law enforcement not only recovers the data but arrests key members of the threat actor group in a coordinated international operation. The bank's cooperation is credited as instrumental. The acquisition can proceed as planned. The bank's board commends the security team's handling of the crisis.",
+              "modifier": "Threat actors arrested. Data secured. Business strategy protected."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The two corporate clients who missed CHAPS deadlines are threatening legal action. One claims the missed payment caused a property deal to collapse, with damages exceeding £3 million.",
+        "A security researcher tweets that they found the bank's VPN vulnerability listed on a dark web forum three months ago, questioning how long the bank has been exposed.",
+        "The cloud-based DDoS mitigation service sends an invoice for £180,000 for the emergency activation and 8 hours of scrubbing — a cost not budgeted for.",
+        "The threat actor sends a second email with screenshots from inside the bank's network, suggesting they may still have access despite the containment effort."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Was the DDoS mitigation strategy adequate? Should protection be always-on?",
+      "How effectively did the team identify the secondary intrusion behind the DDoS smokescreen?",
+      "Were vulnerability management processes and patching timelines adequate?",
+      "How was the decision made regarding the ransom demand? Was the process clear?",
+      "Were client communication and service recovery handled effectively?",
+      "What architectural changes would improve resilience against multi-vector attacks?"
+    ]
+  }
+}
