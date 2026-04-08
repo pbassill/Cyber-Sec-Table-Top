@@ -1,0 +1,250 @@
+{
+  "id": "insider_threat",
+  "title": "The Traitor Within the Keep",
+  "subtitle": "Insider Threat — Privileged Data Theft",
+  "description": "A trusted member of your inner council has turned traitor. Under cover of darkness, they have plundered the realm's most sacred records — the identities and fortunes of your most powerful patrons. As the treachery unravels, the conspiracy may reach higher than anyone expected.",
+  "severity": "P2 — High",
+  "theme_color": "#fd7e14",
+  "icon": "🟠",
+  "estimated_duration_minutes": 60,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 13,
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the response team, makes containment and escalation decisions",
+      "required": true
+    },
+    {
+      "name": "IT Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Provides technical context, reviews access logs, proposes containment",
+      "required": true
+    },
+    {
+      "name": "Compliance / DPO",
+      "title": "Keeper of the Codex",
+      "description": "Assesses regulatory notification obligations, advises on data breach classification",
+      "required": true
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on employment law, evidence preservation, potential prosecution",
+      "required": true
+    },
+    {
+      "name": "HR Representative",
+      "title": "Guild Master",
+      "description": "Manages employee handling, disciplinary procedures, interview coordination",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive decision authority, manages SM&CR implications",
+      "required": false
+    },
+    {
+      "name": "Client Relations",
+      "title": "Herald of the Realm",
+      "description": "Manages client communication if notification is required",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "B1",
+      "title": "Anomalous Activity Detected — The First Whisper",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "The Data Loss Prevention (DLP) system has generated an alert. A senior portfolio analyst with privileged access to the Client Relationship Management (CRM) system has downloaded an unusually large dataset overnight. The download occurred at 02:17 UTC and comprised the full client database extract, including: names, addresses, dates of birth, passport numbers, net worth assessments, source of funds documentation, and investment holdings for all 1,247 private banking clients.\n\nThe analyst's role requires access to individual client records but not bulk exports. The DLP policy was configured to alert on downloads exceeding 500 records. The analyst's workstation shows the data was saved to an encrypted USB device.\n\nHR records indicate the analyst submitted their resignation three days ago, with a four-week notice period. Their LinkedIn profile, updated yesterday, lists a new role at a competing private bank starting next month.",
+      "facilitator_prompts": [
+        "What is the appropriate initial response? Do we immediately revoke the analyst's access?",
+        "If we revoke access, do we risk alerting the analyst and giving them time to destroy evidence or move data?",
+        "What are the legal considerations around monitoring an employee's activity without their knowledge?",
+        "Should we involve HR and Legal before taking any technical action?",
+        "Is this a data breach under GDPR if the data has not yet left the organisation?",
+        "What is the bank's policy on USB device usage? Should this have been blocked by endpoint controls?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "initial_response",
+          "description": "Roll to determine how the analyst responds to increased scrutiny",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "The Traitor Flees",
+              "description": "The analyst notices unusual activity on their account monitoring dashboard (they have SOC access through a previous role that was never revoked). They immediately leave the building with their laptop and USB device.",
+              "modifier": "Analyst has fled with evidence. Laptop and USB unrecoverable. Remote wipe fails."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Evidence Destroyed",
+              "description": "The analyst, sensing something is wrong, performs a secure wipe of the USB device during their lunch break. The data still exists in their personal email but the USB evidence is lost.",
+              "modifier": "USB evidence destroyed. Must rely on network logs and email traces."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Status Quo",
+              "description": "The analyst continues working normally, unaware of the investigation. The team has time to plan their approach, but every hour increases the risk of data being moved externally.",
+              "modifier": "Window of opportunity. Plan carefully."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Evidence Preserved",
+              "description": "IT quietly takes a forensic image of the analyst's workstation during a planned 'IT maintenance window'. The USB device is still in the analyst's desk drawer.",
+              "modifier": "Forensic image captured. Evidence chain intact."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — The Full Picture",
+              "description": "The forensic image reveals the analyst has been systematically accessing client records outside their portfolio for 6 weeks. Browser history shows they have been in contact with a data broker on the dark web. This is bigger than a departing employee — it's organised data theft for sale.",
+              "modifier": "Full scope of theft discovered. Criminal enterprise identified."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The analyst's line manager is on annual leave and cannot be reached for context on the analyst's recent behaviour.",
+        "The DLP alert was generated 6 hours ago but was missed by the overnight SOC team due to alert fatigue.",
+        "The analyst is the nephew of a board member, creating a potential conflict of interest in the investigation.",
+        "The bank's USB blocking policy was approved but never implemented due to a delayed endpoint management rollout."
+      ]
+    },
+    {
+      "id": "B2",
+      "title": "Investigation Findings — The Plot Thickens",
+      "phase": 2,
+      "time_offset": "T+20 Minutes",
+      "narrative": "A covert review of the analyst's email (authorised by Legal and the DPO under the bank's Acceptable Use Policy) reveals the following:\n\nThe analyst sent an encrypted ZIP file to a personal email address at 03:04 UTC on the same night as the download. The file size is consistent with the extracted dataset.\n\nAdditionally, a review of the analyst's access logs over the past 30 days shows a pattern of querying individual UHNW client records that fall outside their assigned portfolio. Eleven of the queried clients are known to be prospects of the competing bank the analyst is joining.\n\nThe analyst is scheduled to be in the office today and is currently at their desk.",
+      "facilitator_prompts": [
+        "Data has now left the organisation via personal email. What are the regulatory notification obligations?",
+        "How do we handle the analyst? Do we confront them, conduct a formal interview, or escalate to law enforcement?",
+        "What evidence preservation steps are required before any confrontation?",
+        "Is this a matter for the police under the Computer Misuse Act 1990 or the Data Protection Act 2018?",
+        "Do we have grounds for an injunction against the competing bank to prevent use of the stolen data?",
+        "Which UHNW clients need to be notified and what do we tell them?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "confrontation_roll",
+          "description": "Roll to determine how the interview with the analyst proceeds",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Legal Catastrophe",
+              "description": "The analyst's personal solicitor arrives within minutes — they were already retained in anticipation of this. The solicitor challenges the legality of the email review and threatens an employment tribunal for constructive dismissal and breach of privacy. The investigation is thrown into legal chaos.",
+              "modifier": "Legal counter-claim filed. Investigation paused pending legal review."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Denial and Deflection",
+              "description": "The analyst denies everything and claims the download was for a legitimate client review project. They demand union representation and refuse to surrender the USB device without a court order.",
+              "modifier": "Analyst uncooperative. Court order required for USB. Delay expected."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Partial Admission",
+              "description": "The analyst admits to the download but claims it was for personal reference to 'hit the ground running' at the new role. They downplay the severity and offer to delete all copies voluntarily.",
+              "modifier": "Partial admission obtained. Voluntary deletion claim cannot be verified."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Full Cooperation",
+              "description": "Confronted with the evidence, the analyst cooperates fully. They surrender the USB device, provide access to the personal email account, and confirm no other copies exist. They agree to a supervised deletion process.",
+              "modifier": "Full cooperation. Evidence recovered. Supervised deletion in progress."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — The Bigger Fish",
+              "description": "The analyst breaks down and reveals they were recruited by a headhunter working for the competing bank, who specifically requested client data as a condition of the job offer. The analyst provides written communications proving the competing bank's complicity.",
+              "modifier": "Competing bank's involvement proven. Grounds for regulatory referral and civil action."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The competing bank's CISO contacts your bank, claiming they have discovered the stolen data on the analyst's application materials and want to 'do the right thing'.",
+        "An anonymous tip is received suggesting the analyst is not the only employee who has been approached by the competing bank.",
+        "The analyst's workstation is a shared hot-desk, complicating the forensic chain of custody.",
+        "A journalist contacts the bank asking about 'staff poaching and data theft in private banking' — suggesting a leak from somewhere."
+      ]
+    },
+    {
+      "id": "B3",
+      "title": "Complications — The Conspiracy Deepens",
+      "phase": 3,
+      "time_offset": "T+35 Minutes",
+      "narrative": "During a discreet meeting with HR and Legal, the analyst becomes confrontational and claims they were acting on verbal instructions from their line manager (a Managing Director) to prepare a 'client transition plan' for the competing bank as part of an informal arrangement.\n\nThe Managing Director denies any such instruction. However, the analyst produces a text message thread (on a personal device) that contains ambiguous language from the MD, including: 'Let's make sure we have everything ready for the move' and 'Keep this between us for now.'\n\nThe MD is a Senior Manager under the SM&CR regime.",
+      "facilitator_prompts": [
+        "How does the involvement of a Senior Manager change the response and escalation pathway?",
+        "What are the SM&CR implications? Do we need to notify the FCA about potential conduct issues?",
+        "Should both individuals be suspended pending investigation?",
+        "How do we preserve the text message evidence on the analyst's personal device?",
+        "Does this change the nature of the offence from a lone actor to potential conspiracy?",
+        "What independent investigation capability do we engage to avoid conflicts of interest?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "conspiracy_investigation",
+          "description": "Roll to determine what the deeper investigation reveals",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Institutional Crisis",
+              "description": "The investigation reveals the MD has been systematically moving clients to the competing bank for 18 months. Three other departing staff members were involved. The scale of client data exposure is ten times larger than initially thought.",
+              "modifier": "Systemic breach. Multiple perpetrators. Full regulatory investigation triggered."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Ambiguous Evidence",
+              "description": "The text messages are genuinely ambiguous. The MD's explanation is plausible but so is the analyst's. Neither can be conclusively proven without further investigation. Both parties lawyer up.",
+              "modifier": "Stalemate. Expensive and lengthy investigation required."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "MD Partially Cleared",
+              "description": "Digital forensics of the MD's devices shows no evidence of direct involvement in data theft, but does reveal they failed to report the analyst's stated intentions. A conduct failing rather than criminal activity.",
+              "modifier": "MD conduct issue identified. SM&CR notification may be required."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Clear Picture",
+              "description": "The investigation clearly demonstrates the analyst acted alone and misrepresented the text messages (which were about the MD's own career move). The analyst is referred to law enforcement.",
+              "modifier": "Analyst's deception exposed. Clear basis for criminal referral."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Justice Served",
+              "description": "The investigation not only clears the MD but reveals the analyst attempted similar data theft at their previous employer. Law enforcement coordination leads to immediate arrest. The competing bank launches its own internal investigation and terminates the headhunter.",
+              "modifier": "Criminal arrested. Pattern of behaviour established. Industry-wide alert issued."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The analyst threatens to go to the press with allegations of a toxic work culture and whistleblower retaliation.",
+        "The MD's executive assistant reveals they overheard conversations that partially corroborate the analyst's claims.",
+        "The bank's internal investigation team reports to the MD being investigated, creating an independence issue.",
+        "The FCA contacts the bank about an unrelated matter, but the timing creates internal panic."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Were DLP controls effective in detecting the data exfiltration?",
+      "Was the investigation handled with appropriate legal and HR coordination?",
+      "Were evidence preservation procedures adequate?",
+      "Were regulatory notification obligations understood?",
+      "How should privileged access controls be improved?",
+      "What training or awareness measures should be implemented?"
+    ]
+  }
+}

@@ -1,0 +1,317 @@
+{
+  "id": "ransomware",
+  "title": "The Crypt of Encrypted Shadows",
+  "subtitle": "Ransomware Attack on Core Banking Infrastructure",
+  "description": "A devastating ransomware attack strikes the heart of your banking fortress. Encrypted shadows spread across your domain as a dark sorcerer demands tribute in cursed coin. Your realm's most guarded secrets — the portfolios of ultra-high-net-worth patrons — hang in the balance.",
+  "severity": "P1 — Critical",
+  "theme_color": "#dc3545",
+  "icon": "🔴",
+  "estimated_duration_minutes": 60,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 15,
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the response team, makes containment and escalation decisions",
+      "required": true
+    },
+    {
+      "name": "IT Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Provides technical context, assesses system impact, proposes containment actions",
+      "required": true
+    },
+    {
+      "name": "SOC Analyst",
+      "title": "Shadow Watcher",
+      "description": "Interprets alerts, provides forensic indicators, monitors detection tooling",
+      "required": true
+    },
+    {
+      "name": "Compliance / DPO",
+      "title": "Keeper of the Codex",
+      "description": "Assesses regulatory notification obligations, advises on breach classification",
+      "required": true
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on legal exposure, privilege, law enforcement engagement",
+      "required": false
+    },
+    {
+      "name": "Client Relations",
+      "title": "Herald of the Realm",
+      "description": "Manages client communication strategy, assesses reputational impact",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive-level decision authority, approves external communications",
+      "required": false
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Town Crier",
+      "description": "Drafts holding statements, manages media and social media response",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "A1",
+      "title": "Initial Detection — The First Tremor",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "It is 07:42 UTC on a Tuesday morning. The Security Operations Centre (SOC) receives a Priority 1 alert from the Endpoint Detection and Response (EDR) platform. Multiple workstations on the Private Client Services floor are exhibiting anomalous behaviour: rapid file encryption across mapped network drives, creation of ransom note text files, and outbound connections to a known command-and-control IP address.\n\nSimultaneously, the IT Service Desk receives three calls from relationship managers reporting that they cannot open client portfolio documents. One manager reports seeing a pop-up window demanding payment in cryptocurrency.\n\nThe EDR dashboard indicates 14 endpoints are affected and the count is rising. The affected file shares include the S:\\PrivateClients\\ and S:\\Compliance\\ directories.",
+      "facilitator_prompts": [
+        "Who is responsible for declaring this a security incident and at what severity level?",
+        "What is the immediate containment strategy? Should affected endpoints be isolated from the network?",
+        "What is the impact on client-facing services? Can relationship managers continue to service clients?",
+        "Has the SOC confirmed whether the EDR agent is blocking the encryption or merely alerting?",
+        "At what point do we escalate to the Incident Commander and convene the Crisis Management Team?",
+        "Do we have offline backups of the affected file shares? When were they last tested?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "containment_roll",
+          "description": "Roll to determine the effectiveness of initial containment",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Catastrophic Failure",
+              "description": "The containment attempt accidentally triggers the ransomware's killswitch — but in reverse. The encryption accelerates to backup systems. 8 additional servers are now compromised, including the email gateway.",
+              "modifier": "Endpoints affected rises from 14 to 47. Email is now offline."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Partial Failure",
+              "description": "Network isolation is incomplete. Three endpoints on the trading floor, previously unaffected, begin showing encryption activity. The threat actor appears to have a secondary C2 channel.",
+              "modifier": "3 additional endpoints compromised on the trading floor."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Partial Success",
+              "description": "Most endpoints are successfully isolated, but the file server continues to show encryption activity. It appears the malware has a scheduled task maintaining persistence.",
+              "modifier": "Workstations contained but file server still active."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Successful Containment",
+              "description": "The SOC team swiftly isolates all affected endpoints and blocks the C2 channel. Encryption is halted at 14 endpoints. No further spread detected.",
+              "modifier": "Containment successful. Proceed to investigation phase."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Master Stroke",
+              "description": "Not only is containment successful, but the SOC analyst identifies the exact phishing email and payload hash. They discover the threat actor's staging server is misconfigured, revealing the decryption key in an exposed directory.",
+              "modifier": "Decryption key potentially recovered. Encryption may be reversible without paying ransom."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A junior IT technician, panicking, force-restarts three affected servers, potentially destroying volatile forensic evidence.",
+        "The EDR vendor's cloud console is experiencing an outage, limiting visibility into the attack.",
+        "A relationship manager has tweeted about the attack from their personal account: 'Something major going on at the bank today. Systems down everywhere.'",
+        "The building's physical access control system, which shares a network segment, begins behaving erratically."
+      ]
+    },
+    {
+      "id": "A2",
+      "title": "Escalation and Scope Expansion — The Shadow Deepens",
+      "phase": 2,
+      "time_offset": "T+15 Minutes",
+      "narrative": "The SOC has completed initial triage. The attack vector has been identified as a phishing email received by a senior relationship manager at 07:12 UTC. The email contained a macro-enabled Excel attachment purporting to be a client portfolio rebalancing report. The malware achieved initial execution via a VBA macro and subsequently moved laterally using harvested domain credentials.\n\nCritically, the SOC has identified outbound data transfer to an external IP address. Approximately 2.3 GB of data from the S:\\PrivateClients\\ directory was exfiltrated between 07:20 and 07:41 UTC before the EDR alert triggered. The directory contains client identification documents, account statements, tax records, and portfolio valuations for approximately 340 ultra-high-net-worth (UHNW) clients.\n\nA ransom note has been found demanding 50 BTC (approximately £2.1 million at current rates), with a 72-hour payment deadline. The note threatens publication of stolen client data on a dark web leak site if payment is not made.",
+      "facilitator_prompts": [
+        "This is now a confirmed data breach involving personal data of UHNW clients. What are our GDPR Article 33 obligations and what is the notification timeline?",
+        "Do we engage the ICO proactively or wait until we have completed our internal assessment?",
+        "What is our position on ransom payment? Who has the authority to make this decision?",
+        "Should we engage our cyber insurance provider and their nominated incident response panel firm?",
+        "How do we preserve forensic evidence whilst also containing the spread?",
+        "What are the FCA/PRA notification requirements for a material operational incident?",
+        "Do we need to notify SWIFT if any SWIFT-related infrastructure is potentially compromised?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "forensic_investigation",
+          "description": "Roll to determine what forensic evidence is recoverable",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Evidence Destroyed",
+              "description": "The ransomware includes an anti-forensics module that has wiped Windows Event Logs and overwritten the MFT on affected systems. Forensic recovery will be extremely limited.",
+              "modifier": "Investigation timeline extended by 72 hours minimum."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Limited Evidence",
+              "description": "Most forensic artifacts on endpoints are encrypted. Network flow data is available but the proxy logs for the exfiltration window have already rotated due to a misconfigured retention policy.",
+              "modifier": "Cannot confirm exact data exfiltrated. Must assume worst case."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Partial Recovery",
+              "description": "Memory forensics from two endpoints captured before isolation provide the malware's process tree and network indicators. However, the exact scope of exfiltrated files cannot be determined.",
+              "modifier": "Good IOCs recovered. Exfiltration scope still uncertain."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Strong Evidence",
+              "description": "Full network capture from the SIEM provides a complete picture of exfiltrated files. The threat actor's infrastructure is identified and reported to NCSC.",
+              "modifier": "Clear understanding of breach scope. NCSC engaged."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Intelligence Goldmine",
+              "description": "The forensics team discovers the threat actor reused infrastructure from a known APT group. NCSC confirms they are already tracking this group and can provide decryption assistance through a partner agency.",
+              "modifier": "Potential for law enforcement-assisted recovery. Decryption support available."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The cyber insurance broker cannot be reached — they are themselves dealing with a separate client incident.",
+        "The bank's external legal counsel has a conflict of interest as they also represent the suspected threat actor's previous victims.",
+        "A second ransom note is discovered with a different Bitcoin address and different demands, suggesting two separate threat actors may be involved.",
+        "The FCA supervisory team calls proactively — they have received intelligence about attacks on private banks and want a status update."
+      ]
+    },
+    {
+      "id": "A3",
+      "title": "Client and Media Pressure — The Siege Tightens",
+      "phase": 3,
+      "time_offset": "T+30 Minutes",
+      "narrative": "A financial journalist from a national broadsheet has contacted the Communications team, stating they have received a tip-off about a cyber attack at the bank. They are requesting comment before a 14:00 UTC publication deadline.\n\nSeparately, two UHNW clients have contacted their relationship managers directly, stating they have received emails from an unknown party claiming to hold their financial records and threatening to release them unless the clients themselves pay a personal ransom of £50,000 each.\n\nThe Board Chairman has been informed and is requesting an immediate briefing. The bank's largest institutional client, a family office with £800 million under management, has scheduled an urgent call with the CEO to discuss the security of their assets and data.",
+      "facilitator_prompts": [
+        "What is our media response strategy? Do we issue a holding statement or a full press release?",
+        "How do we communicate with affected clients? Who approves the client notification and what does it contain?",
+        "Clients are being directly extorted. Do we advise them to contact law enforcement? Do we coordinate this centrally?",
+        "Should we engage the National Cyber Security Centre (NCSC) and/or Action Fraud?",
+        "How do we manage the Board's expectations whilst the investigation is ongoing?",
+        "What is the reputational risk assessment? Could we lose the family office account?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "media_management",
+          "description": "Roll to determine the media outcome",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Media Disaster",
+              "description": "The holding statement is leaked before approval. A disgruntled former employee contacts the journalist with internal details. The story runs with the headline 'Private Bank Left Vault Door Open' and includes accurate technical details.",
+              "modifier": "Full front-page coverage. Client confidence severely impacted."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Negative Coverage",
+              "description": "The journalist publishes before the bank can respond. The article is largely speculative but the bank's 'no comment' is framed negatively. Social media amplification begins.",
+              "modifier": "Negative press coverage. Reactive communications required."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Controlled Narrative",
+              "description": "The holding statement is issued in time but the journalist has additional sources. The article is balanced but raises questions about the bank's cyber security posture.",
+              "modifier": "Mixed coverage. Follow-up press interest likely."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Positive Narrative Control",
+              "description": "The Communications team issues a well-crafted holding statement emphasising proactive response and client protection. The journalist's article frames the bank as a victim responding professionally.",
+              "modifier": "Positive press framing. Client confidence maintained."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Public Relations Victory",
+              "description": "The CEO gives an exclusive interview that is widely praised for transparency and leadership. The bank is held up as an example of excellent incident response. Two prospective clients reach out, impressed by the handling.",
+              "modifier": "Reputational enhancement. New client interest generated."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A board member, not briefed on the communication strategy, gives an unauthorised interview to a business news channel.",
+        "The family office client's own CISO requests a full technical briefing and forensic report within 24 hours as a condition of maintaining the relationship.",
+        "A hacktivist group claims responsibility for the attack on social media, but their claim is inconsistent with the known threat actor TTPs.",
+        "The ICO calls to confirm they have received a complaint from one of the directly extorted clients."
+      ]
+    },
+    {
+      "id": "A4",
+      "title": "Recovery Decisions — The Path to Restoration",
+      "phase": 4,
+      "time_offset": "T+45 Minutes",
+      "narrative": "The containment team has successfully isolated all affected endpoints and halted lateral movement. The threat actor's C2 channel has been blocked at the perimeter firewall and DNS sinkhole.\n\nHowever, the IT Operations team reports that backup restoration for the encrypted file shares will take approximately 18 hours due to the volume of data and the need to verify backup integrity. During this period, relationship managers will have no access to client portfolio documents.\n\nThe CISO has confirmed that the threat actor likely maintained persistent access for up to 11 days before deploying ransomware, based on initial forensic analysis of authentication logs. The full extent of the compromise is not yet known.\n\nThe 72-hour ransom deadline is now at T-70 hours.",
+      "facilitator_prompts": [
+        "With 18 hours of downtime, what is our business continuity strategy for client servicing?",
+        "11 days of persistent access suggests a deeper compromise. What additional systems need forensic review?",
+        "Do we engage an external digital forensics firm, or rely on internal capability?",
+        "What is the decision-making framework for ransom payment, and who chairs that decision?",
+        "How do we ensure the threat actor has not left additional backdoors or persistence mechanisms?",
+        "What is our timeline for completing the ICO notification given the evolving scope of the breach?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "recovery_roll",
+          "description": "Roll to determine the recovery outcome",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Recovery Failure",
+              "description": "The backup tapes are found to be corrupted — the threat actor compromised the backup system during their 11-day access window. No viable backups exist for the last 14 days. Critical client data may be permanently lost unless the ransom is paid.",
+              "modifier": "No viable backups. Ransom payment decision becomes critical."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Slow Recovery",
+              "description": "Backups are viable but the restoration process reveals additional encrypted files in secondary locations. Full recovery will take 36+ hours. Two critical client transactions cannot be processed.",
+              "modifier": "Extended downtime. Client transactions delayed."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Partial Recovery",
+              "description": "Primary file shares are restored within 18 hours as estimated. However, some recent documents (last 3 days) are not in the backup and will need to be recreated manually.",
+              "modifier": "Major systems restored. Some data recreation needed."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Full Recovery",
+              "description": "Backups are verified clean and restoration completes in 12 hours — faster than estimated. All client data is recovered. A full sweep confirms no residual persistence mechanisms.",
+              "modifier": "Full recovery achieved ahead of schedule."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Total Victory",
+              "description": "Recovery is complete within 8 hours. The forensics team identifies and removes all backdoors. Additionally, they discover the threat actor's operational security mistake that reveals the identity of the criminal group, leading to law enforcement action.",
+              "modifier": "Rapid recovery. Threat actor identified. Law enforcement arrests imminent."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The threat actor contacts the bank directly via a secure messaging service, offering a 'discount' if payment is made within 24 hours.",
+        "A second wave of phishing emails targeting bank staff is detected, suggesting the threat actor is attempting to re-establish access.",
+        "The external forensics firm estimates costs of £250,000 for a full investigation. The cyber insurance policy has a £100,000 excess.",
+        "A regulator from a jurisdiction where affected clients are resident demands a detailed incident report within 48 hours."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Was the ransomware detected and contained effectively?",
+      "Were regulatory notification obligations understood and met?",
+      "Was the ransom payment decision handled appropriately?",
+      "Were client communications timely and effective?",
+      "Were backup and recovery procedures adequate?",
+      "What improvements should be made to prevent recurrence?"
+    ]
+  }
+}

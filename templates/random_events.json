@@ -1,0 +1,152 @@
+{
+  "random_events": {
+    "environmental": [
+      {
+        "name": "Power Outage",
+        "description": "A power surge knocks out the primary data centre UPS. Generators kick in but there's a 30-second gap. Some systems require manual restart.",
+        "dice": "d6",
+        "trigger_on": [1]
+      },
+      {
+        "name": "Fire Alarm",
+        "description": "The building fire alarm activates. Staff must evacuate, including the incident response team. The SOC is unattended for 20 minutes.",
+        "dice": "d6",
+        "trigger_on": [2]
+      },
+      {
+        "name": "Key Person Unavailable",
+        "description": "A critical team member (CISO/CTO) is unreachable — they are on a flight with no connectivity for the next 4 hours.",
+        "dice": "d6",
+        "trigger_on": [3]
+      },
+      {
+        "name": "Simultaneous Incident",
+        "description": "An unrelated P2 incident is reported — a core banking application has crashed due to a failed patch. Resources are split.",
+        "dice": "d6",
+        "trigger_on": [4]
+      },
+      {
+        "name": "Vendor System Down",
+        "description": "Your primary security vendor's cloud management console is experiencing a global outage. No access to EDR, SIEM, or email security dashboards.",
+        "dice": "d6",
+        "trigger_on": [5]
+      },
+      {
+        "name": "Social Media Storm",
+        "description": "A viral social media post from a disgruntled customer (unrelated to the current incident) is consuming the communications team's bandwidth.",
+        "dice": "d6",
+        "trigger_on": [6]
+      }
+    ],
+    "plot_twists": [
+      {
+        "name": "The Insider Connection",
+        "description": "Evidence suggests an internal employee may have facilitated the attack by disabling security controls two weeks ago.",
+        "dice": "d20",
+        "trigger_on": [1, 2, 3]
+      },
+      {
+        "name": "Regulatory Surprise Visit",
+        "description": "The FCA announces a routine supervisory visit scheduled for tomorrow. The timing is coincidental but creates additional pressure.",
+        "dice": "d20",
+        "trigger_on": [4, 5, 6]
+      },
+      {
+        "name": "Second Wave",
+        "description": "A second, distinct attack vector is detected. The initial incident may have been a diversion for a more targeted attack.",
+        "dice": "d20",
+        "trigger_on": [7, 8, 9]
+      },
+      {
+        "name": "Client Defection",
+        "description": "Your largest institutional client formally invokes the security breach clause in their service agreement, giving 30-day notice of withdrawal.",
+        "dice": "d20",
+        "trigger_on": [10, 11]
+      },
+      {
+        "name": "Law Enforcement Intervention",
+        "description": "The National Crime Agency contacts the bank. They have been tracking the threat actor group and request the bank delay certain remediation actions to preserve evidence for an ongoing investigation.",
+        "dice": "d20",
+        "trigger_on": [12, 13]
+      },
+      {
+        "name": "Insurance Complication",
+        "description": "The cyber insurance provider sends a reservation of rights letter, suggesting the bank may have been in breach of policy conditions due to delayed patching.",
+        "dice": "d20",
+        "trigger_on": [14, 15]
+      },
+      {
+        "name": "Board Intervention",
+        "description": "A board member with no technical background overrides the CISO and instructs the team to pay the ransom / restore access immediately, creating a command conflict.",
+        "dice": "d20",
+        "trigger_on": [16, 17]
+      },
+      {
+        "name": "Whistleblower",
+        "description": "An anonymous internal whistleblower contacts the compliance team alleging that previous security audit findings were suppressed by senior management.",
+        "dice": "d20",
+        "trigger_on": [18, 19]
+      },
+      {
+        "name": "International Dimension",
+        "description": "Affected clients include politically exposed persons (PEPs) from three different jurisdictions, each with their own data protection notification requirements and diplomatic sensitivities.",
+        "dice": "d20",
+        "trigger_on": [20]
+      }
+    ],
+    "npc_actions": [
+      {
+        "name": "Helpful Analyst",
+        "description": "A junior SOC analyst who was working overtime discovers a crucial log entry that everyone else missed. It changes the direction of the investigation.",
+        "positive": true
+      },
+      {
+        "name": "Panicking Executive",
+        "description": "A C-suite executive sends an all-staff email about the incident before the communications team has approved messaging. The email contains inaccurate information.",
+        "positive": false
+      },
+      {
+        "name": "Proactive Vendor",
+        "description": "A security vendor proactively reaches out with threat intelligence specific to the attack. They offer free incident response support for the next 48 hours.",
+        "positive": true
+      },
+      {
+        "name": "Uncooperative Third Party",
+        "description": "A critical third-party provider refuses to share logs or cooperate with the investigation without a formal legal request, citing their own data protection obligations.",
+        "positive": false
+      },
+      {
+        "name": "Media Contact",
+        "description": "A trusted journalist offers to delay publication of the story by 24 hours in exchange for an exclusive interview once the incident is resolved.",
+        "positive": true
+      },
+      {
+        "name": "Regulator Inquiry",
+        "description": "The ICO opens a formal investigation based on a complaint from an affected data subject who learned of the breach through social media before receiving official notification.",
+        "positive": false
+      }
+    ]
+  },
+  "dice_tables": {
+    "complication_severity": {
+      "dice": "d6",
+      "outcomes": {
+        "1": { "severity": "Minor", "description": "A small inconvenience that slightly delays the response" },
+        "2": { "severity": "Minor", "description": "An annoying distraction that diverts one team member" },
+        "3": { "severity": "Moderate", "description": "A significant complication requiring team discussion" },
+        "4": { "severity": "Moderate", "description": "A notable setback that changes the response approach" },
+        "5": { "severity": "Major", "description": "A serious complication that threatens the response" },
+        "6": { "severity": "Critical", "description": "A crisis within a crisis requiring immediate attention" }
+      }
+    },
+    "time_pressure": {
+      "dice": "d4",
+      "outcomes": {
+        "1": { "modifier": "You have 30 minutes before this escalates" },
+        "2": { "modifier": "You have 1 hour before this becomes critical" },
+        "3": { "modifier": "You have 4 hours before external parties become involved" },
+        "4": { "modifier": "You have until end of business today to resolve this" }
+      }
+    }
+  }
+}
