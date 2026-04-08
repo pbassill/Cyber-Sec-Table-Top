@@ -4,6 +4,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+    initCampaignSelector();
     initCampaignBuilder();
     initSetupPage();
     initDiceRollers();
@@ -11,6 +12,89 @@ document.addEventListener('DOMContentLoaded', function() {
     initComplicationCards();
     initQuickDiceRoller();
 });
+
+/* ════════════════════════════════════════════
+   Campaign Category Selector (Setup Page)
+   ════════════════════════════════════════════ */
+function initCampaignSelector() {
+    var campaignGrid = document.getElementById('campaignGrid');
+    var campaignInput = document.getElementById('selectedCampaignInput');
+    var availableContainer = document.getElementById('availableScenarios');
+
+    if (!campaignGrid || !campaignInput || !availableContainer) return;
+
+    var campaignCards = campaignGrid.querySelectorAll('.campaign-select-card');
+
+    campaignCards.forEach(function(card) {
+        card.addEventListener('click', function() {
+            var campaignId = this.dataset.campaignId;
+
+            // Toggle selection: if already selected, deselect
+            var wasSelected = this.classList.contains('campaign-selected');
+
+            // Remove selection from all cards
+            campaignCards.forEach(function(c) {
+                c.classList.remove('campaign-selected');
+                var inner = c.querySelector('.campaign-card-inner');
+                if (inner) inner.style.background = '';
+                var checkIcon = c.querySelector('.bi-check-circle-fill');
+                if (checkIcon) checkIcon.parentElement.removeChild(checkIcon);
+            });
+
+            if (wasSelected) {
+                // Deselected — clear campaign and hide all scenarios
+                campaignInput.value = '';
+                filterScenariosByCampaign('');
+            } else {
+                // Select this campaign
+                this.classList.add('campaign-selected');
+                var inner = this.querySelector('.campaign-card-inner');
+                var themeColor = this.style.borderColor;
+                if (inner && themeColor) {
+                    inner.style.background = 'linear-gradient(135deg, ' + themeColor + '22, transparent)';
+                }
+
+                // Add check icon
+                var titleDiv = this.querySelector('.flex-grow-1');
+                if (titleDiv) {
+                    var check = document.createElement('i');
+                    check.className = 'bi bi-check-circle-fill text-success ms-2';
+                    check.style.fontSize = '1.3rem';
+                    titleDiv.parentElement.appendChild(check);
+                }
+
+                campaignInput.value = campaignId;
+                filterScenariosByCampaign(campaignId);
+            }
+        });
+    });
+
+    function filterScenariosByCampaign(campaignId) {
+        var scenarioCards = availableContainer.querySelectorAll('.scenario-card-mini');
+        var hint = document.getElementById('noCampaignHint');
+        var anyVisible = false;
+
+        scenarioCards.forEach(function(card) {
+            var scenarioCampaign = card.dataset.campaign || '';
+            if (campaignId === '' || scenarioCampaign !== campaignId) {
+                card.style.display = 'none';
+            } else {
+                card.style.display = '';
+                anyVisible = true;
+            }
+        });
+
+        // Show/hide the hint message
+        if (hint) {
+            hint.style.display = anyVisible ? 'none' : '';
+            if (!anyVisible && campaignId !== '') {
+                hint.innerHTML = '<i class="bi bi-info-circle"></i> No adventures available for this campaign yet';
+            } else if (!anyVisible) {
+                hint.innerHTML = '<i class="bi bi-arrow-up"></i> Select a campaign above to see available adventures';
+            }
+        }
+    }
+}
 
 /* ════════════════════════════════════════════
    CSRF Token Helper

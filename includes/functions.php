@@ -5,6 +5,18 @@
  */
 
 /**
+ * Load campaign category definitions from templates/campaigns.json
+ */
+function loadCampaigns(): array {
+    $file = __DIR__ . '/../templates/campaigns.json';
+    if (!file_exists($file)) return [];
+
+    $content = file_get_contents($file);
+    $data = json_decode($content, true);
+    return is_array($data) ? $data : [];
+}
+
+/**
  * Load all scenario templates from the templates directory
  */
 function loadScenarios(): array {
@@ -210,6 +222,7 @@ function saveSharedSession(array $data): void {
     $sharedState = [
         'session_code' => $data['session_code'],
         'event_name' => $data['event_name'] ?? '',
+        'selected_campaign' => $data['selected_campaign'] ?? '',
         'scenarios' => $data['scenarios'] ?? [],
         'current_scenario' => $data['current_scenario'] ?? 0,
         'current_inject' => $data['current_inject'] ?? 0,

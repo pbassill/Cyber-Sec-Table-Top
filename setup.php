@@ -8,6 +8,7 @@ $pageTitle = 'Cyber Quest — Event Setup';
 require_once 'includes/header.php';
 
 $scenarios = loadScenarios();
+$campaigns = loadCampaigns();
 $session = getSessionData();
 $departments = getDefaultDepartments();
 
@@ -30,6 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $eventName = 'Cyber Quest Event';
                 }
                 $session['event_name'] = substr($eventName, 0, 200);
+
+                // Save selected campaign
+                $selectedCampaign = sanitizeId($_POST['selected_campaign'] ?? '');
+                if ($selectedCampaign !== '' && isset($campaigns[$selectedCampaign])) {
+                    $session['selected_campaign'] = $selectedCampaign;
+                }
 
                 // Save scenario order
                 $order = $_POST['scenario_order'] ?? '';
@@ -98,6 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'participants' => [],
                     'session_code' => '',
                     'event_name' => '',
+                    'selected_campaign' => '',
                     'started' => false
                 ];
                 saveSessionData($session);
@@ -188,21 +196,81 @@ $playerUrl = $session['session_code']
                     </div>
                 </div>
 
-                <!-- Step 2: Select Scenarios -->
+                <!-- Step 2: Choose Campaign Category -->
                 <div class="dnd-card mb-4">
                     <div class="dnd-card-header">
-                        <h3><i class="bi bi-map"></i> Step 2 — Select Quests</h3>
+                        <h3><i class="bi bi-collection"></i> Step 2 — Choose Your Campaign</h3>
                     </div>
                     <div class="dnd-card-body">
                         <p class="card-flavor-text">
-                            Choose and order the scenarios for your event. Each quest will be played in sequence.
+                            Select the type of incident campaign to run. Each campaign contains different
+                            adventures (scenarios) tailored to that threat category.
+                        </p>
+                        <input type="hidden" name="selected_campaign" id="selectedCampaignInput"
+                               value="<?php echo htmlspecialchars($session['selected_campaign'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="row g-3" id="campaignGrid">
+                            <?php foreach ($campaigns as $cId => $campaign): ?>
+                            <?php
+                                $isSelected = ($session['selected_campaign'] ?? '') === $cId;
+                                $adventureCount = 0;
+                                foreach ($scenarios as $s) {
+                                    if (($s['campaign'] ?? '') === $cId) $adventureCount++;
+                                }
+                            ?>
+                            <div class="col-md-6 col-lg-4">
+                                <div class="campaign-select-card <?php echo $isSelected ? 'campaign-selected' : ''; ?>"
+                                     data-campaign-id="<?php echo htmlspecialchars($cId, ENT_QUOTES, 'UTF-8'); ?>"
+                                     style="border-color: <?php echo htmlspecialchars($campaign['theme_color'], ENT_QUOTES, 'UTF-8'); ?>; cursor: pointer;">
+                                    <div class="campaign-card-inner" style="<?php echo $isSelected ? 'background: linear-gradient(135deg, ' . htmlspecialchars($campaign['theme_color'], ENT_QUOTES, 'UTF-8') . '22, transparent);' : ''; ?>">
+                                        <div class="d-flex align-items-start mb-2">
+                                            <span class="campaign-icon me-2" style="font-size: 1.5rem;"><?php echo $campaign['icon']; ?></span>
+                                            <div class="flex-grow-1">
+                                                <h5 class="mb-1"><?php echo htmlspecialchars($campaign['title'], ENT_QUOTES, 'UTF-8'); ?></h5>
+                                                <span class="badge" style="background-color: <?php echo htmlspecialchars($campaign['theme_color'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                    <?php echo $adventureCount; ?> adventure<?php echo $adventureCount !== 1 ? 's' : ''; ?>
+                                                </span>
+                                            </div>
+                                            <?php if ($isSelected): ?>
+                                            <i class="bi bi-check-circle-fill text-success ms-2" style="font-size: 1.3rem;"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                        <p class="small mb-1 text-muted"><?php echo htmlspecialchars(mb_strimwidth($campaign['description'], 0, 160, '…'), ENT_QUOTES, 'UTF-8'); ?></p>
+                                        <small class="text-muted fst-italic"><?php echo htmlspecialchars($campaign['defining_characteristic'], ENT_QUOTES, 'UTF-8'); ?></small>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Select Scenarios (Adventures) -->
+                <div class="dnd-card mb-4">
+                    <div class="dnd-card-header">
+                        <h3><i class="bi bi-map"></i> Step 3 — Select Adventures</h3>
+                    </div>
+                    <div class="dnd-card-body">
+                        <p class="card-flavor-text">
+                            Choose and order the scenarios for your event. Each adventure will be played in sequence.
+                            <?php if (empty($session['selected_campaign'])): ?>
+                            <strong>Select a campaign above to see available adventures.</strong>
+                            <?php endif; ?>
                         </p>
                         <div class="row">
                             <div class="col-md-6">
-                                <h5 class="dnd-section-title">Available Quests</h5>
+                                <h5 class="dnd-section-title">Available Adventures</h5>
                                 <div id="availableScenarios" class="scenario-list">
-                                    <?php foreach ($scenarios as $id => $scenario): ?>
-                                    <div class="scenario-card-mini" data-id="<?php echo htmlspecialchars($id, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?php
+                                    $selectedCampaignId = $session['selected_campaign'] ?? '';
+                                    $hasVisibleScenarios = false;
+                                    foreach ($scenarios as $id => $scenario):
+                                        $scenarioCampaign = $scenario['campaign'] ?? '';
+                                        $isVisible = ($selectedCampaignId !== '' && $scenarioCampaign === $selectedCampaignId);
+                                        if ($isVisible) $hasVisibleScenarios = true;
+                                    ?>
+                                    <div class="scenario-card-mini" data-id="<?php echo htmlspecialchars($id, ENT_QUOTES, 'UTF-8'); ?>"
+                                         data-campaign="<?php echo htmlspecialchars($scenarioCampaign, ENT_QUOTES, 'UTF-8'); ?>"
+                                         style="<?php echo $isVisible ? '' : 'display: none;'; ?>">
                                         <div class="d-flex align-items-center">
                                             <span class="scenario-icon me-3"><?php echo $scenario['icon']; ?></span>
                                             <div class="flex-grow-1">
@@ -218,13 +286,18 @@ $playerUrl = $session['session_code']
                                         </div>
                                     </div>
                                     <?php endforeach; ?>
+                                    <?php if (!$hasVisibleScenarios): ?>
+                                    <p class="text-muted text-center py-3 no-campaign-hint" id="noCampaignHint">
+                                        <i class="bi bi-arrow-up"></i> Select a campaign above to see available adventures
+                                    </p>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <h5 class="dnd-section-title">Your Campaign <span id="campaignDuration" class="badge bg-secondary ms-2">0 min</span></h5>
+                                <h5 class="dnd-section-title">Your Quest Line <span id="campaignDuration" class="badge bg-secondary ms-2">0 min</span></h5>
                                 <div id="selectedScenarios" class="scenario-list campaign-dropzone">
                                     <p class="dropzone-text text-muted text-center py-4">
-                                        <i class="bi bi-arrow-left"></i> Add quests from the available list
+                                        <i class="bi bi-arrow-left"></i> Add adventures from the available list
                                     </p>
                                 </div>
                             </div>
@@ -232,10 +305,10 @@ $playerUrl = $session['session_code']
                     </div>
                 </div>
 
-                <!-- Step 3: Add Participants -->
+                <!-- Step 4 — Assemble Your Party -->
                 <div class="dnd-card mb-4">
                     <div class="dnd-card-header">
-                        <h3><i class="bi bi-people-fill"></i> Step 3 — Assemble Your Party</h3>
+                        <h3><i class="bi bi-people-fill"></i> Step 4 — Assemble Your Party</h3>
                     </div>
                     <div class="dnd-card-body">
                         <p class="card-flavor-text">
@@ -290,7 +363,7 @@ $playerUrl = $session['session_code']
                 <!-- Save & Session Code -->
                 <div class="dnd-card mb-4">
                     <div class="dnd-card-header">
-                        <h3><i class="bi bi-link-45deg"></i> Step 4 — Generate Event Link</h3>
+                        <h3><i class="bi bi-link-45deg"></i> Step 5 — Generate Event Link</h3>
                     </div>
                     <div class="dnd-card-body">
                         <p class="card-flavor-text">
@@ -361,8 +434,10 @@ $playerUrl = $session['session_code']
 <script>
     // Pass data to JS
     window.scenarioData = <?php echo json_encode($scenarios, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+    window.campaignData = <?php echo json_encode($campaigns, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
     window.departmentData = <?php echo json_encode($departments, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
     window.preselectedScenarios = <?php echo json_encode($session['scenarios'] ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+    window.preselectedCampaign = <?php echo json_encode($session['selected_campaign'] ?? '', JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
 </script>
 
 <?php require_once 'includes/footer.php'; ?>
