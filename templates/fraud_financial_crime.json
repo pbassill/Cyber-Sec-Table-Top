@@ -1,0 +1,337 @@
+{
+  "id": "fraud_financial_crime",
+  "campaign": "fraud_financial_crime",
+  "title": "The Gilded Deception",
+  "subtitle": "Authorised Push Payment Fraud & SWIFT Payment Compromise",
+  "description": "A shadow has fallen over the vaults of your private banking citadel. A master deceiver — a sorcerer of silver tongues and forged seals — has woven an intricate enchantment around your most trusted payment channels. Through cunning manipulation and arcane forgery, fraudulent SWIFT messages have been conjured and an ultra-high-net-worth patron has been beguiled into authorising a devastating push payment to a phantom treasury. As the golden threads unravel, the guild must race against time to recover the stolen hoard, contain the breach, and answer to the Elder Councils of regulation before the realm's reputation crumbles to dust.",
+  "severity": "P1 — Critical",
+  "theme_color": "#e83e8c",
+  "icon": "💰",
+  "estimated_duration_minutes": 60,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 15,
+  "compliance_frameworks": ["FCA Handbook DISP", "PSR APP Fraud", "SWIFT CSP", "PRA Fundamental Rules"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the crisis response, coordinates all workstreams, and makes critical escalation and containment decisions",
+      "required": true
+    },
+    {
+      "name": "Fraud Team Lead",
+      "title": "Shadow Hunter",
+      "description": "Directs fraud investigation, analyses transaction patterns, coordinates recall requests, and liaises with receiving banks",
+      "required": true
+    },
+    {
+      "name": "Compliance / MLRO",
+      "title": "Sentinel of the Golden Seal",
+      "description": "Assesses regulatory notification obligations, manages SAR filings, advises on APP fraud reimbursement rules, and coordinates FCA/PSR engagement",
+      "required": true
+    },
+    {
+      "name": "IT Security Lead",
+      "title": "Arcane Engineer",
+      "description": "Investigates the SWIFT environment compromise, reviews access logs, assesses infrastructure integrity, and implements technical containment",
+      "required": true
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on liability exposure, evidence preservation, freezing order applications, and engagement with law enforcement",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive authority, manages SM&CR accountability implications, and engages the board on financial and reputational exposure",
+      "required": false
+    },
+    {
+      "name": "Client Relations",
+      "title": "Herald of the Realm",
+      "description": "Manages communication with the affected UHNW client, coordinates reimbursement discussions, and preserves the client relationship",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "H1",
+      "title": "The Phantom Gold — Suspicious Payment Detected",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "compliance_frameworks": ["FCA Handbook DISP 1.1", "PSR APP Fraud Mandatory Reimbursement", "SWIFT CSP Control 2.2", "PRA Fundamental Rule 2"],
+      "narrative": "At 09:14 UTC on a Monday morning, the bank's real-time payment fraud detection system flags two high-value outbound SWIFT MT103 messages for manual review. The first payment — £2.4 million — was authorised by the Relationship Manager for a UHNW client (net worth £85 million, client for 14 years) and processed at 08:51 UTC to a beneficiary account at a correspondent bank in Singapore. The second payment — £1.8 million — was queued for release at 09:30 UTC to a different beneficiary at a bank in the UAE. Both payments reference an 'urgent property acquisition escrow' that the client allegedly instructed by telephone at 08:22 UTC.\n\nThe fraud detection system flagged the payments because: (a) the beneficiary accounts have never been used before by this client, (b) the combined value of £4.2 million exceeds the client's typical monthly payment volume by 340%, and (c) the Singapore beneficiary account was opened only 72 hours ago. The Relationship Manager confirmed the instruction was received via a phone call from the client's registered mobile number and that the client verbally confirmed the payment details including a reference code.\n\nHowever, an alert analyst on the fraud team notices a discrepancy. The client's registered address is in Mayfair, London, yet the IP address of the online banking session that pre-populated the beneficiary details before the phone call originated from an IP geolocated to Lagos, Nigeria. The Relationship Manager states they did not find this unusual because 'the client travels frequently.'",
+      "facilitator_prompts": [
+        "The first payment of £2.4 million has already been released. What immediate steps can we take to attempt to halt or recall it via the SWIFT network?",
+        "The second payment of £1.8 million is queued for 09:30 UTC — we have approximately 16 minutes. What is the decision: hold, release, or escalate? Who has authority to make this call?",
+        "The Relationship Manager accepted a telephone instruction and did not question the IP geolocation discrepancy. Is this a process failure, a training failure, or both?",
+        "Under the PSR's APP fraud reimbursement rules, what is our potential liability if this is confirmed as authorised push payment fraud?",
+        "Should we attempt to contact the client directly to verify the instruction? If so, through what channel — and what if the client's phone has been compromised via SIM swap?",
+        "What are the immediate SWIFT CSP obligations? Do we need to notify SWIFT of a potential compromise of our messaging environment?"
+      ],
+      "facilitator_notes": [
+        "The key tension in this inject is speed versus diligence. The first payment is already gone and every minute reduces recovery prospects. The second payment can still be stopped but requires a decision authority. Many teams will debate too long and miss the 09:30 window — this is by design. Time-pressure decision-making is a core learning objective.",
+        "Watch for the team's treatment of the Relationship Manager. They made a judgement call based on incomplete information. Guide the discussion toward systemic controls (callback verification, IP anomaly alerts) rather than individual blame.",
+        "The SIM swap possibility is critical. If the client's phone has been compromised, calling the registered mobile will connect to the fraudster. The team should discuss alternative verification methods — email to a known address, contact via the client's PA, or in-person verification."
+      ],
+      "dice_events": [
+        {
+          "trigger": "payment_recall_attempt",
+          "description": "Roll to determine the outcome of the urgent SWIFT recall request for the £2.4 million payment already sent to Singapore",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "The Gold Vanishes",
+              "description": "The recall request is transmitted but the Singapore correspondent bank reports that the beneficiary account was emptied within 7 minutes of receipt. The funds were immediately cascaded through four onward transfers to accounts in Hong Kong, the Philippines, and two jurisdictions with no mutual legal assistance treaty. The money is effectively unrecoverable through banking channels.",
+              "modifier": "£2.4 million irrecoverable. Cascade laundering confirmed. Law enforcement pathway only."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Partial Drain",
+              "description": "The Singapore bank acknowledges the recall request but reports that £1.6 million of the £2.4 million was transferred onward before a hold could be placed. The remaining £800,000 is frozen pending investigation, but the Singapore bank warns that the beneficiary has engaged local counsel to challenge the freeze.",
+              "modifier": "£800,000 frozen but contested. £1.6 million moved onward. Partial recovery possible with legal action."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Funds Frozen — Temporarily",
+              "description": "The Singapore correspondent bank places an immediate hold on the full £2.4 million. However, they advise the hold is temporary (72 hours under local banking regulations) and will require a court order or police report to extend. The beneficiary account holder has already contacted the Singapore bank demanding release of 'their' funds.",
+              "modifier": "Full amount frozen for 72 hours. Court order required urgently to extend hold."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Swift Intervention",
+              "description": "The recall request arrives just as the Singapore bank's own fraud controls flag the incoming payment as suspicious due to the recently-opened beneficiary account. They independently freeze the funds and initiate their own investigation. The Singapore bank's compliance team is cooperative and willing to share KYC information on the beneficiary under a formal request.",
+              "modifier": "Full £2.4 million frozen by receiving bank. Cooperative investigation. KYC data available."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — The Trail Revealed",
+              "description": "The Singapore bank not only freezes the £2.4 million but their investigation reveals the beneficiary account is linked to a known fraud syndicate already under investigation by INTERPOL's Financial Crimes unit. The Singapore authorities immediately issue a production order for all account records. INTERPOL provides intelligence linking this syndicate to 14 similar attacks on European private banks in the past 6 months, giving your team critical threat intelligence.",
+              "modifier": "Full funds frozen. INTERPOL intelligence received. Syndicate identified. Prosecution pathway opened."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The UHNW client's personal assistant calls the bank demanding to know why a payment has been held, claiming the client is in a meeting and 'furious about the delay' — but the PA's number is not on file.",
+        "The Relationship Manager reveals they bypassed the standard four-eyes payment approval process because the client demanded urgency and the RM's line manager was not yet in the office.",
+        "The bank's SWIFT Alliance Lite2 gateway shows an anomalous login from an unrecognised IP address at 07:58 UTC — 24 minutes before the fraudulent instruction — suggesting the SWIFT environment itself may be compromised.",
+        "A second UHNW client calls their Relationship Manager to query a £350,000 payment they did not authorise, suggesting this may not be an isolated incident."
+      ]
+    },
+    {
+      "id": "H2",
+      "title": "The Enchanter Unmasked — Investigation & Containment",
+      "phase": 2,
+      "time_offset": "T+15 Minutes",
+      "compliance_frameworks": ["SWIFT CSP Control 1.1", "SWIFT CSP Control 5.1", "FCA SYSC 6.1.1", "PRA Fundamental Rule 3"],
+      "narrative": "The IT Security team's emergency investigation into the SWIFT environment has produced alarming findings. Analysis of the SWIFT Alliance Lite2 gateway logs reveals that an unauthorised operator profile was created 11 days ago using the credentials of a SWIFT administrator who is currently on extended sick leave. The rogue profile was used to submit the two fraudulent MT103 messages and had the permissions to create and authorise payments without triggering the standard dual-authorisation control. The attacker exploited a vulnerability in the bank's implementation: the dual-control requirement was enforced at the application layer but not at the messaging layer, meaning a single operator with elevated permissions could both create and release messages.\n\nForensic analysis of the administrator's workstation — accessed remotely via the bank's VPN — reveals that their credentials were compromised via a spear-phishing email sent 18 days ago. The email, crafted to appear as a SWIFT security bulletin, contained a malicious PDF that installed a remote access trojan (RAT). The RAT provided the attacker with persistent access to the administrator's workstation, from which they harvested SWIFT credentials, studied the bank's payment processes, and identified the highest-value clients.\n\nThe fraud team has confirmed that the UHNW client whose payments were flagged did NOT make the telephone call at 08:22 UTC. The client has been reached through their family office and is currently abroad. Analysis of phone records suggests the call to the Relationship Manager was made using a spoofed caller ID matching the client's registered mobile number. The client is distressed and demands to know how their banking details were known to the fraudster.",
+      "facilitator_prompts": [
+        "The SWIFT environment has been compromised for at least 11 days. What is the immediate containment action — do we take the entire SWIFT gateway offline, and what is the business impact of doing so?",
+        "The attacker had 11 days of access. How do we determine whether other fraudulent messages were submitted, queued, or are scheduled for future dates?",
+        "The spear-phishing attack exploited a staff member on sick leave whose credentials were never rotated or suspended. What does this reveal about our access management and joiner-mover-leaver processes?",
+        "Under SWIFT's Customer Security Programme, we have an obligation to report a compromise of our SWIFT infrastructure. What is the notification process and timeline?",
+        "The client's phone number was spoofed and their banking details were known to the attacker. Should we assume the client's personal data has been compromised, and if so, what is the source — our systems or an external breach?",
+        "Are there other clients whose payment instructions should now be treated as potentially fraudulent until verified through enhanced authentication?"
+      ],
+      "facilitator_notes": [
+        "The SWIFT compromise is the critical escalation factor. This elevates the incident from a social engineering fraud to a systemic infrastructure breach. Guide the team to recognise that containing the fraud is only half the battle — they must also secure the SWIFT environment before any further payments can be trusted.",
+        "The decision to take the SWIFT gateway offline is a business-critical judgement call. It stops all outbound payments for all clients. The team must weigh the risk of further fraud against the operational impact and client disruption. There is no right answer — the objective is structured decision-making under pressure.",
+        "The credential compromise of the absent administrator is a common real-world attack vector. Use this to explore the bank's controls around dormant accounts, VPN access for absent staff, and whether conditional access policies (geo-fencing, device compliance) would have prevented the initial compromise."
+      ],
+      "dice_events": [
+        {
+          "trigger": "swift_environment_assessment",
+          "description": "Roll to determine what the forensic investigation of the SWIFT environment reveals about the full scope of the compromise",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "The Shadow Network",
+              "description": "The forensic investigation reveals the attacker did not just create one rogue operator profile — they created three, each with different permission sets. Two additional fraudulent MT103 messages totalling £3.1 million were submitted to banks in Eastern Europe overnight and have already settled. Furthermore, the attacker planted a logic bomb in the SWIFT gateway configuration that would have triggered a cascade of 47 fraudulent payments totalling £28 million at market close on Friday. Total exposure is now £35.3 million.",
+              "modifier": "Multiple rogue profiles. Additional £3.1 million already lost. Logic bomb discovered — catastrophic loss averted but total exposure is £35.3 million."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Deeper Compromise",
+              "description": "The investigation reveals one additional rogue operator profile that was used to submit a test MT103 for €500 to an account in Latvia three days ago — likely a reconnaissance transaction to verify the payment pathway. The SWIFT gateway's audit log has been partially tampered with, meaning the team cannot be certain of the full scope without rebuilding the audit trail from SWIFT's central archive. The rebuild will take 48–72 hours.",
+              "modifier": "Test transaction detected. Audit logs tampered. Full scope unknown for 48–72 hours. SWIFT gateway integrity uncertain."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Contained but Uncertain",
+              "description": "The investigation identifies only the single rogue operator profile responsible for the two known fraudulent payments. No additional fraudulent messages are found. However, the attacker's RAT provided access to the payment operations shared drive, which contained SWIFT message templates, client payment histories, and correspondent banking details. The full extent of data exfiltration is unclear.",
+              "modifier": "Single rogue profile confirmed. No additional payments. But attacker had access to sensitive payment data — further attacks possible from external."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Clean Containment",
+              "description": "The forensic investigation confirms the compromise was limited to the single rogue operator profile and the two fraudulent MT103 messages. The SWIFT audit logs are intact and show no other suspicious activity. The attacker's RAT has been isolated and a full network sweep confirms no lateral movement beyond the administrator's workstation. The containment is clean.",
+              "modifier": "Scope confirmed and contained. Audit trail intact. No lateral movement. Clean remediation pathway."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — The Enchanter's Lair",
+              "description": "The forensic investigation not only confirms clean containment but the RAT's command-and-control traffic is traced to a staging server that the attacker failed to properly anonymise. The server contains a trove of operational data including: attack playbooks for six other banks, stolen credentials for three correspondent banks, and communications that identify members of the fraud syndicate. This intelligence is shared with the NCA's National Cyber Crime Unit, who confirm the syndicate is already under active investigation.",
+              "modifier": "Full containment confirmed. Attacker infrastructure identified. NCA intelligence sharing. Syndicate disruption imminent."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The SWIFT administrator on sick leave calls the IT Service Desk to report that their personal email and social media accounts have also been compromised, suggesting the attacker has broader access to their digital identity.",
+        "The bank's CISO is travelling internationally and unreachable for the next 4 hours, leaving the IT Security team without their senior technical decision-maker.",
+        "A correspondent bank in Frankfurt contacts the payments team requesting urgent confirmation of two MT202 cover payments they received overnight — neither of which appears in the bank's records.",
+        "The board chairman calls the CEO demanding a full briefing within the hour after hearing rumours of 'a major fraud' from a contact at another bank."
+      ]
+    },
+    {
+      "id": "H3",
+      "title": "The Quest for Lost Gold — Fund Recovery Attempts",
+      "phase": 3,
+      "time_offset": "T+30 Minutes",
+      "compliance_frameworks": ["PSR APP Fraud Reimbursement Standard", "FCA DISP 1.4", "Proceeds of Crime Act 2002 s.327-329", "PRA Fundamental Rule 6"],
+      "narrative": "Six hours have passed since the fraudulent payments were detected. The SWIFT gateway has been taken offline for forensic rebuild and all outbound payments are being processed via a manual contingency procedure — fax-based SWIFT messaging through the bank's contingency bureau — which is slow, error-prone, and frustrating legitimate clients. Three UHNW clients have already complained about delayed payments, and the Relationship Management team is struggling to manage expectations without revealing the nature of the incident.\n\nThe fund recovery effort is progressing on multiple fronts. The bank's fraud team has submitted formal recall requests (MT199 messages) to the correspondent banks in Singapore and the UAE. The Singapore bank has confirmed the funds are frozen (pending the dice outcome from Inject 1), but the UAE bank has been slow to respond — it is now after business hours in Dubai, and the bank's fraud department will not be available until the following morning. Meanwhile, the bank's legal team has engaged specialist fraud recovery solicitors to prepare an urgent application for a worldwide freezing order in the High Court, but the earliest available hearing slot is 48 hours away.\n\nThe UHNW client — a prominent businessman with political connections — has engaged his own solicitors, who have written to the bank demanding full reimbursement of the £4.2 million within 24 hours under the PSR's APP fraud reimbursement rules. The solicitors argue that the bank failed to implement adequate authentication controls and that the Confirmation of Payee check — which would have flagged the mismatch between the beneficiary name and account — was not performed because SWIFT payments are outside the CoP scheme. The solicitors have also threatened to escalate to the Financial Ombudsman Service and the press.",
+      "facilitator_prompts": [
+        "Under the PSR's mandatory reimbursement rules for APP fraud, is the bank liable to reimburse the client? What defences, if any, are available — such as gross negligence by the client?",
+        "The UAE bank is unresponsive. What escalation options exist — SWIFT priority messaging, direct CEO-to-CEO contact, engagement of local counsel in Dubai, or involvement of the NCA's international liaison network?",
+        "The SWIFT gateway is offline and we are operating on manual contingency. How long can this continue before the operational risk becomes unacceptable? What is the rebuild timeline?",
+        "The client's solicitors are demanding reimbursement within 24 hours. What is our legal position, and should we make an interim goodwill payment to preserve the relationship while the investigation continues?",
+        "Three other UHNW clients are complaining about delayed payments. What do we tell them? How much do we disclose about the incident?",
+        "Should we file a Suspicious Activity Report with the NCA now, or wait until we have a clearer picture of the fraud? What are the risks of early versus late SAR filing?"
+      ],
+      "facilitator_notes": [
+        "The fund recovery phase tests the team's ability to manage multiple parallel workstreams under time pressure: the Singapore recall, the UAE recall, the legal freezing order, the client reimbursement demand, the operational contingency, and the SAR filing. Most teams will struggle to track all threads simultaneously — this is intentional.",
+        "The PSR APP fraud reimbursement rules are a critical discussion point. The new mandatory reimbursement framework (effective October 2024) creates a strong presumption of reimbursement for the sending bank. The key exceptions are gross negligence by the payer and failure to report within 13 months. Guide the team to consider whether the client bears any responsibility — the answer in this scenario is almost certainly no, as the fraud was enabled by the bank's own SWIFT compromise.",
+        "The tension between client reimbursement and fund recovery is important. If the bank reimburses the client in full, it assumes the recovery risk. If it delays reimbursement pending recovery, it risks regulatory censure and reputational damage. There is no clean answer."
+      ],
+      "dice_events": [
+        {
+          "trigger": "uae_fund_recovery",
+          "description": "Roll to determine the outcome of the fund recovery effort with the UAE correspondent bank for the £1.8 million payment",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "The Gold Melts Away",
+              "description": "When the UAE bank's fraud department finally responds the following morning, they report that the beneficiary account was closed immediately after receiving the funds. The account holder — a shell company registered in the British Virgin Islands — withdrew the full £1.8 million via a series of cash withdrawals and cryptocurrency purchases at an OTC desk in Dubai. The UAE bank states they have no further information and that a formal request must be made through UAE law enforcement channels, which typically take 6–12 months to process.",
+              "modifier": "£1.8 million unrecoverable through banking channels. Cash and crypto conversion. 6–12 month law enforcement timeline."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Bureaucratic Labyrinth",
+              "description": "The UAE bank acknowledges the recall request but states that under UAE banking regulations, they cannot freeze the account without a local court order or a request from UAE law enforcement. They advise engaging the UAE Central Bank's Financial Intelligence Unit. The funds remain in the beneficiary account for now, but the beneficiary has instructed a transfer to a third account. A race against bureaucracy begins.",
+              "modifier": "Funds at risk of onward transfer. Local legal action required. 48–72 hour window before funds move."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Partial Freeze",
+              "description": "The UAE bank places a temporary hold on £1.2 million of the £1.8 million, but £600,000 was transferred to a third-party account before the hold was applied. The hold is valid for 5 business days under the bank's internal fraud policy. The beneficiary has instructed a local law firm to challenge the freeze.",
+              "modifier": "£1.2 million frozen for 5 days. £600,000 transferred onward. Legal challenge incoming."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Cooperative Recovery",
+              "description": "The UAE bank's fraud team recognises the beneficiary account as matching a pattern from a recent fraud advisory circulated by the UAE Central Bank. They independently freeze the full £1.8 million and file a suspicious transaction report with the UAE FIU. They are willing to cooperate on a formal repatriation of funds, subject to standard documentation.",
+              "modifier": "Full £1.8 million frozen. Cooperative recovery process initiated. 2–4 week repatriation timeline."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — The Syndicate's Treasury",
+              "description": "The UAE bank's investigation reveals the beneficiary account is a collection account used by the fraud syndicate for multiple operations. The account contains £6.3 million from seven different victims across four countries. UAE law enforcement, already investigating the account, seizes the full balance. Your bank's £1.8 million is identified and ring-fenced for repatriation. The UAE authorities share intelligence on the syndicate's local money laundering network.",
+              "modifier": "Full recovery confirmed. Syndicate collection account seized. Multi-jurisdictional intelligence shared."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The Financial Times publishes an article headlined 'Private Bank Hit by Multi-Million Pound SWIFT Fraud' citing unnamed sources — the story is 80% accurate and names the bank.",
+        "The bank's cyber insurance provider requests an urgent call to discuss coverage. Their initial position is that the SWIFT compromise may fall outside the policy's social engineering fraud exclusion clause, potentially voiding the claim.",
+        "The UHNW client's solicitors file a formal complaint with the Financial Ombudsman Service and simultaneously issue a pre-action protocol letter threatening High Court proceedings for negligence.",
+        "Two more UHNW clients instruct their Relationship Managers to move their full portfolios to competing banks, citing loss of confidence in the bank's security — combined AUM at risk is £120 million."
+      ]
+    },
+    {
+      "id": "H4",
+      "title": "The Elder Council Convenes — Regulatory Reporting & Client Response",
+      "phase": 4,
+      "time_offset": "T+45 Minutes",
+      "compliance_frameworks": ["FCA SUP 15.3 Notification Rules", "PSR APP Fraud Reporting", "SWIFT CSP Mandatory Reporting", "PRA Fundamental Rule 7", "SM&CR COCON"],
+      "narrative": "Forty-eight hours have passed since the initial fraud detection. The bank now faces the full regulatory and reputational consequences of the incident. The FCA's Supervision team has been formally notified via a Principle 11 notification (duty to disclose) and has requested a detailed Section 166 briefing within 5 business days. The PRA's Operational Resilience team has also been notified and is concerned about the SWIFT gateway rebuild timeline and the bank's reliance on manual contingency procedures. SWIFT's ISAC (Information Sharing and Analysis Centre) has been notified of the infrastructure compromise, and SWIFT has deployed a remote forensic team to assist with the gateway rebuild and validate the bank's compliance with the Customer Security Programme controls.\n\nThe client reimbursement decision has reached the board. The bank's legal advisors have confirmed that under the PSR's mandatory APP fraud reimbursement framework, the bank has a strong obligation to reimburse the client in full — the fraud was not caused by client negligence, and the bank's own SWIFT infrastructure compromise was the enabling factor. The CFO has provisioned £4.2 million against the fraud loss, but the board is divided: some members want to delay reimbursement pending fund recovery efforts, while others want to reimburse immediately to limit reputational damage and demonstrate good faith to the regulator.\n\nThe SM&CR implications are becoming acute. The Head of Payments (SMF holder) approved the SWIFT gateway configuration that lacked messaging-layer dual authorisation. The CISO (SMF24) is accountable for the cyber security controls that failed to detect the spear-phishing compromise and the RAT installation. The Compliance Director (SMF16) must explain why the bank's fraud controls did not flag the anomalies sooner. All three face potential regulatory scrutiny of their personal conduct under the duty of responsibility.",
+      "facilitator_prompts": [
+        "The board is divided on immediate reimbursement versus waiting for fund recovery. What is your recommendation, and how do you present the regulatory, legal, and reputational trade-offs to the board?",
+        "Three Senior Management Function holders face personal SM&CR scrutiny. How do we support them while maintaining the independence of the investigation? Do they need individual legal representation?",
+        "The FCA has requested a Section 166 briefing in 5 business days. What should the briefing contain, and how do we balance transparency with protecting the bank's legal position?",
+        "SWIFT's forensic team is on site. How do we manage the relationship — full cooperation or controlled disclosure? What are the risks if SWIFT finds additional CSP control failures?",
+        "The press story is now public. What is our external communications strategy? Do we issue a public statement, and if so, what does it say?",
+        "What systemic remediation actions must be initiated immediately — not after the investigation concludes — to prevent a recurrence? Consider dual authorisation, callback verification, access management, and monitoring."
+      ],
+      "facilitator_notes": [
+        "This final inject brings together all the threads: regulatory engagement, client reimbursement, SM&CR accountability, media management, and systemic remediation. The team must demonstrate they can manage a complex, multi-front crisis while maintaining strategic coherence. Watch for teams that become reactive and lose sight of the bigger picture.",
+        "The SM&CR discussion is the most sensitive element. Senior Managers under investigation may become defensive or attempt to influence the investigation. Guide the team to recognise the tension between supporting individuals and maintaining investigative independence. Best practice is independent legal counsel for each SMF holder, funded by the bank but with separate retainers.",
+        "The board reimbursement debate is a values question as much as a financial one. The 'right' answer from a regulatory perspective is immediate reimbursement — it demonstrates consumer-centric culture and reduces FCA enforcement risk. But the CFO's concern about provisioning £4.2 million against uncertain recovery is commercially legitimate. The discussion should surface these tensions explicitly."
+      ],
+      "dice_events": [
+        {
+          "trigger": "regulatory_outcome",
+          "description": "Roll to determine the FCA's response to the bank's Principle 11 notification and the overall regulatory outcome trajectory",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Regulatory Firestorm",
+              "description": "The FCA's review of the Principle 11 notification triggers an immediate enforcement investigation. The regulator considers the combination of SWIFT control failures, inadequate fraud detection, poor access management, and the Relationship Manager's failure to follow verification procedures as evidence of systemic governance failures. The FCA issues a Voluntary Requirement restricting the bank from onboarding new clients and processing payments above £100,000 without enhanced manual approval. The PRA separately writes to the board expressing concerns about operational resilience. Three SMF holders receive individual investigation notices.",
+              "modifier": "FCA enforcement investigation opened. Business restrictions imposed. Three SMF holders under personal investigation. Share price impact if listed."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Stern Regulatory Scrutiny",
+              "description": "The FCA acknowledges the notification and commends the bank's transparency, but makes clear that the control failures identified are serious. A Section 166 Skilled Person review is commissioned at the bank's expense (estimated cost £1.2 million) to assess the bank's entire payment fraud control framework. The FCA indicates that enforcement action remains possible depending on the Skilled Person's findings. The PSR separately opens an investigation into whether the bank's APP fraud controls met the required standard.",
+              "modifier": "Skilled Person review commissioned. Enforcement action possible. PSR investigation opened. Estimated regulatory cost £1.2 million+."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Constructive but Firm Engagement",
+              "description": "The FCA acknowledges the bank's proactive notification and cooperation. They require a formal remediation plan within 30 days, covering SWIFT security controls, fraud detection capabilities, access management, and staff training. The FCA assigns a dedicated supervision team to monitor remediation progress with quarterly reviews for 12 months. No formal enforcement action is initiated at this stage, but the FCA makes clear this is conditional on satisfactory remediation.",
+              "modifier": "No enforcement action — yet. 30-day remediation plan required. 12-month enhanced supervision. Conditional on execution."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Regulatory Confidence Maintained",
+              "description": "The FCA commends the bank's rapid detection, transparent notification, and comprehensive remediation plan (submitted proactively with the Principle 11 notification). The regulator notes the SWIFT compromise as an industry-wide threat and encourages the bank to share anonymised intelligence with the sector. The FCA requests a single follow-up briefing in 90 days. No enforcement action is pursued. The PSR is satisfied with the bank's APP fraud reimbursement decision.",
+              "modifier": "Positive regulatory outcome. No enforcement action. Industry intelligence-sharing role. Single follow-up in 90 days."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — From Crisis to Leadership",
+              "description": "The bank's exemplary handling of the incident — rapid detection, transparent notification, immediate client reimbursement, and comprehensive remediation — is held up by the FCA as a model of good practice. The regulator invites the bank to participate in an industry working group on SWIFT security and APP fraud prevention. The bank's reputation is enhanced rather than diminished. The UHNW client, impressed by the bank's response, not only maintains but increases their portfolio. The board uses the incident to secure approval for a £5 million investment in fraud and cyber security capabilities.",
+              "modifier": "Regulatory commendation. Industry leadership role. Client relationship strengthened. Board approves major security investment."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A junior member of the IT Security team posts a detailed technical thread on social media about 'the SWIFT hack we just dealt with', breaching confidentiality and potentially prejudicing the investigation.",
+        "The bank's D&O (Directors & Officers) insurance provider indicates that the policy may not cover regulatory fines arising from the SM&CR investigations, leaving the SMF holders personally exposed.",
+        "The affected UHNW client gives an interview to a national newspaper describing their experience and criticising the bank's 'appalling security', generating significant media coverage.",
+        "SWIFT's forensic team identifies two additional CSP control failures unrelated to the fraud — weak password policies on operator accounts and incomplete network segmentation — which must be remediated within 90 days to maintain SWIFT connectivity."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment — The Gilded Deception",
+    "questions": [
+      "Were the bank's fraud detection controls effective in identifying the suspicious payments, and what improvements would have enabled earlier detection?",
+      "Was the decision to take the SWIFT gateway offline proportionate, and was the manual contingency procedure adequate for business continuity?",
+      "How effective was the fund recovery process? Were recall requests submitted quickly enough, and were all available legal and banking channels utilised?",
+      "Was the APP fraud reimbursement decision handled appropriately? Did the team correctly assess the bank's liability under the PSR mandatory reimbursement framework?",
+      "Were regulatory notifications (FCA Principle 11, SWIFT ISAC, PSR) submitted in a timely manner with appropriate content? Was the balance between transparency and legal protection correctly struck?",
+      "What systemic control failures enabled the attack — access management, dual authorisation, callback verification, phishing defences — and what is the prioritised remediation roadmap?",
+      "How were the SM&CR implications managed? Were Senior Management Function holders appropriately supported while maintaining investigative independence?"
+    ]
+  }
+}
