@@ -1,0 +1,337 @@
+{
+  "id": "physical_security",
+  "campaign": "physical_security",
+  "title": "The Siege of the Iron Vault",
+  "subtitle": "Physical Security Breach at Data Centre",
+  "description": "The Iron Vault — your realm's most fortified stronghold, where the ledgers of every noble house and merchant guild are kept under lock, ward, and watchful eye — has been breached. In the dead of night, unknown intruders penetrated its outer defences and gained entry to the inner sanctum. The wards have been disturbed, the sentries deceived, and the full extent of the plunder remains unknown. Rally your council and defend what remains before the enemy strikes again.",
+  "severity": "P2 — High",
+  "theme_color": "#6c757d",
+  "icon": "🏢",
+  "estimated_duration_minutes": 45,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 13,
+  "compliance_frameworks": ["ISO 27001 A.11", "NIST CSF PR.AC", "PCI-DSS Req 9"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "Warden of the Iron Vault",
+      "description": "Leads the response team, coordinates containment and escalation decisions across physical and cyber domains",
+      "required": true
+    },
+    {
+      "name": "Facilities / Physical Security Manager",
+      "title": "Gate Captain",
+      "description": "Manages physical access controls, CCTV review, and coordinates with building management and security contractors",
+      "required": true
+    },
+    {
+      "name": "IT Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Assesses impact to IT infrastructure housed in the data centre, reviews system integrity and access logs",
+      "required": true
+    },
+    {
+      "name": "Compliance / DPO",
+      "title": "Keeper of the Codex",
+      "description": "Assesses regulatory notification obligations arising from potential data exposure due to physical compromise",
+      "required": true
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on law enforcement engagement, evidence preservation, insurance claims, and liability",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive decision authority, manages board and regulator communications",
+      "required": false
+    },
+    {
+      "name": "Client Relations",
+      "title": "Herald of the Realm",
+      "description": "Manages client communication if data exposure or service disruption affects private banking clients",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "F1",
+      "title": "The Broken Ward — Breach Detection",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "compliance_frameworks": ["ISO 27001 A.11.1.1", "ISO 27001 A.11.1.2", "NIST CSF DE.CM-2", "PCI-DSS Req 9.1"],
+      "narrative": "It is 06:14 UTC on a Monday morning. The outsourced security guard conducting the overnight patrol of the bank's Tier III data centre discovers that the rear fire-escape door on the ground floor is ajar. The magnetic lock appears to have been defeated — the strike plate has been physically manipulated, and the door-held-open alarm, which should have triggered after 30 seconds, did not activate. CCTV review of the external camera covering the fire escape shows the camera was repositioned at approximately 02:30 UTC and now points at the ceiling. The repositioning was not logged as a tamper alert by the Video Management System.\n\nThe security guard reports the finding to the 24/7 Security Operations Centre. A preliminary walkthrough of the ground floor reveals that the door to the main server hall (Room 101) is closed but the electronic access log shows two badge-in events at 02:47 and 02:51 UTC using the credentials of a facilities technician who is confirmed to be on annual leave in Portugal. No corresponding badge-out events are recorded.\n\nThe data centre houses 14 racks of production servers supporting the bank's core banking platform, client portfolio management system, SWIFT gateway, and the primary storage area network (SAN) containing backup tapes for the private banking division. A recent internal audit flagged that these tapes are stored unencrypted — a remediation project was approved but not yet implemented. Approximately 2,400 ultra-high-net-worth client records reside on these systems.",
+      "facilitator_prompts": [
+        "What is the immediate priority — securing the physical premises or preserving digital evidence on the affected systems?",
+        "The compromised badge belongs to an employee on leave. What does this suggest about the nature of the breach — stolen credentials, cloned badge, or insider involvement?",
+        "The CCTV camera was repositioned but no tamper alert was generated. What does this tell us about our monitoring controls?",
+        "Should we power down systems in the server hall to prevent further access, or keep them running to preserve volatile forensic evidence?",
+        "At what point do we contact law enforcement, and which agency is appropriate — local police, Action Fraud, or the National Crime Agency?",
+        "Do we have a complete and current asset inventory for every device in Room 101? How confident are we that nothing has been physically removed?"
+      ],
+      "facilitator_notes": [
+        "The key tension here is between physical security (lock down the building) and digital forensics (keep systems live to capture memory and logs). Guide the team to discuss this trade-off explicitly.",
+        "If the team does not raise the cloned badge angle, prompt them — badge cloning is a well-known physical attack vector and suggests premeditation and reconnaissance.",
+        "Expected best practice: declare a P2 incident, secure the perimeter, do NOT power down servers, begin CCTV preservation, and contact police non-emergency initially while assessing scope."
+      ],
+      "dice_events": [
+        {
+          "trigger": "initial_assessment",
+          "description": "Roll to determine what the initial physical inspection of the server room reveals",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Catastrophic Discovery",
+              "description": "The inspection reveals that two servers have been physically removed from Rack 7 — the rack hosting the primary SAN controller and backup tape library. The intruders brought their own rack-mount rails and cleanly disconnected the hardware. The missing servers contain unencrypted backup tapes with full client records for all 2,400 UHNW clients.",
+              "modifier": "Two servers physically stolen. Unencrypted client data in hostile hands. Immediate P1 escalation required."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Evidence of Tampering",
+              "description": "No equipment appears to be missing, but a portable USB device is found connected to the KVM switch on Rack 3, which hosts the core banking application servers. The device appears to be a hardware keylogger that has been recording console access credentials. It is unknown how long it has been in place.",
+              "modifier": "Hardware keylogger discovered. All console credentials for Rack 3 must be assumed compromised."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Inconclusive Search",
+              "description": "The physical inspection reveals no obvious signs of tampering or theft. However, the facilities team notes that several rack doors were unlocked that should have been secured, and dust patterns on two servers suggest they were partially removed and then replaced.",
+              "modifier": "No confirmed theft but suspicious indicators. Full asset audit required."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Perimeter Contained",
+              "description": "The inspection confirms all hardware is accounted for. High-resolution CCTV from an internal camera the intruders missed captures two individuals in the server room for approximately 12 minutes. They appear to have photographed server configurations and rack labels but did not connect any devices.",
+              "modifier": "Reconnaissance operation confirmed. No data exfiltration via physical means. Internal CCTV footage preserved."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — The Trail is Fresh",
+              "description": "The inspection not only confirms no equipment was taken, but the intruders dropped a mobile phone behind Rack 9 during their hasty exit. The phone is unlocked and contains photographs of rack configurations, a contact list, and GPS data from previous visits to the building over the past two weeks — clear evidence of prior reconnaissance.",
+              "modifier": "Intruder's phone recovered. Strong forensic evidence available. Law enforcement will have actionable intelligence."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The outsourced security guard company rotated staff last week and the new guard is unfamiliar with the data centre layout and emergency procedures.",
+        "The electronic access control system log server has run out of disk space and badge events older than 48 hours have been overwritten.",
+        "A scheduled HVAC maintenance visit is due at 08:00 UTC — a third-party engineer is already in the building lobby waiting for escort access to the server room.",
+        "The facilities technician whose badge was used is unreachable — their phone goes straight to voicemail and their emergency contact has no information on their whereabouts."
+      ]
+    },
+    {
+      "id": "F2",
+      "title": "Mapping the Shadows — Scope Assessment",
+      "phase": 2,
+      "time_offset": "T+15 Minutes",
+      "compliance_frameworks": ["ISO 27001 A.11.1.3", "ISO 27001 A.11.2.1", "NIST CSF DE.AE-2", "PCI-DSS Req 9.5", "PCI-DSS Req 9.9"],
+      "narrative": "The initial physical inspection is complete and the server room has been sealed as a potential crime scene. The IT Operations team has begun a remote integrity check of all systems hosted in Room 101. The first findings are troubling.\n\nThe core banking application server (Rack 3) shows an anomalous root login at 03:04 UTC via the local console — not via the network. This is consistent with someone physically present at the KVM terminal in the server room. The session lasted 22 minutes and executed a series of commands that exported the client master database to a local staging directory. The export file — approximately 1.8 GB — was then copied to an unknown USB mass storage device. The USB device was connected at 03:09 UTC and disconnected at 03:21 UTC. Endpoint detection on this server was not configured to alert on local USB connections because it was classified internally as 'air-gapped' infrastructure — though in reality the server sits on an isolated network segment with restricted, monitored connectivity for remote management, making the classification inaccurate.\n\nSeparately, the SAN management console shows that someone accessed the backup tape catalogue and marked 14 LTO tapes as 'ejected' in the library management software. However, a physical check of the tape library confirms all tapes are still present. It appears the intruder attempted to eject tapes for removal but the tape library's physical lock — a simple key lock — held. The key for the tape library is stored in a key safe in the facilities office, and the key safe audit log shows no access during the overnight period.",
+      "facilitator_prompts": [
+        "We now have evidence of data exfiltration via USB from a server classified as air-gapped. How did our security architecture fail, and what does this mean for our air-gap claims to regulators?",
+        "The export comprised the full client master database — 2,400 UHNW client records. What are our GDPR Article 33 notification obligations and what is the timeline?",
+        "The intruders attempted to steal backup tapes but were thwarted by a physical lock. Should we treat this as a near-miss or as a confirmed breach given the USB exfiltration?",
+        "Who needs to be notified internally at this stage? Board? Chairman? Audit Committee?",
+        "The server had no USB alerting because it was classified as air-gapped. Who approved this classification and when was it last reviewed?",
+        "What is our obligation under PCI-DSS Requirement 9 regarding physical access to systems that store cardholder data?"
+      ],
+      "facilitator_notes": [
+        "The air-gap classification is a critical governance failure. Guide the team to explore how a server with physical console access and working USB ports was ever classified as air-gapped. This is a common real-world audit finding.",
+        "The 72-hour GDPR notification clock started when the organisation became aware of the breach — which is arguably when the USB exfiltration was confirmed, not when the door was found open."
+      ],
+      "dice_events": [
+        {
+          "trigger": "scope_discovery",
+          "description": "Roll to determine what the full scope assessment reveals about the data exfiltrated via USB",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Total Exposure",
+              "description": "Forensic analysis of the server logs reveals the intruder did not just export the client master database — they also accessed the SWIFT gateway configuration files, including authentication keys. The bank's SWIFT credentials must be assumed compromised. Additionally, the staging directory shows a second export: the full AML/KYC document repository including source-of-funds evidence for all clients.",
+              "modifier": "SWIFT credentials compromised — immediate SWIFT network isolation required. AML/KYC data also exfiltrated. Triple breach scope."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Broader Than Expected",
+              "description": "The client master database export included not just identification data but also full portfolio valuations, investment holdings, and tax residency information. The data is sufficient for sophisticated spear-phishing or identity theft targeting the bank's wealthiest clients.",
+              "modifier": "Exfiltrated data includes financial details. Client risk significantly elevated."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Contained But Significant",
+              "description": "The export is confirmed as the client master database only — names, addresses, dates of birth, and account numbers. No portfolio data, no financial details. Serious but limited. However, the USB device model cannot be identified from logs, limiting forensic tracing.",
+              "modifier": "PII exfiltrated but no financial data. USB device unidentifiable."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Scope Contained",
+              "description": "Detailed log analysis reveals the export command failed partway through due to a disk space error on the staging directory. Only approximately 340 of 2,400 client records were successfully exported before the process terminated. The USB copy is therefore incomplete.",
+              "modifier": "Partial exfiltration only — 340 client records. Scope significantly reduced."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — The Vault Held",
+              "description": "The IT team discovers that a recently implemented database encryption-at-rest policy means the exported file, while copied to USB, is encrypted with AES-256 using a key stored in the HSM. Without the HSM key, the exfiltrated data is unreadable. The intruders likely have an encrypted blob they cannot decrypt.",
+              "modifier": "Exfiltrated data is encrypted and unusable without HSM key. Breach impact dramatically reduced."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The CISO is travelling internationally and is on a flight with no connectivity for the next 6 hours — the deputy CISO must lead the technical response.",
+        "A facilities contractor arrives claiming they have an emergency work order to replace the fire-escape door lock — but no one in the bank authorised this work order.",
+        "The bank's cyber insurance broker advises that physical break-in may not be covered under the cyber policy, and the physical premises policy excludes data theft.",
+        "A junior analyst posts on an internal Slack channel: 'Has anyone heard about a break-in at the DC last night?' — the information is now spreading internally before official communications are issued."
+      ]
+    },
+    {
+      "id": "F3",
+      "title": "Summoning the Watch — Law Enforcement and Regulatory Engagement",
+      "phase": 3,
+      "time_offset": "T+30 Minutes",
+      "compliance_frameworks": ["ISO 27001 A.11.1.6", "NIST CSF RS.CO-2", "NIST CSF RS.CO-3", "PCI-DSS Req 12.10"],
+      "narrative": "The Incident Commander has escalated the incident to P1. Law enforcement has been contacted and a detective from the local police Cyber Crime Unit is en route to the data centre. The detective has requested that the server room remain sealed and that no systems be touched until a forensic examiner can attend — estimated arrival in 4 hours.\n\nThis creates an immediate operational conflict. The core banking platform is hosted on the servers in Room 101 and is currently running. However, the IT Operations team has identified that the compromised root session installed a scheduled task on the core banking server configured to execute at 18:00 UTC today. The payload is unknown but the task name — 'cleanup.sh' — suggests it may be designed to destroy evidence or cause further damage. The IT team wants to access the server immediately to disable the scheduled task, but doing so would contaminate the crime scene.\n\nMeanwhile, the Compliance team has confirmed that GDPR Article 33 notification to the ICO is required within 72 hours. The FCA must also be notified under Principle 11 (relations with regulators) and SUP 15.3 (notification requirements). The bank's PCI-DSS Qualified Security Assessor (QSA) has been contacted and has stated that a physical breach of the cardholder data environment constitutes a PCI incident requiring notification to the acquiring bank and card schemes.",
+      "facilitator_prompts": [
+        "Law enforcement wants the scene untouched for 4 hours, but a potentially destructive scheduled task executes at 18:00. How do we resolve this conflict?",
+        "Can we take a remote forensic image of the affected server without physically entering the room? What are the legal implications of doing so against police instructions?",
+        "What is our notification priority order — ICO, FCA, PRA, PCI QSA, acquiring bank, card schemes? Who drafts each notification?",
+        "The scheduled task 'cleanup.sh' could be evidence destruction or a secondary attack payload. What is the risk appetite for letting it execute versus intervening?",
+        "Do we need to engage the National Crime Agency (NCA) given the scale of data involved and potential organised crime indicators?",
+        "How do we manage client-facing services while the core banking platform is potentially compromised but still running?"
+      ],
+      "facilitator_notes": [
+        "The core tension is operational safety versus evidence preservation. In the UK, police requests to preserve a crime scene are not legally binding orders — the bank can choose to override them, but doing so may compromise any future prosecution. Guide the team to negotiate with law enforcement for supervised access.",
+        "Best practice: request that the police forensic examiner prioritise the scheduled task analysis, or agree a protocol for supervised remote access to disable the task while maintaining chain of custody.",
+        "If the team suggests simply letting the task run to see what happens, challenge them on the risk — it could wipe logs, encrypt data, or exfiltrate additional information."
+      ],
+      "dice_events": [
+        {
+          "trigger": "law_enforcement_coordination",
+          "description": "Roll to determine how the negotiation with law enforcement proceeds",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Jurisdictional Nightmare",
+              "description": "The local police Cyber Crime Unit arrives but declares the incident beyond their capability and refers it to the National Crime Agency. The NCA cannot attend for 48 hours. Meanwhile, the local police insist the crime scene remains sealed. The scheduled task is 11 hours away and the bank has no authorised access to the server room.",
+              "modifier": "48-hour law enforcement delay. Server room sealed. No access to disable scheduled task. Must decide whether to override police request."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Bureaucratic Delay",
+              "description": "The detective is cooperative but insists on waiting for the forensic examiner before any access is permitted. The forensic examiner is delayed — now estimated at 6 hours. The detective agrees to supervised access only after the examiner arrives.",
+              "modifier": "6-hour delay before any server access. Scheduled task executes before examiner arrives."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Conditional Access",
+              "description": "The detective agrees to supervised remote access to the affected server, with full screen recording and a police observer present. However, they insist that no physical entry to the server room is permitted until the forensic examiner completes their sweep.",
+              "modifier": "Remote access granted under supervision. Physical access still restricted."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Full Cooperation",
+              "description": "The detective is experienced with financial sector incidents and agrees to a joint approach. The bank's IT team is permitted supervised access to disable the scheduled task and take forensic images, with the detective documenting every action for the evidence chain.",
+              "modifier": "Joint access protocol agreed. Scheduled task disabled under police supervision. Evidence chain maintained."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Elite Response",
+              "description": "The detective recognises the MO from a series of data centre break-ins targeting financial institutions across London. The NCA is already running Operation Cobalt Gate investigating this group. A specialist NCA forensic team is diverted and arrives within 2 hours. They bring intelligence that identifies the likely threat actors and their fencing operation for stolen data.",
+              "modifier": "NCA specialist team deployed. Threat actor group identified. Active intelligence sharing. Scheduled task safely neutralised."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The police detective asks to interview all security guards who were on duty overnight, but the outsourced security company is invoking contractual terms and insisting interviews go through their legal team first.",
+        "The PCI QSA states that the physical breach has invalidated the bank's PCI-DSS compliance certification and the acquiring bank must be notified within 24 hours or the bank risks having card processing suspended.",
+        "A board member contacts the Incident Commander directly, demanding to know why they were not briefed first and insisting on visiting the data centre personally to 'see the damage'.",
+        "The scheduled task 'cleanup.sh' triggers early at 14:00 UTC due to a timezone misconfiguration, giving the team 2 fewer hours than expected to respond."
+      ]
+    },
+    {
+      "id": "F4",
+      "title": "Rebuilding the Fortress — Recovery and Remediation",
+      "phase": 4,
+      "time_offset": "T+45 Minutes",
+      "compliance_frameworks": ["ISO 27001 A.11.2.4", "NIST CSF RC.RP-1", "NIST CSF PR.IP-9", "PCI-DSS Req 9.4"],
+      "narrative": "Law enforcement forensic examination of the server room is complete. The police have collected physical evidence including fingerprints, fibre samples, and the repositioned CCTV camera. The bank now has full access to the data centre. The scheduled task has been safely disabled and its payload analysed — it was a log-wiping script designed to remove all evidence of the intrusion from the affected servers.\n\nThe IT Operations team is now working to restore trust in the data centre environment. The core banking platform has been running throughout the incident but must now be treated as potentially compromised. A full rebuild of the affected servers from known-good images is recommended by the external forensics firm, but this will require 24-48 hours of downtime for the core banking system.\n\nThe Communications team has drafted client notifications for the 2,400 affected UHNW clients. The ICO notification has been submitted within the 72-hour window. The FCA supervisory team has scheduled a call for tomorrow morning to discuss the bank's remediation plan. The board has convened an emergency meeting and is requesting a full root cause analysis and remediation roadmap.",
+      "facilitator_prompts": [
+        "A full server rebuild requires 24-48 hours of core banking downtime. What is our business continuity strategy for servicing clients during this period?",
+        "How do we communicate with 2,400 UHNW clients about a physical break-in and data theft? What tone and channel is appropriate for this client demographic?",
+        "What immediate physical security improvements must be implemented before the data centre is returned to normal operations?",
+        "The FCA will want to understand our root cause analysis. What were the systemic failures that allowed this breach, and who is accountable?",
+        "Should we engage a specialist physical penetration testing firm to validate our remediated controls before returning to production?",
+        "What is our long-term strategy — remediate the existing data centre or accelerate migration to a colocation facility with stronger physical controls?"
+      ],
+      "facilitator_notes": [
+        "Guide the team to identify the systemic failures: inadequate CCTV tamper detection, no USB port controls on 'air-gapped' servers, outsourced security with inadequate training, badge cloning vulnerability, and the gap between the fire-escape alarm failure and detection.",
+        "The client notification discussion should explore the unique sensitivity of UHNW clients — these are individuals who value discretion above all else. A breach notification may trigger client departures regardless of remediation quality.",
+        "Challenge the team on the rebuild timeline — 24-48 hours of core banking downtime is a significant operational resilience event in its own right. What does the FCA/PRA operational resilience framework say about impact tolerances?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "recovery_outcome",
+          "description": "Roll to determine the outcome of the recovery and remediation effort",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Recovery Disaster",
+              "description": "During the server rebuild, the IT team discovers that the known-good images stored on the disaster recovery site were also compromised — the intruders had physical access to the DR site three weeks ago in an unreported incident. There are no trustworthy baseline images available. A bare-metal rebuild from vendor media is required, extending downtime to 5-7 days.",
+              "modifier": "DR site also compromised. 5-7 day rebuild required. Core banking offline for a week. FCA emergency intervention likely."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Extended Downtime",
+              "description": "The server rebuild proceeds but takes 48 hours. During the downtime, three UHNW clients with time-critical portfolio transactions escalate to the CEO. Two clients instruct their relationship managers to begin transferring assets to a competitor. The financial impact is estimated at £120 million in assets under management at risk.",
+              "modifier": "48-hour downtime. Client attrition risk materialised. £120M AUM at risk."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Managed Recovery",
+              "description": "The core banking platform is rebuilt and restored within 30 hours. Most clients are serviced via manual workarounds during the downtime. However, post-recovery testing reveals that two database tables have inconsistencies that require manual reconciliation — estimated 3 days of additional work for the operations team.",
+              "modifier": "Systems restored in 30 hours. Database reconciliation required. Operational overhead continues."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Clean Recovery",
+              "description": "The rebuild is completed in 20 hours using verified clean images. All systems pass integrity checks. The physical security remediation plan — including new CCTV with tamper alerts, USB port disabling on all data centre servers, badge anti-cloning technology, and upgraded access controls — is approved and scheduled for implementation within 30 days.",
+              "modifier": "Efficient recovery. Comprehensive remediation plan approved. Client impact minimised."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Fortress Reforged",
+              "description": "Recovery is completed in 16 hours. The remediation plan is not only approved but fast-tracked with emergency budget. The board authorises a £2 million physical security upgrade programme. The bank's response is praised by the FCA as exemplary and is cited anonymously in subsequent regulatory guidance on physical security for financial institutions. No clients depart.",
+              "modifier": "Rapid recovery. Board-approved £2M security investment. Regulatory praise. Zero client attrition."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A national newspaper runs a front-page story: 'Private Bank's Data Centre Broken Into Like a Garden Shed' — sourced from the outsourced security guard company's disgruntled employee.",
+        "The external forensics firm discovers that the intruders left a cellular-connected device hidden inside a ceiling tile in the server room, providing persistent remote access to the local network — it has been active for an unknown period.",
+        "The insurance company's loss adjuster disputes the claim, arguing that the bank's failure to maintain the fire-escape door alarm constitutes a breach of the policy's security conditions.",
+        "Three additional UHNW clients receive targeted phishing emails using personal details that could only have come from the stolen database, confirming the data is already being weaponised."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Were physical access controls at the data centre adequate, and what specific failures enabled the breach?",
+      "Was the incident detected in a timely manner, or were there unacceptable gaps between the breach occurring and its discovery?",
+      "How effectively did the team balance the competing priorities of evidence preservation, operational continuity, and law enforcement cooperation?",
+      "Were regulatory notification obligations (GDPR, FCA, PCI-DSS) understood and executed within required timelines?",
+      "What improvements to physical security monitoring — CCTV, tamper detection, badge anti-cloning, USB port controls — should be prioritised?",
+      "How should the bank's classification of 'air-gapped' infrastructure be reviewed in light of this incident?",
+      "Was the client communication strategy appropriate for the UHNW demographic, and how could it be improved?",
+      "What changes to third-party security guard contracts and oversight are needed to prevent recurrence?"
+    ]
+  }
+}

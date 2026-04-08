@@ -334,6 +334,12 @@ function saveSessionData(array $data): void {
     if (!empty($data['session_code'])) {
         saveSharedSession($data);
     }
+
+    // Persist to SQLite database for exercise history
+    if (!empty($data['session_code'])) {
+        require_once __DIR__ . '/database.php';
+        saveExercise($data);
+    }
 }
 
 /**

@@ -1,0 +1,361 @@
+{
+  "id": "business_continuity",
+  "campaign": "business_continuity",
+  "title": "The Great Storm of the Iron Citadel",
+  "subtitle": "Major Infrastructure Outage & BCP Activation Following Cascading Power and Flood Failure",
+  "description": "A catastrophic storm descends upon the Iron Citadel — your primary data centre — severing power and breaching flood defences. As the waters rise, critical systems fall silent one by one. The realm's core banking platforms, trading engines, and SWIFT gateways are plunged into darkness. The War Council must invoke the ancient rites of Business Continuity to restore order from chaos, activating the secondary fortress before dawn breaks on the markets.",
+  "severity": "P1 — Critical",
+  "theme_color": "#198754",
+  "icon": "🌪️",
+  "estimated_duration_minutes": 60,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 14,
+  "compliance_frameworks": [
+    "PRA SS1/21 Operational Resilience",
+    "FCA PS21/3",
+    "ISO 22301 BCMS",
+    "DORA Art.11"
+  ],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the crisis response, chairs the Crisis Management Team, authorises BCP activation and failover decisions",
+      "required": true
+    },
+    {
+      "name": "IT Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Provides technical context on infrastructure status, manages failover execution, monitors system recovery and data integrity",
+      "required": true
+    },
+    {
+      "name": "BCP Manager",
+      "title": "Keeper of the Continuity Scrolls",
+      "description": "Owns the Business Continuity Plan, coordinates activation of disaster recovery procedures, tracks RTO and RPO adherence",
+      "required": true
+    },
+    {
+      "name": "Facilities Manager",
+      "title": "Warden of the Iron Citadel",
+      "description": "Reports on physical site conditions, manages building systems, coordinates with utilities and emergency services on-site",
+      "required": true
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Town Crier",
+      "description": "Manages internal and external communications, drafts holding statements for clients and regulators, coordinates media response",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive decision authority, approves regulatory notifications and client communications, manages board expectations",
+      "required": false
+    },
+    {
+      "name": "Client Relations Lead",
+      "title": "Herald of the Realm",
+      "description": "Manages UHNW client communication strategy, coordinates relationship manager responses, assesses client impact and reputational risk",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "I1",
+      "title": "The Lights Go Dark — Initial Outage Detection",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "compliance_frameworks": [
+        "PRA SS1/21 §4 — Impact Tolerances",
+        "ISO 22301 §8.4 — Business Continuity Procedures",
+        "DORA Art.11(1) — ICT Response and Recovery Plans"
+      ],
+      "narrative": "It is 02:17 UTC on a Thursday morning. The Network Operations Centre (NOC) receives a cascade of critical alerts: the primary data centre — codenamed Iron Citadel — has suffered a complete mains power failure following severe electrical storms across the region. The uninterruptible power supply (UPS) systems engage automatically, providing an estimated 45 minutes of battery power to critical infrastructure. The dual diesel generators fail to start; subsequent investigation reveals that the fuel delivery scheduled for Monday was missed due to a supplier administrative error, leaving tanks at 8% capacity — insufficient for sustained operation.\n\nWithin twelve minutes, the NOC observes rising humidity and temperature alerts from the ground-floor server hall. The building management system reports that the basement sump pumps, which rely on mains power, have ceased operation. Rainwater ingress from the storm is accumulating in the cable risers beneath the primary server racks. The facilities on-call engineer, en route to site, reports significant surface flooding on surrounding roads.\n\nThe core banking platform serving 2,400 ultra-high-net-worth clients, the real-time trading engine, the SWIFT messaging gateway, and the client-facing digital banking portal are all running on depleting UPS battery reserves. At current draw, the NOC estimates 33 minutes until total shutdown. The overnight batch processing cycle for next-day settlements — representing £1.2 billion in pending transactions — is 60% complete and will fail if power is not restored.",
+      "facilitator_prompts": [
+        "Who should be contacted first, and through what communication channels, given that email and VoIP systems are hosted in the affected data centre?",
+        "What is our documented RTO for core banking, trading, and SWIFT systems, and are those targets achievable given the current scenario?",
+        "The UPS has approximately 33 minutes of charge remaining. What is the priority order for graceful shutdown of systems if failover cannot be achieved in time?",
+        "Should we declare a Major Incident immediately, or wait until the facilities team confirms the extent of the flooding?",
+        "What is the RPO for the overnight batch processing cycle, and what is the financial exposure if the £1.2 billion settlement batch cannot be recovered?",
+        "Do we have out-of-band communication channels that do not depend on the primary data centre infrastructure?"
+      ],
+      "facilitator_notes": [
+        "The key tension here is time pressure: 33 minutes of UPS versus the complexity of activating DR failover. Players should recognise that they cannot do everything and must prioritise. A strong team will immediately declare a Major Incident without waiting for full situational awareness.",
+        "Watch for whether players identify the communication dependency — if VoIP and email are hosted in the affected DC, the crisis team may struggle to coordinate. Teams that pre-established out-of-band channels (e.g., mobile phone trees, satellite phones, or cloud-based collaboration tools) will fare better.",
+        "The missed fuel delivery is a supply chain failure that compounds the technical incident. Players should note this as a third-party risk management gap in the debrief."
+      ],
+      "dice_events": [
+        {
+          "trigger": "ups_duration_roll",
+          "description": "Roll to determine how long the UPS batteries actually sustain critical systems under load",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Catastrophic Battery Failure",
+              "description": "The UPS battery array, last tested 14 months ago in breach of maintenance schedules, suffers a cascading cell failure. Total power loss occurs within 8 minutes — far short of the 33-minute estimate. Core banking, trading, and SWIFT systems undergo hard shutdowns with no graceful termination. Database transaction logs are corrupted.",
+              "modifier": "Immediate total power loss. Database corruption likely. RPO severely impacted."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Reduced Battery Life",
+              "description": "The UPS batteries, degraded beyond their rated capacity, provide only 18 minutes of power instead of the estimated 33. The team has barely enough time to initiate graceful shutdowns of tier-1 systems, but tier-2 systems including the client digital banking portal and email servers crash without clean termination.",
+              "modifier": "18 minutes of power only. Tier-2 systems lost ungracefully."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Expected Battery Performance",
+              "description": "The UPS performs as estimated, providing 33 minutes of power. This is sufficient for the team to initiate graceful shutdowns of all critical systems but not enough time to complete a live failover to the disaster recovery site. The overnight batch is suspended mid-cycle at 60% completion.",
+              "modifier": "33 minutes as estimated. Graceful shutdown achieved. Batch suspended."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Extended Battery Life",
+              "description": "The UPS batteries, recently replaced as part of a maintenance refresh, outperform their rating and provide 50 minutes of power. The additional time allows the team to initiate an orderly failover of the core banking platform to the DR site before battery depletion.",
+              "modifier": "50 minutes of power. Core banking failover initiated before shutdown."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — The Generators Spark to Life",
+              "description": "The on-site facilities engineer arrives within 15 minutes and, through exceptional technical skill, manages to manually prime and start one of the two diesel generators using the residual 8% fuel. The single generator can sustain critical infrastructure for approximately 3 hours, buying significant time for an orderly DR activation.",
+              "modifier": "Single generator online. 3 hours of power secured. Orderly failover now possible."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The crisis communication phone tree is stored on a SharePoint site hosted in the affected data centre. The BCP Manager's printed copy is at their home address, 40 minutes away.",
+        "The overnight batch processing was running a quarter-end regulatory reporting cycle for the PRA. Failure to submit by 08:00 UTC will constitute a regulatory breach.",
+        "A UHNW client in Singapore is attempting an urgent £15 million transfer via SWIFT for a time-sensitive acquisition, and the relationship manager is calling the emergency line demanding status.",
+        "The NOC monitoring platform itself is hosted in the affected data centre; the team loses visibility of all infrastructure alerts after 12 minutes of UPS power."
+      ]
+    },
+    {
+      "id": "I2",
+      "title": "Invoking the Ancient Rites — BCP Activation and Failover",
+      "phase": 2,
+      "time_offset": "T+20 Minutes",
+      "compliance_frameworks": [
+        "ISO 22301 §8.4.2 — Recovery Procedures",
+        "PRA SS1/21 §5 — Self-Assessment and Testing",
+        "DORA Art.11(4) — ICT Business Continuity Testing",
+        "FCA PS21/3 — Important Business Services"
+      ],
+      "narrative": "The War Chief has formally declared a Major Incident and activated the Business Continuity Plan. The Crisis Management Team is assembling via a mobile conference bridge — the only communication channel confirmed operational. The primary data centre is now confirmed as fully offline; the last UPS charge was consumed 7 minutes ago, and all systems at the Iron Citadel have undergone either graceful or forced shutdown depending on tier priority.\n\nThe BCP Manager is coordinating failover to the secondary data centre — codenamed the Shadow Keep — located 85 miles north. However, the Shadow Keep has not hosted a full-scale live failover since a tabletop test 9 months ago. The last full technical DR test was conducted 14 months ago and identified 3 critical deficiencies that were placed on the risk register but not yet remediated: (1) the SWIFT gateway DR configuration was not synchronised with production, (2) the trading platform's real-time market data feed required manual re-pointing, and (3) the DR site's network bandwidth was provisioned at 40% of production capacity.\n\nThe Arcane Engineer reports that database replication to the Shadow Keep was operating with a 4-minute asynchronous lag prior to the outage. This means up to 4 minutes of transactional data — including client instructions, trade executions, and payment messages — may not have been replicated. For the overnight batch, the last checkpoint was at 60% completion; the batch will need to be restarted from the 60% mark once systems are available, adding approximately 90 minutes to the recovery timeline.",
+      "facilitator_prompts": [
+        "The DR site has three known unresolved deficiencies. How do we prioritise remediation during activation, and which services do we bring online first?",
+        "With a 4-minute replication lag, how do we identify and reconcile any transactions that were in-flight but not replicated? What is the financial and regulatory exposure?",
+        "The SWIFT gateway DR configuration is out of sync. What is the process for notifying SWIFT, our correspondent banks, and the Bank of England of a potential disruption to payment services?",
+        "What are our regulatory notification obligations at this point? PRA, FCA, and Bank of England operational resilience reporting — what are the timelines and content requirements?",
+        "The DR site has only 40% of production network capacity. How do we manage client service degradation, and what services should be deprioritised?",
+        "How do we communicate the outage to clients across different time zones? Asian markets are open, European markets open in 4 hours."
+      ],
+      "facilitator_notes": [
+        "This inject tests whether the organisation has genuinely tested its BCP/DR plans or merely documented them. The three unresolved deficiencies are realistic — many organisations carry known DR gaps on risk registers without remediation. Players should recognise that an untested DR plan is not a plan.",
+        "The 4-minute replication lag creates a data reconciliation challenge. Strong teams will immediately engage operations and treasury to identify in-flight transactions from the gap window. Weak teams may overlook this until clients report missing transactions.",
+        "Regulatory notification is time-sensitive. PRA supervisory notification should be made as soon as the firm is aware of a material operational disruption to an important business service. Players should not wait until full recovery to notify."
+      ],
+      "dice_events": [
+        {
+          "trigger": "failover_execution_roll",
+          "description": "Roll to determine how smoothly the DR failover executes at the Shadow Keep",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Catastrophic Failover Failure",
+              "description": "The DR site activation script, untested against the current production configuration, encounters a critical incompatibility. The core banking database begins restoration but fails integrity checks — the replication stream had been silently corrupted for the past 72 hours due to a storage firmware bug. The backup of last resort, an offline tape stored in a secure vault, is 7 days old.",
+              "modifier": "DR database corrupted. Fallback to 7-day-old tape backup. RPO now 7 days. Potential for significant financial data loss."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Partial Failover — Critical Gaps",
+              "description": "Core banking comes online at the DR site after 2 hours, but the SWIFT gateway refuses to connect due to the configuration mismatch. The trading platform initialises but cannot receive market data feeds. Client digital banking remains offline. The DR site is operational but cannot process payments or execute trades.",
+              "modifier": "Core banking online but SWIFT, trading, and digital banking offline. Payment processing suspended."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Degraded Failover",
+              "description": "Core banking and SWIFT come online at the DR site within 90 minutes. The SWIFT configuration is manually corrected by the Arcane Engineer, but the trading platform remains offline awaiting market data feed re-pointing. Client digital banking is restored in read-only mode. Network congestion at 40% capacity causes intermittent timeouts.",
+              "modifier": "Core banking and SWIFT operational. Trading platform and full digital banking still offline. Performance degraded."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Successful Failover",
+              "description": "The DR team executes a well-coordinated failover. Core banking, SWIFT, and the trading platform are restored within 75 minutes. The market data feed is re-pointed with assistance from the vendor's emergency support line. Client digital banking is restored with full functionality. Network capacity is managed through traffic prioritisation.",
+              "modifier": "All critical systems restored within 75 minutes. Operating at reduced but functional capacity."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — The Shadow Keep Stands Ready",
+              "description": "The DR site, benefiting from an infrastructure refresh completed just last month, executes a flawless automated failover. All critical systems — core banking, SWIFT, trading, and digital banking — are operational within 40 minutes. The network capacity proves sufficient due to intelligent traffic shaping. The overnight batch resumes automatically from its 60% checkpoint.",
+              "modifier": "All systems restored in 40 minutes. Batch processing resumed. Operating at near-full capacity."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The DR site's physical access control system does not recognise the badges of three key engineers who were hired after the last DR access list update. Security will not admit them without manual authorisation from a director who is unreachable.",
+        "The trading platform vendor's emergency support line is in New York and operates US business hours only. An after-hours callback has been requested but no ETA is provided.",
+        "A correspondent bank in Frankfurt sends an urgent SWIFT message querying the status of a €200 million interbank settlement due at 07:00 CET. The message is queued but not yet delivered.",
+        "The Shadow Keep's cooling system triggers a high-temperature alert within 30 minutes of bringing additional compute online, as the facility was running at minimal load prior to activation."
+      ]
+    },
+    {
+      "id": "I3",
+      "title": "The Long Siege — Extended Outage Management",
+      "phase": 3,
+      "time_offset": "T+40 Minutes",
+      "compliance_frameworks": [
+        "PRA SS1/21 §6 — Communications",
+        "FCA PS21/3 — Consumer Duty and Communication",
+        "DORA Art.11(6) — Crisis Communication Plans",
+        "ISO 22301 §8.4.3 — Ongoing Management"
+      ],
+      "narrative": "Six hours have elapsed since the initial power failure. The primary data centre remains offline and inaccessible — the facilities team reports that floodwater has risen to 30 centimetres in the ground-floor server hall, and structural engineers must assess the building before anyone can re-enter. The initial estimate for primary site restoration is 5 to 10 business days, contingent on the flood damage assessment, electrical system re-certification, and hardware replacement.\n\nThe DR site is now operational for core banking and SWIFT, but the trading platform remains degraded and client digital banking is experiencing intermittent outages under the increased load. Asian markets have been open for several hours and three UHNW clients in Hong Kong have been unable to execute equity trades totalling approximately £45 million. The London market open is 90 minutes away, and the trading desk is requesting confirmation that the platform will be stable. European relationship managers are beginning their working day and discovering the situation for the first time.\n\nThe PRA supervisory team has acknowledged the initial notification and requested a detailed impact assessment by 12:00 UTC today, including: (1) identification of all Important Business Services affected, (2) confirmation of whether impact tolerances have been breached, (3) a timeline for full service restoration, and (4) details of any client detriment or financial loss. The FCA has separately requested confirmation of client communication plans and whether any vulnerable clients are affected.",
+      "facilitator_prompts": [
+        "We are now 6 hours into the incident with a 5-10 day primary site recovery estimate. At what point does this transition from incident management to sustained crisis management, and what governance structures need to change?",
+        "Three UHNW clients have been unable to trade for several hours. What is our obligation to these clients, and could we face claims for consequential losses on the £45 million in unexecuted trades?",
+        "The PRA has requested a detailed impact assessment by 12:00 UTC. Who is responsible for preparing this, and do we have clarity on which services are classified as Important Business Services under our operational resilience framework?",
+        "European staff are arriving to work and discovering the situation. What is the internal communication strategy to prevent misinformation, manage staff welfare, and maintain operational discipline?",
+        "With the primary site offline for potentially 10 days, do we need to activate alternate working arrangements for staff who normally operate from the primary site? Where do they go?",
+        "The FCA has asked about vulnerable clients. Do we have a process for identifying which of our 2,400 UHNW clients might be classified as vulnerable, and how are we prioritising outreach?"
+      ],
+      "facilitator_notes": [
+        "This inject shifts the challenge from technical recovery to sustained crisis leadership, client management, and regulatory engagement. The 5-10 day recovery timeline means this is no longer a short-term incident — it requires strategic resource allocation, staff welfare considerations, and sustained client communication over an extended period.",
+        "The unexecuted trades create genuine financial exposure. In a real scenario, the bank may be liable for consequential losses if it cannot demonstrate that it took all reasonable steps to maintain service. Players should consider whether manual workarounds — such as executing trades through a third-party broker — are available.",
+        "The PRA impact assessment is a critical regulatory deliverable. Strong teams will have pre-prepared templates mapping Important Business Services to impact tolerances. Weak teams will struggle to articulate their operational resilience framework under pressure."
+      ],
+      "dice_events": [
+        {
+          "trigger": "client_impact_roll",
+          "description": "Roll to determine the extent of client financial impact from the extended outage",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Catastrophic Client Loss",
+              "description": "Market conditions move sharply against the three Hong Kong clients during the outage window. By the time trading is restored, the positions they intended to take have moved by 8%, representing approximately £3.6 million in opportunity cost. One client instructs their lawyers to send a letter of claim. Additionally, the £200 million interbank settlement fails, triggering a cascade of SWIFT queries from 12 correspondent banks.",
+              "modifier": "£3.6 million client claim. Interbank settlement failure. Multiple correspondent bank escalations."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Significant Client Impact",
+              "description": "Two of the three Hong Kong clients suffer material losses due to market movement during the outage. The total opportunity cost is estimated at £1.8 million. The trading desk manages to restore partial service but execution latency causes further slippage. Three European clients call to complain about inability to access their portfolios online.",
+              "modifier": "£1.8 million client impact. Multiple client complaints. Regulatory attention heightened."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Moderate Client Impact",
+              "description": "The relationship managers in Hong Kong successfully contact all three affected clients and arrange manual trade execution through an introducing broker agreement. The trades are executed but at slightly worse prices due to the delay, resulting in approximately £400,000 of slippage. Digital banking is intermittent but functional.",
+              "modifier": "Workaround executed. £400K slippage. Clients inconvenienced but contained."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Minimal Client Impact",
+              "description": "The trading platform stabilises in time for the client instructions to be executed at acceptable prices. The Hong Kong relationship team's proactive communication prevents escalation. European clients are informed before markets open, and alternative channels are offered. Total client impact is minimal.",
+              "modifier": "Proactive management limits client impact. Reputational damage contained."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Exemplary Client Management",
+              "description": "The client relations team executes a masterful communication strategy. All affected clients are personally contacted by senior relationship managers with clear information and alternative service options. The Hong Kong trades are executed at market-neutral prices through a pre-arranged third-party execution agreement. Two clients specifically commend the bank's transparency and crisis handling.",
+              "modifier": "Zero client financial impact. Client confidence strengthened. Positive regulatory narrative."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A national news outlet runs a story: 'Major Private Bank Hit by Infrastructure Failure — Client Access Disrupted' based on a tip from a disgruntled contractor working at the flooded data centre site.",
+        "The DR site cooling alert escalates to a critical warning. The facility manager recommends reducing compute load by 20% or risk thermal shutdown within 2 hours, forcing a decision on which services to deprioritise.",
+        "A compliance officer discovers that the firm's operational resilience self-assessment, submitted to the PRA three months ago, stated that DR failover could be achieved within 30 minutes — a claim now demonstrably incorrect.",
+        "The CEO receives a call from the Chairman of the Board demanding a written briefing for an emergency board call scheduled in 90 minutes."
+      ]
+    },
+    {
+      "id": "I4",
+      "title": "Dawn After the Storm — Recovery and Lessons Learned",
+      "phase": 4,
+      "time_offset": "T+60 Minutes",
+      "compliance_frameworks": [
+        "ISO 22301 §10 — Improvement",
+        "PRA SS1/21 §7 — Lessons Learned and Remediation",
+        "DORA Art.11(7) — Post-Incident Review",
+        "FCA PS21/3 — Continuous Improvement"
+      ],
+      "narrative": "It is now 72 hours after the initial power failure. The primary data centre remains offline and the structural assessment has confirmed significant water damage to ground-floor infrastructure: 34 server racks, 2 core network switches, the primary SAN array, and the building's electrical distribution board require replacement. The insurance assessor has attended site. The estimated cost of physical damage is £4.2 million, with a further £1.8 million in estimated business losses. Full primary site restoration is now projected at 15 business days.\n\nThe DR site is operating as the de facto production environment. All critical services — core banking, SWIFT, trading, and client digital banking — are now fully operational, albeit at reduced performance. The overnight batch processing backlog has been cleared, and all pending settlements have been reconciled. The 4-minute replication gap has been investigated: 23 transactions were identified as unrecoverable from the DR replica and have been manually reconstructed from source documentation and client confirmations, with a total value of £8.7 million.\n\nThe PRA has acknowledged the detailed impact assessment and scheduled a Section 166 review of the bank's operational resilience framework for the coming quarter. The FCA has requested a formal Root Cause Analysis within 30 days. Two UHNW clients have formally complained about service disruption; one has indicated they are considering transferring their £120 million portfolio to a competitor. The Board has convened and is requesting a full post-incident review with recommendations within 14 days.",
+      "facilitator_prompts": [
+        "What does the post-incident review governance look like? Who chairs it, who contributes, and what is the scope — technical root cause only, or a full organisational resilience assessment?",
+        "The PRA has scheduled a Section 166 review. How do we prepare, and what are the likely areas of focus given the known DR deficiencies that were on the risk register but not remediated?",
+        "A UHNW client with £120 million is considering leaving. What is the client retention strategy, and at what level of seniority should we engage?",
+        "23 transactions worth £8.7 million had to be manually reconstructed. What does this tell us about our replication architecture, and what is the remediation plan to achieve zero data loss (RPO=0)?",
+        "The total estimated cost is £6 million. How does this interact with our insurance coverage, and what is the process for claiming under both property damage and business interruption policies?",
+        "What systemic improvements — to DR testing frequency, generator maintenance, fuel supply chain management, and impact tolerance calibration — should be recommended to the Board?"
+      ],
+      "facilitator_notes": [
+        "This final inject focuses on accountability, remediation, and organisational learning. The best teams will recognise that the incident exposed systemic governance failures — DR gaps on the risk register without remediation, untested failover plans, and single points of failure in the fuel supply chain — rather than treating it as an unforeseeable event.",
+        "The Section 166 review is a significant regulatory action. Players should understand that this involves an independent third-party review at the firm's expense, and that the findings will be shared with the PRA. Preparation should include an honest self-assessment rather than a defensive narrative.",
+        "The 30-day FCA Root Cause Analysis deadline is realistic. Strong teams will begin drafting the RCA structure immediately rather than waiting. The RCA should address people, process, technology, and third-party factors."
+      ],
+      "dice_events": [
+        {
+          "trigger": "lessons_learned_roll",
+          "description": "Roll to determine the long-term organisational outcome of the post-incident review and remediation programme",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Regulatory Censure",
+              "description": "The Section 166 review uncovers additional systemic failures beyond those identified in the incident: untested backup restoration, expired DR runbooks, and falsified DR test reports from the previous year. The PRA issues a formal Written Notice requiring the bank to commission an independent operational resilience remediation programme. The estimated cost is £3 million over 18 months. The UHNW client departs with their £120 million portfolio, and two further clients follow.",
+              "modifier": "Formal regulatory enforcement. £3 million remediation programme. £320 million in client AUM lost."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Difficult Recovery",
+              "description": "The post-incident review identifies significant governance failures, but the remediation plan lacks specificity and timeline commitments. The PRA expresses dissatisfaction and places the bank under enhanced supervisory attention. The departing client proceeds with their transfer. Insurance covers only 60% of the claim due to a policy exclusion for unresolved known deficiencies.",
+              "modifier": "Enhanced regulatory supervision. £120 million client lost. Partial insurance recovery."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Adequate but Incomplete Recovery",
+              "description": "The post-incident review is thorough and the remediation plan is credible. The PRA acknowledges the plan but requires quarterly progress reporting. The departing client is retained after a personal meeting with the CEO and a fee concession. Insurance covers 80% of the claim. Several recommendations from the review remain unfunded pending board budget approval.",
+              "modifier": "Regulatory relationship preserved. Client retained with concessions. Remediation partially funded."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Strong Recovery and Improvement",
+              "description": "The post-incident review is comprehensive and well-received by the PRA. The remediation plan is fully funded and includes: monthly DR failover testing, dual fuel supply contracts, real-time synchronous replication, and a new operational resilience governance framework. The departing client is retained. Insurance covers the full claim. Staff morale is restored through transparent internal communication.",
+              "modifier": "Full remediation programme funded. Client retained. Regulatory confidence restored."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — A Stronger Citadel Rises",
+              "description": "The bank's response to the incident becomes an industry exemplar. The post-incident review leads to a complete overhaul of operational resilience practices, including a new active-active data centre architecture, automated failover with RPO=0, and a comprehensive third-party resilience programme. The PRA cites the bank's response as best practice in a Dear CEO letter to the sector. The departing client not only stays but increases their portfolio to £180 million, impressed by the bank's transparency and commitment to improvement.",
+              "modifier": "Industry-leading resilience posture achieved. Client AUM increased. Regulatory recognition."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The insurance company disputes the business interruption claim, arguing that the missed fuel delivery constitutes contributory negligence, and appoints an independent loss adjuster to investigate.",
+        "A technology auditor reviewing the incident discovers that the DR replication monitoring dashboard had been showing false-positive 'healthy' status for 6 weeks due to a misconfigured alert threshold.",
+        "The FCA receives a formal complaint from the UHNW client in Hong Kong, triggering an independent investigation into whether the firm met its Consumer Duty obligations during the outage.",
+        "A junior facilities engineer posts photos of the flooded data centre on LinkedIn with the caption 'Monday vibes at work', garnering significant attention before the post is taken down."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Siege War Council — Lessons from the Storm",
+    "questions": [
+      "Was the Business Continuity Plan activated promptly and effectively? Were roles, responsibilities, and escalation paths clearly understood by all participants?",
+      "Were the documented RTO and RPO targets achievable in practice, and did the actual recovery times expose gaps between documented plans and operational reality?",
+      "How effective was the alternate site (Shadow Keep / DR site) in sustaining critical business services? Were the known deficiencies on the risk register a contributing factor to recovery delays?",
+      "Were internal and external communications — to staff, clients, regulators, correspondent banks, and media — timely, accurate, and appropriately coordinated?",
+      "Were all regulatory notification obligations — PRA, FCA, Bank of England, and SWIFT — identified and met within required timelines? Was the content of notifications appropriate?",
+      "What systemic improvements to operational resilience — including DR testing frequency, infrastructure redundancy, third-party supply chain management, and impact tolerance calibration — should be prioritised in the remediation programme?",
+      "How should the organisation address the cultural and governance factors that allowed known DR deficiencies to remain on the risk register without remediation for over a year?"
+    ]
+  }
+}

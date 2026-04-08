@@ -61,6 +61,17 @@ $filterCampaign = isset($_GET['campaign']) ? sanitizeId($_GET['campaign']) : '';
                         </div>
                     </div>
 
+                    <?php if (!empty($viewScenario['compliance_frameworks'])): ?>
+                    <div class="mb-4">
+                        <h4 class="dnd-section-title mb-3"><i class="bi bi-shield-check"></i> Compliance Frameworks</h4>
+                        <div>
+                            <?php foreach ($viewScenario['compliance_frameworks'] as $fw): ?>
+                            <span class="badge bg-info text-dark me-1 mb-1"><i class="bi bi-shield-check"></i> <?php echo htmlspecialchars($fw, ENT_QUOTES, 'UTF-8'); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
                     <!-- Roles -->
                     <h4 class="dnd-section-title mb-3">🛡️ Roles & Party Members</h4>
                     <div class="row g-3 mb-4">

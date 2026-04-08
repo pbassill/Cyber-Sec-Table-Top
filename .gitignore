@@ -1,0 +1,17 @@
+# SQLite database
+data/*.sqlite
+data/*.sqlite-wal
+data/*.sqlite-shm
+
+# Session files
+data/sessions/*.json
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

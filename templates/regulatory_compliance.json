@@ -1,0 +1,337 @@
+{
+  "id": "regulatory_compliance",
+  "campaign": "regulatory_compliance",
+  "title": "The Tribunal of the Elder Council",
+  "subtitle": "Regulatory Investigation — Critical Compliance Failure",
+  "description": "The Elder Council — the supreme arbiters of law and order across the realm — have dispatched their most feared inquisitors to your gates. Ancient wards of protection that should have shielded the realm from dark gold and forbidden transactions have been found shattered and neglected. Worse still, a sacred oath to notify the Council of a breach within the prescribed celestial cycle has been broken. The inquisitors carry scrolls of enforcement, and the very charter of your guild hangs in the balance.",
+  "severity": "P1 — Critical",
+  "theme_color": "#20c997",
+  "icon": "📋",
+  "estimated_duration_minutes": 60,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 14,
+  "compliance_frameworks": ["FCA SYSC", "PRA SS1/21", "GDPR Art.33-34", "SM&CR"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the response team, coordinates across all workstreams, and makes escalation decisions",
+      "required": true
+    },
+    {
+      "name": "Compliance Officer",
+      "title": "Keeper of the Codex",
+      "description": "Assesses the scope of AML screening failures, manages FCA relationship, and coordinates remediation evidence",
+      "required": true
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on regulatory enforcement exposure, legal privilege, and enforcement strategy",
+      "required": true
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive authority, manages SM&CR personal accountability implications, and engages the board",
+      "required": true
+    },
+    {
+      "name": "Data Protection Officer",
+      "title": "Warden of the Sacred Scrolls",
+      "description": "Manages GDPR breach notification obligations, liaises with the ICO, and assesses data subject impact",
+      "required": false
+    },
+    {
+      "name": "MLRO",
+      "title": "Sentinel of the Golden Seal",
+      "description": "Assesses the AML screening failure scope, manages SAR obligations, and coordinates NCA engagement",
+      "required": false
+    },
+    {
+      "name": "Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Provides technical context on screening system failures, data flows, and remediation feasibility",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "G1",
+      "title": "The Inquisitors Arrive — A Writ of Judgement",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "compliance_frameworks": ["FCA SYSC 6.1.1", "FCA SYSC 6.3.1", "MLR 2017 Reg.21", "SM&CR COCON 2.2"],
+      "narrative": "At 08:47 UTC on a Tuesday morning, the bank's Compliance Director receives a formal notification from the Financial Conduct Authority's Enforcement and Market Oversight Division. The FCA has completed a thematic review of anti-money laundering controls across mid-tier private banks, and the results for your institution are severe. The FCA's findings indicate that the bank's automated AML transaction monitoring system has been operating with a critically misconfigured rule set for the past 14 months. Specifically, the sanctions screening module has been running against an outdated OFSI consolidated list — the list was last updated in January of the previous year, meaning 14 months of new designations have not been screened against.\n\nThe FCA's preliminary analysis, based on a sample of 200 client accounts, identified 23 transactions totalling £8.7 million that involved counterparties who were added to the OFSI sanctions list during the gap period. At least three of these counterparties are designated persons linked to a sanctioned regime. The FCA has issued a Requirement Notice under Section 166 of FSMA, appointing a Skilled Person to conduct an independent review of the bank's entire AML framework. The Skilled Person will be on site within 48 hours.\n\nSimultaneously, the DPO discovers that a data breach involving the exfiltration of 340 client KYC records — detected internally 80 hours ago by the IT security team — was never escalated to the DPO. The 72-hour GDPR notification window to the ICO has now expired. The IT Security Manager who detected the breach assumed it was a false positive and closed the ticket without escalation.",
+      "facilitator_prompts": [
+        "Who takes ownership of the FCA relationship from this point forward? Is the current Compliance Director the right person, or is there a conflict given the failures occurred on their watch?",
+        "What is the immediate priority — responding to the FCA Requirement Notice or addressing the missed GDPR notification to the ICO?",
+        "Under SM&CR, which Senior Management Function holders have personal accountability for the AML screening failures? What are their obligations right now?",
+        "The 72-hour GDPR notification deadline has been missed. What is the legal strategy for late notification to the ICO, and how do we explain the 80-hour internal delay?",
+        "Should we engage external legal counsel immediately to manage the FCA enforcement process under legal privilege?",
+        "Do we need to make a Suspicious Activity Report to the NCA for the 23 identified transactions, and what is the tipping-off risk?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "aml_screening_gap_assessment",
+          "description": "Roll to determine the full scope of the AML screening failure when the team conducts an emergency review",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Catastrophic Systemic Failure",
+              "description": "The emergency review reveals the sanctions screening failure is far worse than the FCA identified. Not only was the OFSI list outdated, but the PEP screening module was completely disabled during a system upgrade 18 months ago and never reactivated. Over 4,200 client relationships have never been screened against PEP databases. Additionally, the Compliance team discovers that three current clients are designated persons on the EU sanctions list, and active transactions have been processed in the last 30 days.",
+              "modifier": "Total AML framework collapse. Active sanctions breaches confirmed. Criminal referral likely."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Significant Expansion of Scope",
+              "description": "The review confirms the FCA's findings and identifies an additional 47 transactions totalling £14.2 million involving sanctioned counterparties. The sanctions list update failure also affected the bank's correspondent banking screening, meaning payments routed through the bank on behalf of other institutions may also be affected. Two correspondent banking partners must be notified.",
+              "modifier": "Scope expanded significantly. Correspondent banking exposure creates contagion risk."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Contained but Serious",
+              "description": "The FCA's findings are broadly confirmed. The 23 transactions and £8.7 million exposure represents the bulk of the issue. However, three additional transactions totalling £1.1 million are identified. The screening gap did not affect PEP screening, which operates on a separate system. The correspondent banking channel was unaffected.",
+              "modifier": "Scope broadly as expected. No additional systemic failures identified but remediation still extensive."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Narrower Than Feared",
+              "description": "Detailed analysis reveals that 14 of the 23 flagged transactions involved counterparties who were designated after the transaction completed — reducing the true exposure to 9 transactions totalling £3.1 million. The screening gap was limited to the OFSI list only; UN and EU sanctions lists were updated correctly. The team can present a credible remediation narrative.",
+              "modifier": "Exposure narrower than FCA's initial assessment. Strong basis for constructive engagement."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Mitigating Evidence Discovered",
+              "description": "The review reveals that while the automated screening was misconfigured, the bank's manual enhanced due diligence process — conducted by the Compliance team for all transactions over £50,000 — independently caught and blocked 19 of the 23 flagged transactions before settlement. Only 4 transactions totalling £890,000 actually completed. Documentation of the manual blocks is comprehensive and demonstrates a functioning second line of defence despite the systems failure.",
+              "modifier": "Strong mitigating evidence. Manual controls compensated for system failure. Significantly reduces enforcement risk."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A financial journalist from the Financial Times contacts the bank's press office stating they have received a leaked copy of the FCA Requirement Notice and are publishing a story tomorrow morning.",
+        "The Compliance Director, upon learning of the FCA findings, submits their immediate resignation via email to the CEO, creating a leadership vacuum at the worst possible moment.",
+        "The bank's AML transaction monitoring system vendor contacts the Compliance team to state that they issued a critical update notification 14 months ago that was never actioned — and they have the delivery receipt.",
+        "The bank's external auditors request an urgent meeting, stating that the AML screening failure may require a qualification of the bank's most recent annual accounts."
+      ],
+      "facilitator_notes": [
+        "The dual crisis structure — FCA enforcement plus missed GDPR notification — is deliberate. Guide the team to recognise they are fighting on two regulatory fronts simultaneously and must allocate resources accordingly. Many teams will focus entirely on the FCA and neglect the ICO notification.",
+        "SM&CR personal accountability is a critical thread. Under COCON, Senior Managers must take reasonable steps to ensure compliance in their areas. The SMF16 (Compliance Oversight) and SMF17 (MLRO) holders face personal regulatory risk. Prompt the team to discuss this explicitly.",
+        "The IT Security Manager's failure to escalate the data breach is a cultural and governance failure, not just a process one. Guide discussion toward root cause — was the escalation path unclear, was there fear of blame, or was there inadequate training?"
+      ]
+    },
+    {
+      "id": "G2",
+      "title": "The Investigation Deepens — Unearthing Forgotten Relics",
+      "phase": 2,
+      "time_offset": "T+15 Minutes",
+      "compliance_frameworks": ["FCA SYSC 3.2.6", "FCA PRIN 11", "GDPR Art.33", "GDPR Art.34", "MLR 2017 Reg.66"],
+      "narrative": "The internal investigation team — assembled under the direction of external legal counsel to preserve legal privilege — has been working for four hours. The findings are escalating. A forensic review of the AML screening system's configuration change log reveals that the sanctions list update failure was caused by an expired API credential. The credential was tied to a service account managed by a Compliance analyst who left the bank 16 months ago. When their user accounts were decommissioned by IT during offboarding, the service account that powered the automated sanctions list update was inadvertently disabled. No one noticed because the system continued to screen transactions — it simply screened them against the stale list. There were no alerts configured for list staleness.\n\nThe MLRO has completed a preliminary review of the 23 flagged transactions and confirmed that Suspicious Activity Reports must be filed with the NCA for at least 11 of them. However, three of the transactions involve a long-standing UHNW client — a politically connected individual who has been a client for 12 years and is a personal acquaintance of the bank's Chairman. The MLRO is concerned about tipping-off risk if the client's relationship manager is informed of the investigation.\n\nMeanwhile, the DPO has prepared a late GDPR breach notification to the ICO. However, the investigation into the KYC data exfiltration has revealed that the breach is larger than initially thought — 340 records were confirmed exfiltrated, but log analysis suggests the attacker had access to the full KYC document repository containing scanned passports, proof of address, and source of wealth documentation for all 1,247 private banking clients. The attacker may have accessed but not exfiltrated the wider dataset.",
+      "facilitator_prompts": [
+        "The sanctions list staleness was caused by a leaver's service account being disabled. What does this tell us about the bank's change management and offboarding processes?",
+        "How do we handle the UHNW client who is a personal acquaintance of the Chairman? The MLRO has a legal obligation to file SARs — does the Chairman's relationship create a conflict?",
+        "The GDPR breach scope has expanded from 340 to potentially 1,247 clients. How does this change the ICO notification, and do we now need to notify affected data subjects under Article 34?",
+        "Legal privilege is being used to protect the investigation findings. What are the boundaries of privilege in a regulatory investigation, and can the FCA compel disclosure?",
+        "Should we proactively self-report the missed GDPR notification to the FCA as well, given their concurrent investigation?",
+        "What is our obligation to notify correspondent banks and counterparties about the sanctions screening gap?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "kyc_breach_scope_determination",
+          "description": "Roll to determine the true scope of the KYC data breach and whether exfiltration extended beyond the confirmed 340 records",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Total Compromise Confirmed",
+              "description": "Forensic analysis confirms the attacker exfiltrated the entire KYC repository — all 1,247 client files including scanned passports, source of wealth declarations, and investment portfolios. Worse, the forensics team discovers the attacker maintained persistent access via a web shell and accessed the repository again just 6 hours ago, downloading updated records that were added since the initial breach. The breach is ongoing.",
+              "modifier": "Active ongoing breach. Full client base compromised. Immediate containment required before any notification."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Extensive Exfiltration",
+              "description": "Log analysis confirms approximately 890 client KYC files were exfiltrated, including passport scans and source of wealth documentation. The attacker specifically targeted UHNW clients with assets over £5 million, suggesting this was a targeted attack rather than opportunistic. The data has appeared on a dark web marketplace with a price tag of £200,000.",
+              "modifier": "Targeted attack on UHNW clients. Data already for sale. Client notification under Article 34 is mandatory."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Confirmed 340 — Wider Access Uncertain",
+              "description": "The confirmed exfiltration remains at 340 records. The attacker had read access to the wider repository but the evidence is inconclusive on whether they accessed or downloaded additional files. The forensics firm recommends treating all 1,247 records as potentially compromised for notification purposes, but this is a precautionary assessment.",
+              "modifier": "Ambiguous scope. Conservative approach requires treating all 1,247 clients as affected."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Breach Contained to 340 Records",
+              "description": "Forensic analysis confirms with high confidence that only the 340 records were exfiltrated. The attacker's access was limited by network segmentation — they reached the KYC staging server used for onboarding but could not access the primary document management system. The web application firewall logged and blocked multiple attempts to access the wider repository.",
+              "modifier": "Breach scope confirmed and contained. Strong evidence for ICO that controls limited the damage."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Breach Attribution Achieved",
+              "description": "Not only is the breach confirmed at 340 records, but the forensics team has identified the attacker. The IP addresses trace to a known threat actor group that has been targeting financial institutions. NCSC confirms they are tracking this group and can provide intelligence support. The attacker's infrastructure has been seized by law enforcement in a parallel investigation, meaning the exfiltrated data has likely been recovered before sale.",
+              "modifier": "Attacker identified. Data likely recovered. Strong narrative for ICO and affected clients."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The UHNW client whose transactions triggered SAR obligations contacts their relationship manager directly, stating they have heard 'rumours' about a compliance investigation at the bank and demanding reassurance. The tipping-off risk is now acute.",
+        "The FCA's Section 166 Skilled Person arrives a day early and requests immediate access to the AML transaction monitoring system — before the internal investigation team has completed their privilege-protected review.",
+        "The bank's cyber insurance provider states that the KYC data breach notification was made outside the policy's 48-hour notification window, and coverage may be denied.",
+        "A board member who sits on the bank's Risk Committee leaks the existence of the FCA investigation to a contact at a trade publication, triggering a media inquiry."
+      ],
+      "facilitator_notes": [
+        "The UHNW client / Chairman relationship is designed to test whether the team will allow personal relationships to influence regulatory obligations. The MLRO's duty to file SARs is absolute and cannot be overridden by commercial considerations. If the team hesitates, challenge them directly.",
+        "The service account issue is a very common real-world failure. Guide the team to explore the systemic governance question: who owns service accounts, how are they tracked, and what happens to them during offboarding? This is a control that many banks get wrong.",
+        "Legal privilege in FCA investigations is complex. The FCA cannot compel production of privileged material, but voluntary disclosure as part of cooperative engagement is often strategically advisable. Guide the team to weigh the trade-offs."
+      ]
+    },
+    {
+      "id": "G3",
+      "title": "Forging the Shield — The Remediation Compact",
+      "phase": 3,
+      "time_offset": "T+30 Minutes",
+      "compliance_frameworks": ["FCA SYSC 6.1.1", "PRA SS1/21 Para.3", "GDPR Art.34", "SM&CR COCON 4.1"],
+      "narrative": "Forty-eight hours have passed since the FCA Requirement Notice was received. The Skilled Person review is underway and the initial findings call has been held with the FCA supervisory team. The FCA's tone was measured but firm — they have indicated that this matter has been referred to the Enforcement Division and that a formal investigation under Section 167 of FSMA is likely. The FCA has also indicated they are considering whether to impose a Voluntary Requirement (VREQ) restricting the bank from onboarding new clients until remediation is complete.\n\nThe bank must now prepare a comprehensive remediation plan. The MLRO has filed 11 SARs with the NCA and is preparing a further 6 based on the expanded review. The sanctions screening system has been emergency-patched and is now operating against the current OFSI consolidated list. A full lookback review of all transactions processed during the 14-month gap period — estimated at 47,000 transactions across 1,247 client accounts — has been scoped but will require 6-8 weeks to complete with external support at an estimated cost of £2.4 million.\n\nThe ICO has acknowledged the late GDPR breach notification and has opened its own investigation. The ICO has asked the bank to explain the 80-hour internal delay and has indicated that the late notification itself may constitute an additional infringement. The DPO is preparing Article 34 notifications to affected data subjects, but the Communications team is concerned that individual client notifications — particularly to UHNW clients — will trigger a wave of client departures and reputational damage.",
+      "facilitator_prompts": [
+        "The FCA is considering a client onboarding restriction (VREQ). What is the commercial impact, and should we negotiate or accept it proactively as a sign of good faith?",
+        "The lookback review will cost £2.4 million and take 6-8 weeks. Who authorises this expenditure, and can it be accelerated?",
+        "How do we notify 340 (or potentially 1,247) UHNW clients about the KYC data breach without triggering mass client departures?",
+        "Under SM&CR, the FCA may seek to interview Senior Management Function holders. How do we prepare them, and should each have independent legal counsel?",
+        "The ICO and FCA investigations are running in parallel. How do we ensure consistency in what we tell each regulator without creating contradictions?",
+        "What is the board's role at this stage? Should the Chairman recuse themselves given their relationship with the UHNW client under SAR investigation?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "fca_enforcement_posture",
+          "description": "Roll to determine the FCA's enforcement posture following the initial Skilled Person findings",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Maximum Enforcement Action",
+              "description": "The FCA Enforcement Division escalates aggressively. The Skilled Person's interim report identifies not just the sanctions screening failure but evidence that previous internal audit reports flagged AML system weaknesses two years ago and the recommendations were never implemented. The FCA issues a First Supervisory Notice imposing an immediate restriction on the bank processing any international payments, and publicly announces the investigation. Share price implications are severe if the bank were listed.",
+              "modifier": "Public enforcement action. Payment processing restricted. Existential regulatory risk."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Formal Investigation Confirmed",
+              "description": "The FCA confirms a formal Section 167 investigation and imposes the VREQ restricting new client onboarding. The Skilled Person report is critical of the bank's compliance culture and governance, noting that the Compliance function is under-resourced relative to the bank's risk profile. The FCA indicates it is considering personal action against the SMF16 and SMF17 holders.",
+              "modifier": "Formal investigation with personal accountability proceedings. New business restricted."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Supervisory Engagement",
+              "description": "The FCA adopts a supervisory rather than enforcement approach, contingent on the bank's full cooperation and timely completion of the remediation plan. The VREQ is held in reserve as a backstop. The Skilled Person report is critical but acknowledges the bank's proactive response since discovery. The FCA expects monthly progress reports.",
+              "modifier": "Enforcement deferred but not ruled out. Cooperation is critical."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Constructive Regulatory Engagement",
+              "description": "The FCA supervisory team acknowledges the bank's comprehensive and transparent response. The Skilled Person's interim findings confirm the issue was a technical configuration failure rather than a cultural or governance deficiency. The FCA agrees to a collaborative approach with quarterly progress reviews and no VREQ. Personal action against Senior Managers is not being pursued at this stage.",
+              "modifier": "Positive regulatory relationship. No restrictions imposed. Remediation proceeds collaboratively."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Exemplary Response Recognised",
+              "description": "The FCA supervisory team commends the bank's response as a model of how firms should handle compliance failures. The proactive SAR filings, immediate system remediation, and transparent engagement are noted positively. The FCA closes the enforcement referral and keeps the matter in supervision. The Skilled Person review is narrowed in scope, reducing costs significantly. The FCA invites the bank to participate in an industry working group on AML system resilience.",
+              "modifier": "Enforcement closed. Bank recognised as exemplary responder. Reputational recovery accelerated."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The NCA contacts the MLRO to state that one of the filed SARs relates to an ongoing criminal investigation into a sanctioned regime's procurement network. The NCA requests that the bank maintain the client relationship and continue processing transactions under a consent regime to support intelligence gathering — directly conflicting with the bank's instinct to exit the relationship.",
+        "The external law firm managing the investigation discovers a conflict of interest — they also act for one of the counterparties identified in the sanctions screening review. They must withdraw from the engagement, requiring the bank to instruct new counsel mid-investigation.",
+        "Three UHNW clients who received Article 34 breach notifications have instructed solicitors and are threatening group litigation for breach of confidence and negligence.",
+        "The PRA contacts the bank separately, expressing concern about the operational resilience implications of the AML system failure and requesting a briefing under PRA SS1/21."
+      ],
+      "facilitator_notes": [
+        "The VREQ discussion is commercially significant. A new-client onboarding restriction can be devastating for a private bank's growth pipeline. Guide the team to consider whether proactively offering a temporary restriction demonstrates good faith and may result in a shorter restriction period than a contested one.",
+        "The parallel ICO and FCA investigations create a coordination challenge. In reality, the ICO and FCA share information under regulatory cooperation agreements. The team should assume that anything told to one regulator will be known by the other.",
+        "SM&CR interview preparation is a critical thread. Senior Managers are entitled to legal representation in FCA interviews, and they should be briefed on the distinction between cooperation and self-incrimination. This is a nuance many teams miss."
+      ]
+    },
+    {
+      "id": "G4",
+      "title": "The Council's Verdict — Restoring the Realm's Honour",
+      "phase": 4,
+      "time_offset": "T+45 Minutes",
+      "compliance_frameworks": ["FCA DEPP 6.2", "FCA DEPP 6.5", "GDPR Art.83", "SM&CR FIT 2.1", "PRA Fundamental Rule 7"],
+      "narrative": "Six weeks have elapsed. The lookback review of 47,000 transactions is nearing completion. The final results show that 31 transactions totalling £11.3 million involved sanctioned counterparties during the screening gap period. Of these, 7 transactions totalling £4.1 million involved counterparties who were designated at the time of the transaction — representing clear sanctions breaches. The remaining 24 transactions involved counterparties designated after the transaction date but during the screening gap, meaning they should have been caught by ongoing monitoring.\n\nThe FCA has completed its preliminary investigation and has issued a Warning Notice indicating it intends to impose a financial penalty on the bank. The proposed penalty, calculated under the FCA's penalty framework (DEPP 6.5), is £12.8 million — reflecting the seriousness of the breach, the 14-month duration, and the bank's initial failure to detect the issue internally. The FCA has offered a 30% discount for early settlement. The Warning Notice also names the former SMF17 (MLRO) personally, proposing a prohibition order and a personal fine of £76,000.\n\nThe ICO has issued its preliminary decision on the GDPR breach. The late notification under Article 33, combined with the inadequate internal escalation processes, has resulted in a proposed fine of £1.2 million. The ICO has also required the bank to implement a comprehensive data protection improvement plan, subject to audit in 12 months. Client litigation from the three UHNW clients has been joined by an additional eight clients and is now being coordinated as group litigation.",
+      "facilitator_prompts": [
+        "The FCA proposes a £12.8 million fine with a 30% early settlement discount. Do we accept, negotiate, or contest the fine through the Regulatory Decisions Committee?",
+        "The former MLRO faces personal prohibition and a fine. What are the bank's obligations to support them, and what are the SM&CR implications for current Senior Managers?",
+        "The ICO fine of £1.2 million is in addition to the FCA penalty. What is the total financial exposure when litigation costs and remediation are included?",
+        "Group litigation from 11 UHNW clients is underway. What is the bank's litigation strategy, and should we consider a settlement offer?",
+        "What governance and structural changes must the bank implement to prevent recurrence? Consider people, process, and technology.",
+        "How does the bank rebuild trust with clients, regulators, and the market following this episode?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "penalty_negotiation_outcome",
+          "description": "Roll to determine the outcome of the bank's engagement with the FCA on the proposed penalty",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Aggravated Penalty",
+              "description": "During the settlement negotiations, the FCA discovers that a key document provided during the Skilled Person review was incomplete — a compliance monitoring report had been edited to remove references to a previous near-miss with sanctions screening. The FCA treats this as a failure to cooperate and increases the proposed penalty to £19.5 million. The matter is referred to the Regulatory Decisions Committee for a contested hearing. The FCA also expands the personal action to include the current SMF16 holder.",
+              "modifier": "Penalty increased. Cooperation credit lost. Additional personal action. Contested proceedings."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Penalty Upheld",
+              "description": "The FCA declines to reduce the proposed penalty, citing the 14-month duration and the failure to detect the issue internally. The bank accepts the £12.8 million fine with the 30% early settlement discount, resulting in a final penalty of £8.96 million. The prohibition order against the former MLRO proceeds. The final notice is published on the FCA register, generating significant press coverage.",
+              "modifier": "Settled at £8.96 million. Public final notice. MLRO prohibited. Reputational damage crystallised."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Partial Reduction Achieved",
+              "description": "The bank's representations to the FCA, supported by evidence of the comprehensive remediation programme and cooperation throughout the investigation, result in a modest reduction. The penalty is reduced to £10.2 million before the 30% discount, resulting in a final settlement of £7.14 million. The MLRO prohibition is replaced with a public censure and a personal fine of £45,000.",
+              "modifier": "Reduced penalty of £7.14 million. MLRO censured but not prohibited."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Significant Mitigation",
+              "description": "The bank's early and proactive engagement, comprehensive remediation, and evidence of manual controls that caught the majority of transactions result in a substantial reduction. The penalty is reduced to £6.4 million before discount, settling at £4.48 million. The FCA acknowledges the bank's exemplary post-discovery response in the final notice. The MLRO personal action is dropped due to evidence that the system failure preceded their appointment.",
+              "modifier": "Settlement of £4.48 million with positive acknowledgement. MLRO action dropped."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Regulatory Resolution",
+              "description": "The bank's legal team presents compelling evidence that the sanctions screening failure was a narrow technical issue in an otherwise robust AML framework, supported by the manual controls that prevented the majority of transactions from completing. The FCA agrees to resolve the matter by private warning rather than financial penalty, contingent on completion of the remediation plan within 12 months. The MLRO personal action is withdrawn. The ICO, informed of the FCA's approach, reduces its fine to £400,000. The total regulatory cost is a fraction of the worst-case scenario.",
+              "modifier": "Private warning. No public penalty. MLRO cleared. ICO fine reduced. Best achievable outcome."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A whistleblower within the Compliance team contacts the FCA directly, alleging that senior management was aware of AML system weaknesses before the FCA's thematic review and failed to act. The FCA requests all board and Risk Committee minutes for the past two years.",
+        "The group litigation claimants obtain a court order for disclosure of the Skilled Person report, challenging the bank's assertion that it is subject to regulatory confidentiality under FSMA Section 348.",
+        "A correspondent bank terminates its relationship with the bank, citing the sanctions screening failure. This threatens the bank's ability to process USD-denominated transactions, affecting 60% of its private banking clients.",
+        "The bank's professional indemnity insurer indicates it may decline to cover the FCA fine on the basis that regulatory penalties are not insurable losses under English law."
+      ],
+      "facilitator_notes": [
+        "The penalty negotiation is the culmination of the exercise. Guide the team to consider the full picture: financial penalty, personal action, litigation costs, remediation costs, reputational damage, and client attrition. The FCA fine is often the smallest component of the total cost of a compliance failure.",
+        "The early settlement discount is a real feature of FCA enforcement. The 30% discount for Stage 1 settlement is significant and most firms accept it. Guide the team to weigh the certainty of settlement against the risk and cost of contested proceedings.",
+        "Close the exercise by asking the team to reflect on what a 'good' compliance culture looks like — not just systems and controls, but the behaviours, incentives, and accountability structures that would have prevented this scenario from occurring."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Were the AML screening failures detected in a timely manner, and what controls should have identified the issue earlier?",
+      "Was the GDPR breach notification process adequate, and why did the internal escalation fail?",
+      "Were SM&CR accountability structures clear, and did Senior Managers understand their personal obligations?",
+      "How effective was the coordination between the FCA and ICO response workstreams?",
+      "Was legal privilege appropriately managed throughout the investigation?",
+      "What governance, process, and technology changes would prevent recurrence of both the AML and GDPR failures?",
+      "How should the bank's compliance culture be strengthened to ensure issues are escalated rather than suppressed?"
+    ]
+  }
+}

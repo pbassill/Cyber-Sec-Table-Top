@@ -1,0 +1,363 @@
+{
+  "id": "data_breach",
+  "campaign": "data_breach",
+  "title": "The Shattered Vault of Secrets",
+  "subtitle": "Accidental Data Exposure and Loss of UHNW Client Records",
+  "description": "A catastrophic breach of the realm's most sacred vault has occurred — not through dark sorcery or siege, but through negligence within your own walls. A misconfigured cloud storage vessel has laid bare the personal records of your most prestigious patrons, while a misdirected enchanted scroll carrying sensitive client data has reached the hands of an unintended recipient. The Wardens of Data must act swiftly to seal the breach, notify the High Regulators, and restore the trust of those whose secrets were exposed.",
+  "severity": "P1 — Critical",
+  "theme_color": "#6f42c1",
+  "icon": "📂",
+  "estimated_duration_minutes": 50,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 14,
+  "compliance_frameworks": [
+    "GDPR Art.33-34",
+    "UK DPA 2018",
+    "FCA PRIN 2.1",
+    "ICO Guidance",
+    "ISO 27001 A.18"
+  ],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the incident response, coordinates containment and escalation, and drives decision-making across all workstreams",
+      "required": true
+    },
+    {
+      "name": "Data Protection Officer",
+      "title": "Warden of the Sacred Scrolls",
+      "description": "Advises on GDPR obligations, assesses personal data impact, determines notification requirements for the ICO and affected individuals",
+      "required": true
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on legal exposure, privilege, contractual obligations to clients, and regulatory engagement strategy",
+      "required": true
+    },
+    {
+      "name": "IT Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Provides technical context on cloud infrastructure, assesses misconfiguration scope, implements access controls and containment measures",
+      "required": true
+    },
+    {
+      "name": "Compliance Officer",
+      "title": "Keeper of the Codex",
+      "description": "Assesses FCA notification obligations, ensures adherence to internal policies, and maintains the regulatory compliance audit trail",
+      "required": false
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Town Crier",
+      "description": "Drafts client notifications, manages media inquiries, and coordinates internal communications to staff",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive-level decision authority, approves client notifications and regulatory submissions, manages board reporting",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "J1",
+      "title": "Initial Discovery — The Unsealed Vault",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "compliance_frameworks": [
+        "GDPR Art.33",
+        "ISO 27001 A.18",
+        "ICO Guidance"
+      ],
+      "narrative": "It is 09:17 UTC on a Wednesday morning. The IT Security team receives an automated alert from the cloud security posture management (CSPM) tool indicating that an Amazon S3 bucket — s3://pb-client-documents-prod — has been publicly accessible since a configuration change made during a routine migration four days ago. The bucket contains approximately 12,400 files relating to 870 ultra-high-net-worth (UHNW) private banking clients, including scanned passports, proof-of-address documents, tax residency certificates, source-of-wealth declarations, and signed investment mandate agreements.\n\nSimultaneously, the Compliance team escalates a separate incident: a senior relationship manager sent an email at 08:45 UTC to an external contact containing an attached spreadsheet with the names, dates of birth, National Insurance numbers, portfolio valuations, and risk appetite classifications of 43 UHNW clients. The email was intended for an internal portfolio review meeting but was sent to a similarly-named external address — a personal Gmail account belonging to an unknown third party.\n\nCloud access logs indicate that the exposed S3 bucket received 347 external GET requests from 29 distinct IP addresses over the past 96 hours. It is not yet known whether any of these requests were from malicious actors or automated web crawlers indexing publicly accessible storage.",
+      "facilitator_prompts": [
+        "Under GDPR Article 33, when does the 72-hour notification clock to the ICO start — from the moment of misconfiguration, the moment of discovery, or the moment we confirm personal data was accessed?",
+        "We have two separate data exposure incidents occurring simultaneously. Should these be treated as a single breach or two distinct incidents for regulatory notification purposes?",
+        "What categories of personal data are involved in each incident, and how does this affect our risk assessment under GDPR Article 34?",
+        "Who is responsible for immediately securing the S3 bucket, and what approval process is needed before modifying production cloud configurations?",
+        "What steps should be taken to attempt recall or deletion of the misdirected email and its attachment?",
+        "Should we engage external forensic specialists to analyse the S3 access logs, or can this be handled internally?"
+      ],
+      "facilitator_notes": [
+        "The 72-hour ICO notification clock under GDPR Art.33 starts from the moment the controller becomes 'aware' of the breach — which is 09:17 UTC when the alert was received, not when the misconfiguration occurred four days earlier. The DPO should identify this distinction clearly.",
+        "The misdirected email contains special category-adjacent data (financial data combined with NI numbers constitutes high-risk personal data). Players should recognise that email recall via Exchange/Outlook has limited effectiveness for external recipients, and the team may need to contact the recipient directly to request deletion.",
+        "The S3 bucket exposure is particularly severe because passport scans and tax documents combined create a high risk of identity theft. Players should consider whether the 347 external requests indicate the data has already been harvested by threat actors or scrapers."
+      ],
+      "dice_events": [
+        {
+          "trigger": "discovery_assessment_roll",
+          "description": "Roll to determine what the initial cloud access log analysis reveals about the extent of external access to the exposed S3 bucket",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Catastrophic Discovery",
+              "description": "Cloud access logging was disabled on the bucket as part of the same misconfiguration. There are no logs for the past 96 hours. Additionally, a security researcher has already posted the bucket URL on a public disclosure forum, and the data has been mirrored to an archive site.",
+              "modifier": "No access logs available. Data confirmed publicly indexed and archived. Assume full compromise of all 12,400 files."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Significant Exposure",
+              "description": "Access logs show that 8 of the 29 IP addresses belong to known web scraping services. Approximately 4,200 files were downloaded, including a folder containing scanned passports for 310 clients. The remaining IP addresses are unattributable.",
+              "modifier": "Confirmed data harvesting. 310 clients' identity documents compromised."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Uncertain Scope",
+              "description": "Access logs are available but show mixed signals. Most requests were HEAD requests (metadata only) from search engine crawlers. However, 12 GET requests from two unidentified IP addresses downloaded files from the tax residency certificates folder.",
+              "modifier": "Limited confirmed downloads but full scope uncertain. Tax documents for approximately 50 clients may be compromised."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Contained Exposure",
+              "description": "Detailed log analysis confirms that all 347 external requests were from legitimate search engine crawlers performing indexing. No full file downloads occurred — only metadata was accessed. The bucket contents were not cached in any search engine results pages.",
+              "modifier": "No confirmed data exfiltration from the bucket. Search engine cache clear. Misdirected email remains the primary concern."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Swift Containment",
+              "description": "The CSPM tool's alert triggered an automated remediation playbook that re-secured the bucket within 3 minutes of detection. Log analysis confirms zero file downloads by external parties. Additionally, the IT team discovers the misconfiguration was caught by a pre-deployment check that was overridden — providing a clear root cause.",
+              "modifier": "Bucket auto-remediated. Zero data exposure from cloud incident. Clear audit trail for root cause."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The relationship manager who sent the misdirected email has panicked and attempted to send a follow-up email to the external recipient asking them to delete it — inadvertently confirming the data is sensitive and providing additional context about the clients.",
+        "A second misconfigured S3 bucket is discovered during the initial investigation — this one containing archived client onboarding video recordings from KYC checks, exposed for an estimated 11 days.",
+        "The cloud infrastructure team reveals that the S3 bucket permissions were changed by a contractor whose access should have been revoked two weeks ago following the end of their engagement.",
+        "The IT Security team's CSPM tool licence expired yesterday, and the alert was the last one generated before the tool went offline — meaning any further misconfigurations will not be detected until the licence is renewed."
+      ]
+    },
+    {
+      "id": "J2",
+      "title": "Breach Assessment & Containment — Sealing the Broken Wards",
+      "phase": 2,
+      "time_offset": "T+15 Minutes",
+      "compliance_frameworks": [
+        "GDPR Art.33-34",
+        "UK DPA 2018",
+        "FCA PRIN 2.1",
+        "ISO 27001 A.18"
+      ],
+      "narrative": "The Arcane Engineer has confirmed the S3 bucket has been re-secured with private access controls. However, the Data Protection Officer has completed a preliminary data mapping exercise and the results are sobering. The exposed bucket contained personal data falling into the following categories: full names, dates of birth, nationalities, passport numbers, residential addresses, National Insurance and tax identification numbers, source-of-wealth documentation (including salary details, inheritance records, and business ownership structures), signed investment mandates with risk profiles, and bank account numbers. For 23 clients, the files also included medical questionnaires completed as part of insurance-linked investment product applications — constituting special category data under GDPR Article 9.\n\nThe misdirected email situation has escalated. The external recipient has responded to the relationship manager's panicked follow-up email, stating: 'I have received your spreadsheet. I am concerned about the personal information it contains. I intend to report this to the Information Commissioner's Office unless I receive confirmation of how this occurred and what steps you are taking.' The recipient has not confirmed whether they have deleted the data or shared it with anyone else.\n\nThe DPO is now conducting the formal risk assessment required under GDPR Article 33(1) to determine whether this breach is likely to result in a risk to the rights and freedoms of the affected individuals. The CISO has convened the full incident response team in the crisis management suite.",
+      "facilitator_prompts": [
+        "The DPO must now complete a formal breach risk assessment. What factors determine whether this breach is 'likely to result in a risk to the rights and freedoms' of affected individuals under GDPR Art.33?",
+        "Special category data (medical questionnaires) was included in the exposure for 23 clients. How does the presence of Article 9 data change our notification obligations and risk assessment?",
+        "The external email recipient is threatening to report to the ICO themselves. How does this affect our notification timeline and strategy?",
+        "Should we instruct external legal counsel to contact the email recipient, or should the DPO handle this directly? What are the privilege implications?",
+        "What is our data classification policy, and did it fail here? Should these documents have been stored in an S3 bucket at all?",
+        "Under the UK DPA 2018 and FCA PRIN 2.1, do we have separate notification obligations to the FCA in addition to the ICO?"
+      ],
+      "facilitator_notes": [
+        "Given the volume of personal data, the categories involved (identity documents, financial data, and special category health data), and the confirmed external access, this breach almost certainly meets the threshold for ICO notification under Art.33 AND individual notification under Art.34. The DPO should recognise this is not a borderline case.",
+        "The external email recipient's threat to report to the ICO is actually helpful in one respect — it creates urgency that should accelerate internal decision-making. However, the team should avoid any communication that could be interpreted as attempting to dissuade the individual from exercising their right to complain to a supervisory authority under Art.77.",
+        "FCA PRIN 2.1 (acting with integrity) and the FCA's operational resilience framework require firms to notify the FCA of material incidents. A data breach affecting 870+ UHNW clients would almost certainly meet this threshold. Players should identify this dual notification requirement."
+      ],
+      "dice_events": [
+        {
+          "trigger": "containment_effectiveness_roll",
+          "description": "Roll to determine the outcome of containment efforts and the external email recipient's cooperation",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Containment Collapse",
+              "description": "The external email recipient has forwarded the spreadsheet to a data protection solicitor and a journalist as 'evidence.' The journalist contacts the bank's press office seeking comment. Simultaneously, a review of cloud configurations reveals three additional S3 buckets with misconfigured permissions across different business units.",
+              "modifier": "Data now held by solicitor and journalist. Three additional exposed buckets discovered. Breach scope tripled."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Partial Containment Failure",
+              "description": "The external recipient states they have 'saved a copy for their records' before deleting the email and will not confirm deletion without a formal written request from the bank's legal team. Cloud team discovers cached copies of exposed S3 files in a CDN edge node that was not immediately purged.",
+              "modifier": "Email data retained by recipient. CDN cache extends exposure window by 6 additional hours."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Partial Containment",
+              "description": "The external recipient agrees to delete the email and attachment but requests written confirmation of the bank's data protection measures before doing so. The S3 bucket is secured but search engine cache entries for two file URLs are discovered and removal requests submitted to Google.",
+              "modifier": "Recipient cooperative but conditional. Search engine cache removal pending (24-48 hours)."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Effective Containment",
+              "description": "The external recipient responds positively, confirms deletion of the email and attachment, and provides written confirmation. The S3 bucket is fully secured with no search engine caching detected. All cloud configurations across the estate are reviewed and no further issues found.",
+              "modifier": "Email data confirmed deleted. Cloud estate verified clean. Containment effective."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Complete Containment",
+              "description": "The external recipient is a retired data protection professional who recognises the sensitivity immediately, confirms secure deletion with a signed declaration, and declines to report to the ICO as they are satisfied with the bank's swift response. The cloud team implements automated bucket policy enforcement across the entire AWS estate within hours.",
+              "modifier": "Recipient fully cooperative with signed deletion confirmation. Automated cloud security controls deployed estate-wide."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The DPO discovers that the bank's Record of Processing Activities (ROPA) under GDPR Art.30 is out of date and does not accurately reflect the use of cloud storage for client documents — creating an additional compliance exposure.",
+        "A UHNW client who is a politically exposed person (PEP) is identified among the 870 affected individuals. Their source-of-wealth documentation contains highly sensitive information about government contracts that could have national security implications.",
+        "The cloud infrastructure team admits that the S3 bucket misconfiguration occurred because a production change was deployed without going through the normal change management approval process — a Saturday 'emergency fix' that bypassed peer review.",
+        "The bank's cyber insurance policy contains an exclusion for data breaches caused by misconfiguration rather than malicious attack. The insurer's loss adjuster requests an urgent call to discuss coverage."
+      ]
+    },
+    {
+      "id": "J3",
+      "title": "Regulatory Notification — Dispatching the Raven to the High Regulators",
+      "phase": 3,
+      "time_offset": "T+30 Minutes",
+      "compliance_frameworks": [
+        "GDPR Art.33-34",
+        "UK DPA 2018",
+        "ICO Guidance",
+        "FCA PRIN 2.1"
+      ],
+      "narrative": "The DPO has completed the formal breach risk assessment and concluded that the breach is likely to result in a high risk to the rights and freedoms of affected individuals. The assessment identifies the following risks: identity theft and fraud (passport numbers, NI numbers, dates of birth), financial loss (account numbers, portfolio valuations), reputational damage to clients (source-of-wealth disclosures, PEP status), and potential discrimination or distress (medical questionnaire data for 23 clients). Under GDPR Article 33, the ICO must be notified without undue delay and no later than 72 hours after becoming aware of the breach. The clock started at 09:17 UTC on Wednesday — giving the team until 09:17 UTC on Saturday.\n\nThe DPO is now preparing the ICO notification using the ICO's online breach reporting tool. However, the notification requires specific information that is still being compiled: the exact number of affected individuals, the categories of personal data involved, the likely consequences of the breach, and the measures taken or proposed to address it. The DPO must decide whether to submit an initial notification now with incomplete information (as permitted by Art.33(4)) or wait until a more complete picture is available.\n\nThe FCA supervisory team has been informed via the firm's usual supervisory contact, and they have requested a formal written notification within 24 hours. The Compliance team is preparing a parallel notification under the FCA's operational incident reporting framework. The bank also has clients resident in the EEA, Switzerland, and Singapore, raising the question of whether additional supervisory authorities must be notified.",
+      "facilitator_prompts": [
+        "Should the DPO submit an initial ICO notification now with incomplete information under Art.33(4), or wait until the full picture is available? What are the risks of each approach?",
+        "The ICO notification requires us to state the 'likely consequences' of the breach. Given the categories of data involved, what are the realistic consequences for affected individuals?",
+        "We have clients resident in multiple jurisdictions. Under GDPR's one-stop-shop mechanism, do we notify only the ICO, or must we notify supervisory authorities in other EEA member states?",
+        "What information must we include in the FCA notification, and how does this differ from the ICO notification?",
+        "The breach involves both a technical failure (cloud misconfiguration) and a human error (misdirected email). How do we present root cause analysis to regulators without creating undue legal exposure?",
+        "Art.33(5) requires us to document the breach, its effects, and remedial actions. Who is responsible for maintaining this documentation, and where is it stored?"
+      ],
+      "facilitator_notes": [
+        "GDPR Art.33(4) explicitly permits phased notification — the DPO should submit an initial notification promptly and supplement it as further information becomes available. Waiting for complete information is a common mistake that can result in breaching the 72-hour deadline. The ICO's own guidance states it is better to notify promptly with incomplete information than to notify late with complete information.",
+        "For cross-border considerations, if the bank's main establishment is in the UK, post-Brexit the ICO is the lead authority for UK GDPR. However, for EEA-resident clients, the EU GDPR may also apply and notification to an EEA lead supervisory authority may be required separately. Singapore's PDPA has its own notification requirements. Players should identify this complexity.",
+        "The FCA notification should be handled through the firm's supervisory contact and should focus on the operational impact, the risk to consumers, and the remediation plan. It is separate from but complementary to the ICO notification."
+      ],
+      "dice_events": [
+        {
+          "trigger": "regulatory_notification_roll",
+          "description": "Roll to determine the outcome of the regulatory notification process and the regulators' initial response",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Regulatory Catastrophe",
+              "description": "The ICO notification is submitted with a critical error — the DPO inadvertently attaches an internal legal advice memo marked 'Privileged and Confidential' that contains an unflattering assessment of the bank's cloud security practices. The FCA notification is submitted 6 hours late due to a miscommunication about responsibility. The ICO opens a formal investigation.",
+              "modifier": "Legal privilege potentially waived. FCA notification late. ICO formal investigation opened."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Notification Difficulties",
+              "description": "The ICO notification is submitted within the deadline but the ICO case officer responds with 14 follow-up questions that suggest the initial notification was insufficiently detailed. The FCA supervisory team expresses concern about the firm's cloud governance arrangements and requests a Section 166 skilled person review.",
+              "modifier": "ICO demanding further detail. FCA considering skilled person review. Regulatory burden increasing."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Adequate Notification",
+              "description": "Both the ICO and FCA notifications are submitted on time with reasonable detail. The ICO acknowledges receipt and assigns a case officer. The FCA accepts the notification but requests fortnightly progress updates on remediation.",
+              "modifier": "Notifications accepted. Ongoing regulatory engagement required."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Strong Regulatory Engagement",
+              "description": "The phased ICO notification is well-structured and demonstrates a thorough understanding of the breach. The ICO case officer commends the timeliness and completeness. The FCA supervisory team is satisfied with the firm's response and requests only monthly updates.",
+              "modifier": "Positive regulatory response. Reduced reporting burden. Firm's compliance culture noted positively."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Regulatory Commendation",
+              "description": "The ICO and FCA are both impressed by the bank's proactive, transparent, and thorough notification. The ICO decides not to open a formal investigation and instead uses the bank's response as an anonymised case study of good practice. The FCA supervisory team closes the matter with no further action required.",
+              "modifier": "No formal investigation. Response cited as good practice. Regulatory matter effectively closed."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A data subject access request (DSAR) arrives from one of the 43 clients whose data was in the misdirected email, demanding to know exactly what data was exposed and to whom — with a 30-day statutory deadline under GDPR Art.15.",
+        "The ICO's online breach reporting portal experiences a technical outage, and the DPO must resort to email notification — raising concerns about whether the timestamp of the email will be accepted as evidence of timely notification.",
+        "A Swiss-resident client's private banker informs the Compliance team that Swiss banking secrecy laws (Art.47 of the Swiss Banking Act) may have been violated by the exposure of the client's account information, creating potential criminal liability.",
+        "The bank's Data Protection Impact Assessment (DPIA) for the cloud migration project is located and found to have identified the exact risk of S3 bucket misconfiguration — but the recommended mitigating controls were marked as 'deferred to Phase 2' and never implemented."
+      ]
+    },
+    {
+      "id": "J4",
+      "title": "Individual Notification & Remediation — Restoring the Broken Trust",
+      "phase": 4,
+      "time_offset": "T+45 Minutes",
+      "compliance_frameworks": [
+        "GDPR Art.34",
+        "UK DPA 2018",
+        "ICO Guidance",
+        "ISO 27001 A.18",
+        "FCA PRIN 2.1"
+      ],
+      "narrative": "The ICO notification has been submitted and the focus now shifts to the obligation under GDPR Article 34 to notify affected individuals 'without undue delay' where the breach is likely to result in a high risk to their rights and freedoms. The DPO has confirmed that individual notification is required given the sensitivity of the data involved. The Communications team must now draft notification letters for three distinct groups: the 870 clients whose data was in the exposed S3 bucket, the 43 clients whose data was in the misdirected email, and the 23 clients whose special category medical data was included.\n\nThe notification must explain in clear and plain language: the nature of the breach, the categories of personal data concerned, the likely consequences, the measures taken to address the breach, and how individuals can obtain further information. The bank must also advise affected individuals on steps they can take to protect themselves — including credit monitoring, passport replacement where identity documents were exposed, and vigilance against phishing or social engineering attempts using the stolen data.\n\nSenior Management has authorised a client remediation package including: complimentary identity theft monitoring for 24 months, a dedicated incident hotline staffed by senior relationship managers, expedited passport replacement cost reimbursement, and a personal letter from the CEO to each affected UHNW client. The estimated cost of the remediation package is £2.4 million. However, the board is concerned about the reputational impact of the notification itself and is questioning whether certain clients — including three members of a Gulf royal family and a prominent UK philanthropist — should receive personalised advance notice before the general notification is issued.",
+      "facilitator_prompts": [
+        "GDPR Art.34 requires notification to affected individuals 'without undue delay.' What does this mean in practice, and is there a hard deadline like the 72-hour ICO requirement?",
+        "The Board wants to give advance notice to VIP clients before the general notification. Is this legally permissible, and what are the ethical and regulatory implications of treating data subjects differently based on their wealth or status?",
+        "What specific self-help advice should we provide to individuals whose passport scans were exposed? Is offering to reimburse passport replacement costs sufficient?",
+        "For the 23 clients with exposed medical data, do we need to provide additional or different notification given the special category nature of this data?",
+        "How do we handle the notification for clients resident in different jurisdictions where language and local regulatory requirements may differ?",
+        "What ongoing monitoring obligations do we have after notification? How do we detect if the exposed data is being misused?"
+      ],
+      "facilitator_notes": [
+        "Unlike the ICO notification, there is no fixed statutory deadline for individual notification under Art.34 — the requirement is 'without undue delay.' However, the ICO's guidance suggests this should be as soon as reasonably possible and that unnecessary delay could itself constitute a compliance failure. Players should recognise that speed is critical but the notification must also be accurate and actionable.",
+        "Providing advance VIP notification is legally risky. GDPR requires that all affected data subjects are notified, and differential treatment based on wealth or status could be seen as discriminatory and could attract regulatory criticism. The DPO should push back on this, though a reasonable compromise might be that all notifications go out simultaneously but VIP clients receive a personal phone call from their relationship manager in addition to the written notification.",
+        "For clients whose passport scans were exposed, credit monitoring alone is insufficient. The bank should advise contacting HM Passport Office, monitoring for identity fraud via CIFAS protective registration, and being vigilant against targeted phishing. The 23 clients with medical data exposure should receive specific advice about the sensitivity of health data and the additional risk of discrimination."
+      ],
+      "dice_events": [
+        {
+          "trigger": "client_notification_roll",
+          "description": "Roll to determine how affected clients respond to the breach notification and the effectiveness of the remediation package",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Client Exodus",
+              "description": "The notification letter is leaked to the Financial Times before it reaches clients. Three UHNW families with combined assets of £1.2 billion initiate transfers to competitor banks. A class action lawsuit is filed by 47 clients. The Gulf royal family's office issues a formal complaint to the FCA and threatens diplomatic escalation.",
+              "modifier": "£1.2 billion AUM at risk. Class action filed. Diplomatic incident. CEO crisis management required."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Significant Client Backlash",
+              "description": "The notification is received poorly by a significant minority of clients. 34 clients formally complain to the ICO. 12 clients instruct solicitors to pursue compensation claims. The dedicated incident hotline is overwhelmed with calls and wait times exceed 45 minutes, further damaging client confidence.",
+              "modifier": "34 ICO complaints. 12 compensation claims. Hotline overwhelmed. Client trust severely damaged."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Mixed Client Response",
+              "description": "Most clients accept the notification and remediation package. However, 8 clients submit formal complaints and 3 clients with exposed medical data express significant distress. The incident hotline operates effectively but relationship managers report difficult conversations with long-standing clients.",
+              "modifier": "Majority of clients retained. 8 formal complaints. Medical data clients require additional support."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Positive Client Reception",
+              "description": "The notification is well-received due to its clarity and the comprehensive remediation package. Clients appreciate the transparency and proactive approach. Only 2 formal complaints are received. The personal CEO letters are particularly effective with UHNW clients who value the personal touch.",
+              "modifier": "Strong client retention. Minimal complaints. CEO letters well received. Trust largely maintained."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Trust Strengthened",
+              "description": "The bank's handling of the notification is exemplary. Clients are impressed by the speed, transparency, and generosity of the remediation package. Several clients publicly commend the bank's response. The Gulf royal family's office expresses satisfaction and increases their portfolio allocation. Net new client inquiries increase by 15% in the following month.",
+              "modifier": "Client trust strengthened. Portfolio growth from existing clients. New client interest. Reputational enhancement."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "An identity theft case is reported by one of the affected clients within 48 hours of the breach notification — a fraudulent credit application using their exposed passport and address details. It is unclear whether this is linked to the breach or coincidental.",
+        "The CEO's personal notification letters are delayed by 24 hours because the board cannot agree on the wording. During this time, two clients learn about the breach from media coverage rather than from the bank directly.",
+        "The 24-month identity theft monitoring provider selected by the bank suffers its own data breach, forcing the team to find an alternative provider and re-issue enrolment instructions to all 870 affected clients.",
+        "A group of 15 affected clients retains a prominent data protection solicitor who sends a formal 'letter before action' demanding £50,000 per client in compensation for distress under GDPR Art.82, totalling £750,000."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment — Lessons from the Shattered Vault",
+    "questions": [
+      "Were GDPR Article 33 and 34 obligations correctly identified and met within the required timelines? What would you do differently to ensure faster notification?",
+      "Was the ICO notification submitted promptly using the phased approach under Art.33(4), or did the team delay seeking complete information? How did this affect the regulatory outcome?",
+      "How effective was the data classification and cloud security governance framework? Should client personal data have been stored in an S3 bucket, and what controls should have prevented the misconfiguration?",
+      "Were the misdirected email and the cloud misconfiguration treated as separate incidents or a combined breach? What is the correct approach and why?",
+      "How were the rights of affected individuals protected, including their right to be informed (Art.34), right of access (Art.15), and right to lodge a complaint with a supervisory authority (Art.77)?",
+      "Was the decision-making process around differential VIP client notification appropriate? How should the principle of non-discrimination apply to breach notifications?",
+      "What systemic improvements — including cloud access controls, email DLP rules, change management processes, and data classification policies — should be implemented to prevent recurrence?"
+    ]
+  }
+}

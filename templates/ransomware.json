@@ -11,6 +11,7 @@
   "recommended_players": 4,
   "max_players": 12,
   "difficulty_class": 15,
+  "compliance_frameworks": ["NIST CSF RS.RP", "ISO 27001 A.16", "GDPR Art.33-34", "PRA SS1/21", "FCA SYSC 13.7"],
   "roles": [
     {
       "name": "Incident Commander",
@@ -67,6 +68,7 @@
       "title": "Initial Detection — The First Tremor",
       "phase": 1,
       "time_offset": "T+0 Minutes",
+      "compliance_frameworks": ["NIST CSF DE.AE", "ISO 27001 A.16.1.2"],
       "narrative": "It is 07:42 UTC on a Tuesday morning. The Security Operations Centre (SOC) receives a Priority 1 alert from the Endpoint Detection and Response (EDR) platform. Multiple workstations on the Private Client Services floor are exhibiting anomalous behaviour: rapid file encryption across mapped network drives, creation of ransom note text files, and outbound connections to a known command-and-control IP address.\n\nSimultaneously, the IT Service Desk receives three calls from relationship managers reporting that they cannot open client portfolio documents. One manager reports seeing a pop-up window demanding payment in cryptocurrency.\n\nThe EDR dashboard indicates 14 endpoints are affected and the count is rising. The affected file shares include the S:\\PrivateClients\\ and S:\\Compliance\\ directories.",
       "facilitator_prompts": [
         "Who is responsible for declaring this a security incident and at what severity level?",
@@ -127,6 +129,7 @@
       "title": "Escalation and Scope Expansion — The Shadow Deepens",
       "phase": 2,
       "time_offset": "T+15 Minutes",
+      "compliance_frameworks": ["GDPR Art.33", "FCA SUP 15.3", "PRA Fundamental Rule 7"],
       "narrative": "The SOC has completed initial triage. The attack vector has been identified as a phishing email received by a senior relationship manager at 07:12 UTC. The email contained a macro-enabled Excel attachment purporting to be a client portfolio rebalancing report. The malware achieved initial execution via a VBA macro and subsequently moved laterally using harvested domain credentials.\n\nCritically, the SOC has identified outbound data transfer to an external IP address. Approximately 2.3 GB of data from the S:\\PrivateClients\\ directory was exfiltrated between 07:20 and 07:41 UTC before the EDR alert triggered. The directory contains client identification documents, account statements, tax records, and portfolio valuations for approximately 340 ultra-high-net-worth (UHNW) clients.\n\nA ransom note has been found demanding 50 BTC (approximately £2.1 million at current rates), with a 72-hour payment deadline. The note threatens publication of stolen client data on a dark web leak site if payment is not made.",
       "facilitator_prompts": [
         "This is now a confirmed data breach involving personal data of UHNW clients. What are our GDPR Article 33 obligations and what is the notification timeline?",
@@ -188,6 +191,7 @@
       "title": "Client and Media Pressure — The Siege Tightens",
       "phase": 3,
       "time_offset": "T+30 Minutes",
+      "compliance_frameworks": ["NCSC Ransomware Guidance", "ICO Breach Reporting"],
       "narrative": "A financial journalist from a national broadsheet has contacted the Communications team, stating they have received a tip-off about a cyber attack at the bank. They are requesting comment before a 14:00 UTC publication deadline.\n\nSeparately, two UHNW clients have contacted their relationship managers directly, stating they have received emails from an unknown party claiming to hold their financial records and threatening to release them unless the clients themselves pay a personal ransom of £50,000 each.\n\nThe Board Chairman has been informed and is requesting an immediate briefing. The bank's largest institutional client, a family office with £800 million under management, has scheduled an urgent call with the CEO to discuss the security of their assets and data.",
       "facilitator_prompts": [
         "What is our media response strategy? Do we issue a holding statement or a full press release?",
@@ -248,6 +252,7 @@
       "title": "Recovery Decisions — The Path to Restoration",
       "phase": 4,
       "time_offset": "T+45 Minutes",
+      "compliance_frameworks": ["NIST CSF RC.RP", "ISO 27001 A.16.1.6", "FCA PRIN 2.1"],
       "narrative": "The containment team has successfully isolated all affected endpoints and halted lateral movement. The threat actor's C2 channel has been blocked at the perimeter firewall and DNS sinkhole.\n\nHowever, the IT Operations team reports that backup restoration for the encrypted file shares will take approximately 18 hours due to the volume of data and the need to verify backup integrity. During this period, relationship managers will have no access to client portfolio documents.\n\nThe CISO has confirmed that the threat actor likely maintained persistent access for up to 11 days before deploying ransomware, based on initial forensic analysis of authentication logs. The full extent of the compromise is not yet known.\n\nThe 72-hour ransom deadline is now at T-70 hours.",
       "facilitator_prompts": [
         "With 18 hours of downtime, what is our business continuity strategy for client servicing?",

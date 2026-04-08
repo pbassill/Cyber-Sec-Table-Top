@@ -170,6 +170,38 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
                     <?php echo htmlspecialchars($currentScenario['title'], ENT_QUOTES, 'UTF-8'); ?>
                 </h3>
                 <small class="text-muted"><?php echo htmlspecialchars($currentScenario['subtitle'], ENT_QUOTES, 'UTF-8'); ?></small>
+                <?php if (!empty($currentScenario['compliance_frameworks'])): ?>
+                <div class="mt-2">
+                    <?php foreach ($currentScenario['compliance_frameworks'] as $fw): ?>
+                    <span class="badge bg-info text-dark me-1"><i class="bi bi-shield-check"></i> <?php echo htmlspecialchars($fw, ENT_QUOTES, 'UTF-8'); ?></span>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Inject Timer -->
+            <div class="dnd-card mb-3" id="injectTimerCard">
+                <div class="dnd-card-body py-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <i class="bi bi-stopwatch"></i>
+                            <span class="fw-bold ms-1">Inject Timer:</span>
+                            <span id="timerDisplay" class="ms-2 fs-5 fw-bold" style="font-family: 'Cinzel', serif; color: var(--gold);">15:00</span>
+                        </div>
+                        <div>
+                            <select id="timerPreset" class="form-select form-select-sm d-inline-block dnd-input" style="width: auto;">
+                                <option value="300">5 min</option>
+                                <option value="600">10 min</option>
+                                <option value="900" selected>15 min</option>
+                                <option value="1200">20 min</option>
+                                <option value="1800">30 min</option>
+                            </select>
+                            <button class="btn btn-sm btn-gold ms-1" id="timerStartBtn"><i class="bi bi-play-fill"></i></button>
+                            <button class="btn btn-sm btn-outline-gold ms-1" id="timerPauseBtn" style="display:none;"><i class="bi bi-pause-fill"></i></button>
+                            <button class="btn btn-sm btn-outline-danger ms-1" id="timerResetBtn"><i class="bi bi-arrow-counterclockwise"></i></button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Current Inject -->
@@ -182,6 +214,13 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
                         </h4>
                         <span class="badge bg-secondary"><?php echo htmlspecialchars($currentInject['time_offset'], ENT_QUOTES, 'UTF-8'); ?></span>
                     </div>
+                    <?php if (!empty($currentInject['compliance_frameworks'])): ?>
+                    <div class="mt-2">
+                        <?php foreach ($currentInject['compliance_frameworks'] as $fw): ?>
+                        <span class="badge bg-info text-dark me-1" style="font-size: 0.7rem;"><i class="bi bi-shield-check"></i> <?php echo htmlspecialchars($fw, ENT_QUOTES, 'UTF-8'); ?></span>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
                 </div>
                 <div class="dnd-card-body">
                     <!-- Narrative -->
@@ -205,6 +244,20 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
                             <?php endforeach; ?>
                         </ul>
                     </div>
+
+                    <!-- Facilitator Private Notes (DM Only) -->
+                    <?php if (!empty($currentInject['facilitator_notes'])): ?>
+                    <div class="facilitator-notes mt-4" id="dmNotesPanel" style="display:none;">
+                        <h5 class="dnd-label"><i class="bi bi-eye-slash"></i> DM Notes <span class="badge bg-danger ms-1">Facilitator Only</span></h5>
+                        <div class="dm-notes-content" style="background: rgba(139, 26, 26, 0.15); border: 1px dashed var(--blood-red); border-radius: 8px; padding: 1rem;">
+                            <ul class="mb-0">
+                                <?php foreach ($currentInject['facilitator_notes'] as $note): ?>
+                                <li class="mb-1"><?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    </div>
+                    <?php endif; ?>
 
                     <!-- Dice Events -->
                     <?php if (!empty($currentInject['dice_events'])): ?>
@@ -317,13 +370,36 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
                     <div class="session-code-value mb-2">
                         <?php echo htmlspecialchars($session['session_code'], ENT_QUOTES, 'UTF-8'); ?>
                     </div>
+                    <!-- QR Code -->
+                    <div class="mb-2">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=<?php echo urlencode($playerUrl); ?>"
+                             alt="QR Code for player join" class="img-fluid" style="max-width: 150px; border-radius: 8px; background: #fff; padding: 4px;">
+                    </div>
                     <div class="input-group input-group-sm mb-2">
                         <input type="text" class="form-control dnd-input" value="<?php echo htmlspecialchars($playerUrl, ENT_QUOTES, 'UTF-8'); ?>" readonly id="sessionPlayerUrl">
                         <button type="button" class="btn btn-outline-gold" onclick="navigator.clipboard.writeText(document.getElementById('sessionPlayerUrl').value);" title="Copy URL">
                             <i class="bi bi-clipboard"></i>
                         </button>
                     </div>
-                    <small class="text-muted">Share this with participants</small>
+                    <small class="text-muted">Scan QR code or share URL with participants</small>
+                </div>
+            </div>
+
+            <!-- DM Controls -->
+            <div class="dnd-card mb-4">
+                <div class="dnd-card-header">
+                    <h5 class="mb-0"><i class="bi bi-eye-slash"></i> DM Controls</h5>
+                </div>
+                <div class="dnd-card-body">
+                    <button class="btn btn-outline-gold w-100 mb-2" id="toggleDmNotes">
+                        <i class="bi bi-eye-slash"></i> Show/Hide DM Notes
+                    </button>
+                    <a href="api/facilitator_pack.php?code=<?php echo urlencode($session['session_code']); ?>" class="btn btn-outline-gold w-100 mb-2" target="_blank">
+                        <i class="bi bi-printer"></i> Print Facilitator Pack
+                    </a>
+                    <a href="api/calendar.php?code=<?php echo urlencode($session['session_code']); ?>&name=<?php echo urlencode($session['event_name'] ?? ''); ?>" class="btn btn-outline-gold w-100">
+                        <i class="bi bi-calendar-event"></i> Download Calendar Invite
+                    </a>
                 </div>
             </div>
             <?php endif; ?>
@@ -464,6 +540,95 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
 <script>
     // Pass random events data to JS
     window.randomEventsData = <?php echo json_encode($randomEvents, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+
+    // Inject Timer
+    (function() {
+        var timerSeconds = 900;
+        var timerRunning = false;
+        var timerInterval = null;
+        var display = document.getElementById('timerDisplay');
+        var startBtn = document.getElementById('timerStartBtn');
+        var pauseBtn = document.getElementById('timerPauseBtn');
+        var resetBtn = document.getElementById('timerResetBtn');
+        var preset = document.getElementById('timerPreset');
+
+        if (!display) return;
+
+        function formatTime(s) {
+            var m = Math.floor(s / 60);
+            var sec = s % 60;
+            return (m < 10 ? '0' : '') + m + ':' + (sec < 10 ? '0' : '') + sec;
+        }
+
+        function updateDisplay() {
+            display.textContent = formatTime(timerSeconds);
+            if (timerSeconds <= 60 && timerSeconds > 0) {
+                display.style.color = '#dc3545';
+            } else if (timerSeconds === 0) {
+                display.style.color = '#dc3545';
+                display.textContent = "TIME'S UP!";
+            } else {
+                display.style.color = 'var(--gold)';
+            }
+        }
+
+        function tick() {
+            if (timerSeconds > 0) {
+                timerSeconds--;
+                updateDisplay();
+            } else {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                startBtn.style.display = '';
+                pauseBtn.style.display = 'none';
+            }
+        }
+
+        startBtn?.addEventListener('click', function() {
+            if (!timerRunning && timerSeconds > 0) {
+                timerRunning = true;
+                timerInterval = setInterval(tick, 1000);
+                startBtn.style.display = 'none';
+                pauseBtn.style.display = '';
+            }
+        });
+
+        pauseBtn?.addEventListener('click', function() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            startBtn.style.display = '';
+            pauseBtn.style.display = 'none';
+        });
+
+        resetBtn?.addEventListener('click', function() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerSeconds = parseInt(preset.value) || 900;
+            updateDisplay();
+            startBtn.style.display = '';
+            pauseBtn.style.display = 'none';
+        });
+
+        preset?.addEventListener('change', function() {
+            if (!timerRunning) {
+                timerSeconds = parseInt(this.value) || 900;
+                updateDisplay();
+            }
+        });
+
+        updateDisplay();
+    })();
+
+    // Toggle DM Notes
+    document.getElementById('toggleDmNotes')?.addEventListener('click', function() {
+        var panel = document.getElementById('dmNotesPanel');
+        if (panel) {
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+            this.innerHTML = panel.style.display === 'none'
+                ? '<i class="bi bi-eye-slash"></i> Show/Hide DM Notes'
+                : '<i class="bi bi-eye"></i> Hide DM Notes';
+        }
+    });
 </script>
 
 <?php require_once 'includes/footer.php'; ?>
