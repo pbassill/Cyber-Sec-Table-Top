@@ -5,6 +5,7 @@
  */
 header('Content-Type: application/json');
 header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
 
 require_once '../includes/functions.php';
 
@@ -75,6 +76,10 @@ switch ($action) {
 
     case 'random_event':
         $type = $_POST['type'] ?? 'environmental';
+        $allowedTypes = ['environmental', 'plot_twist', 'npc'];
+        if (!in_array($type, $allowedTypes, true)) {
+            $type = 'environmental';
+        }
         $randomEvents = loadRandomEvents();
         $result = null;
 

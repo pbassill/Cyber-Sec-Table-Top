@@ -5,10 +5,17 @@
  */
 header('Content-Type: application/json');
 header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
 
 require_once '../includes/functions.php';
 
-$action = $_GET['action'] ?? 'list';
+$action = isset($_GET['action']) ? $_GET['action'] : 'list';
+$allowedActions = ['list', 'get'];
+if (!in_array($action, $allowedActions, true)) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Invalid action']);
+    exit;
+}
 
 switch ($action) {
     case 'list':
