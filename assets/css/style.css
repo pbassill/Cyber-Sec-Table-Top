@@ -383,6 +383,31 @@ body {
     justify-content: space-between;
 }
 
+/* Campaign category selector cards */
+.campaign-select-card {
+    border: 2px solid var(--border-ornate);
+    border-radius: 8px;
+    padding: 0;
+    transition: all 0.2s ease;
+    height: 100%;
+}
+
+.campaign-select-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.campaign-select-card.campaign-selected {
+    border-width: 3px;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+}
+
+.campaign-card-inner {
+    padding: 1rem;
+    border-radius: 6px;
+    height: 100%;
+}
+
 .dropzone-text {
     font-style: italic;
 }

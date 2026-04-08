@@ -1,16 +1,20 @@
 <?php
 /**
  * Cyber Quest — Scenario Browser
- * View all available scenario templates
+ * View all available scenario templates, grouped by campaign category
  */
 $pageTitle = 'Cyber Quest — Quest Board';
 require_once 'includes/header.php';
 
 $scenarios = loadScenarios();
+$campaigns = loadCampaigns();
 
 // If a specific scenario is requested, show detail view
 $viewId = isset($_GET['id']) ? sanitizeId($_GET['id']) : null;
 $viewScenario = $viewId ? loadScenario($viewId) : null;
+
+// Optional campaign filter
+$filterCampaign = isset($_GET['campaign']) ? sanitizeId($_GET['campaign']) : '';
 ?>
 
 <div class="container py-4">
@@ -118,52 +122,114 @@ $viewScenario = $viewId ? loadScenario($viewId) : null;
     </div>
 
     <?php else: ?>
-    <!-- Scenario List -->
+    <!-- Scenario List grouped by Campaign -->
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="text-center mb-5">
                 <h1 class="dnd-title">Quest Board</h1>
-                <p class="dnd-subtitle">Browse available scenario templates for your campaign</p>
+                <p class="dnd-subtitle">Browse available scenario templates grouped by campaign</p>
                 <div class="hero-divider">═══════ ⚜️ ═══════</div>
             </div>
 
-            <div class="row g-4">
-                <?php foreach ($scenarios as $id => $scenario): ?>
-                <div class="col-md-6 col-lg-4">
-                    <a href="scenarios.php?id=<?php echo htmlspecialchars(urlencode($id), ENT_QUOTES, 'UTF-8'); ?>" class="text-decoration-none">
-                        <div class="dnd-quest-card h-100" style="border-color: <?php echo htmlspecialchars($scenario['theme_color'], ENT_QUOTES, 'UTF-8'); ?>">
-                            <div class="quest-card-header" style="background: linear-gradient(135deg, <?php echo htmlspecialchars($scenario['theme_color'], ENT_QUOTES, 'UTF-8'); ?>22, transparent)">
-                                <span class="quest-icon"><?php echo $scenario['icon']; ?></span>
-                                <h4 class="quest-title"><?php echo htmlspecialchars($scenario['title'], ENT_QUOTES, 'UTF-8'); ?></h4>
-                                <span class="quest-severity badge" style="background-color: <?php echo htmlspecialchars($scenario['theme_color'], ENT_QUOTES, 'UTF-8'); ?>">
-                                    <?php echo htmlspecialchars($scenario['severity'], ENT_QUOTES, 'UTF-8'); ?>
-                                </span>
-                            </div>
-                            <div class="quest-card-body">
-                                <p class="quest-description"><?php echo htmlspecialchars($scenario['description'], ENT_QUOTES, 'UTF-8'); ?></p>
-                                <div class="quest-stats">
-                                    <div class="stat">
-                                        <span class="stat-label">Duration</span>
-                                        <span class="stat-value"><?php echo $scenario['estimated_duration_minutes']; ?> min</span>
-                                    </div>
-                                    <div class="stat">
-                                        <span class="stat-label">DC</span>
-                                        <span class="stat-value"><?php echo $scenario['difficulty_class']; ?></span>
-                                    </div>
-                                    <div class="stat">
-                                        <span class="stat-label">Injects</span>
-                                        <span class="stat-value"><?php echo count($scenario['injects']); ?></span>
-                                    </div>
-                                </div>
-                                <div class="text-center mt-3">
-                                    <span class="btn btn-outline-gold btn-sm">View Quest Details</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
+            <!-- Campaign filter pills -->
+            <div class="text-center mb-4">
+                <a href="scenarios.php" class="btn btn-sm <?php echo $filterCampaign === '' ? 'btn-gold' : 'btn-outline-gold'; ?> me-1 mb-1">All</a>
+                <?php foreach ($campaigns as $cId => $camp): ?>
+                <a href="scenarios.php?campaign=<?php echo htmlspecialchars(urlencode($cId), ENT_QUOTES, 'UTF-8'); ?>"
+                   class="btn btn-sm <?php echo $filterCampaign === $cId ? 'btn-gold' : 'btn-outline-gold'; ?> me-1 mb-1">
+                    <?php echo $camp['icon']; ?> <?php echo htmlspecialchars($camp['title'], ENT_QUOTES, 'UTF-8'); ?>
+                </a>
                 <?php endforeach; ?>
             </div>
+
+            <?php
+            // Group scenarios by campaign
+            $grouped = [];
+            foreach ($scenarios as $id => $scenario) {
+                $sCampaign = $scenario['campaign'] ?? 'uncategorised';
+                if ($filterCampaign !== '' && $sCampaign !== $filterCampaign) continue;
+                $grouped[$sCampaign][] = ['id' => $id, 'scenario' => $scenario];
+            }
+
+            // Sort groups so campaigns with definitions come first
+            $orderedGroups = [];
+            foreach ($campaigns as $cId => $camp) {
+                if (isset($grouped[$cId])) {
+                    $orderedGroups[$cId] = $grouped[$cId];
+                }
+            }
+            // Append any uncategorised
+            if (isset($grouped['uncategorised'])) {
+                $orderedGroups['uncategorised'] = $grouped['uncategorised'];
+            }
+
+            foreach ($orderedGroups as $groupKey => $items):
+                $campInfo = $campaigns[$groupKey] ?? null;
+            ?>
+            <div class="mb-5">
+                <div class="d-flex align-items-center mb-3">
+                    <?php if ($campInfo): ?>
+                    <span style="font-size: 1.5rem;" class="me-2"><?php echo $campInfo['icon']; ?></span>
+                    <h3 class="dnd-section-title mb-0" style="color: <?php echo htmlspecialchars($campInfo['theme_color'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <?php echo htmlspecialchars($campInfo['title'], ENT_QUOTES, 'UTF-8'); ?>
+                    </h3>
+                    <?php else: ?>
+                    <h3 class="dnd-section-title mb-0">Uncategorised</h3>
+                    <?php endif; ?>
+                </div>
+                <?php if ($campInfo): ?>
+                <p class="text-muted small mb-3"><?php echo htmlspecialchars($campInfo['defining_characteristic'], ENT_QUOTES, 'UTF-8'); ?></p>
+                <?php endif; ?>
+
+                <div class="row g-4">
+                    <?php foreach ($items as $item):
+                        $id = $item['id'];
+                        $scenario = $item['scenario'];
+                    ?>
+                    <div class="col-md-6 col-lg-4">
+                        <a href="scenarios.php?id=<?php echo htmlspecialchars(urlencode($id), ENT_QUOTES, 'UTF-8'); ?>" class="text-decoration-none">
+                            <div class="dnd-quest-card h-100" style="border-color: <?php echo htmlspecialchars($scenario['theme_color'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <div class="quest-card-header" style="background: linear-gradient(135deg, <?php echo htmlspecialchars($scenario['theme_color'], ENT_QUOTES, 'UTF-8'); ?>22, transparent)">
+                                    <span class="quest-icon"><?php echo $scenario['icon']; ?></span>
+                                    <h4 class="quest-title"><?php echo htmlspecialchars($scenario['title'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                    <span class="quest-severity badge" style="background-color: <?php echo htmlspecialchars($scenario['theme_color'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <?php echo htmlspecialchars($scenario['severity'], ENT_QUOTES, 'UTF-8'); ?>
+                                    </span>
+                                </div>
+                                <div class="quest-card-body">
+                                    <p class="quest-description"><?php echo htmlspecialchars($scenario['description'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                    <div class="quest-stats">
+                                        <div class="stat">
+                                            <span class="stat-label">Duration</span>
+                                            <span class="stat-value"><?php echo $scenario['estimated_duration_minutes']; ?> min</span>
+                                        </div>
+                                        <div class="stat">
+                                            <span class="stat-label">DC</span>
+                                            <span class="stat-value"><?php echo $scenario['difficulty_class']; ?></span>
+                                        </div>
+                                        <div class="stat">
+                                            <span class="stat-label">Injects</span>
+                                            <span class="stat-value"><?php echo count($scenario['injects']); ?></span>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-3">
+                                        <span class="btn btn-outline-gold btn-sm">View Quest Details</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endforeach; ?>
+
+            <?php if (empty($orderedGroups)): ?>
+            <div class="text-center text-muted py-5">
+                <p>No adventures found for this campaign filter.</p>
+                <a href="scenarios.php" class="btn btn-outline-gold">View all adventures</a>
+            </div>
+            <?php endif; ?>
         </div>
     </div>
     <?php endif; ?>

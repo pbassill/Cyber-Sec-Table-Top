@@ -1,0 +1,101 @@
+{
+    "cyber_attack": {
+        "id": "cyber_attack",
+        "title": "Cyber Attack",
+        "icon": "⚔️",
+        "theme_color": "#dc3545",
+        "description": "A deliberate, malicious attempt by an external or internal threat actor to compromise the confidentiality, integrity, or availability of the bank's information systems, networks, or data. This includes ransomware, distributed denial-of-service, phishing and social engineering campaigns, advanced persistent threats, zero-day exploitation, credential stuffing, web application attacks, and targeted intrusions.",
+        "defining_characteristic": "Adversarial intent — someone is actively trying to cause harm or extract value.",
+        "response_priorities": "Detection, containment, eradication, evidence preservation, and threat actor attribution."
+    },
+    "digital_operational_resilience": {
+        "id": "digital_operational_resilience",
+        "title": "Digital / Operational Resilience",
+        "icon": "🏗️",
+        "theme_color": "#0dcaf0",
+        "description": "The bank's ability to continue delivering critical business services and recover to defined tolerances when technology systems fail, degrade, or become unavailable for reasons that are not necessarily adversarial. This covers major infrastructure outages, software defects causing data corruption or service disruption, failed change management and botched deployments, capacity exhaustion, cryptographic certificate expiry, DNS failures, and cascade failures across interconnected systems.",
+        "defining_characteristic": "Systemic or accidental failure rather than hostile action.",
+        "response_priorities": "Service restoration within impact tolerances, client communication, workaround activation, and root cause analysis. Under the FCA/PRA operational resilience framework (PS21/3), this category specifically tests whether the bank can remain within its stated impact tolerances for important business services."
+    },
+    "data_breach": {
+        "id": "data_breach",
+        "title": "Data Breach / Data Loss",
+        "icon": "📂",
+        "theme_color": "#6f42c1",
+        "description": "Events where personal or confidential data is exposed, lost, or improperly accessed, regardless of whether a malicious actor is involved. This includes accidental disclosures (misdirected emails, misconfigured cloud storage), lost devices, and improper disposal of records.",
+        "defining_characteristic": "Personal or confidential data exposure regardless of intent.",
+        "response_priorities": "Data impact assessment, regulatory notification (ICO/GDPR), affected individual communication, and containment of further exposure."
+    },
+    "insider_threat": {
+        "id": "insider_threat",
+        "title": "Insider Threat",
+        "icon": "🎭",
+        "theme_color": "#fd7e14",
+        "description": "Deliberate or negligent actions by employees, contractors, or trusted third parties. This spans fraud, sabotage, data theft, and policy violations. Often treated as its own category because the response involves HR, Legal, and potentially law enforcement in ways that differ from external attacks.",
+        "defining_characteristic": "Threat originates from within the organisation's trusted circle.",
+        "response_priorities": "Evidence preservation, HR and Legal coordination, access revocation, and potential law enforcement engagement."
+    },
+    "third_party_supply_chain": {
+        "id": "third_party_supply_chain",
+        "title": "Third-Party / Supply Chain",
+        "icon": "🔗",
+        "theme_color": "#0d6efd",
+        "description": "Incidents originating from vendors, managed service providers, SaaS platforms, or upstream software dependencies. The response is fundamentally different because you lack direct control over the compromised environment.",
+        "defining_characteristic": "The incident originates outside the organisation's direct control.",
+        "response_priorities": "Vendor communication, contractual obligation review, compensating controls, and supply chain risk reassessment."
+    },
+    "physical_security": {
+        "id": "physical_security",
+        "title": "Physical Security",
+        "icon": "🏢",
+        "theme_color": "#6c757d",
+        "description": "Events affecting physical infrastructure such as break-ins to data centres, theft of hardware, tailgating, or destruction of equipment. Often overlooked in cyber-focused exercises but directly relevant to data protection and operational continuity.",
+        "defining_characteristic": "Physical access or physical damage to infrastructure.",
+        "response_priorities": "Physical containment, law enforcement engagement, asset inventory, and data exposure assessment."
+    },
+    "regulatory_compliance": {
+        "id": "regulatory_compliance",
+        "title": "Regulatory / Compliance",
+        "icon": "📋",
+        "theme_color": "#20c997",
+        "description": "Incidents triggered by regulatory action, audit findings, or discovered non-compliance that require immediate remediation. Examples include discovery of sanctions screening failures or AML control breakdowns.",
+        "defining_characteristic": "Regulatory or compliance obligation is the primary driver.",
+        "response_priorities": "Regulatory engagement, remediation planning, evidence gathering, and control gap closure."
+    },
+    "fraud_financial_crime": {
+        "id": "fraud_financial_crime",
+        "title": "Fraud and Financial Crime",
+        "icon": "💰",
+        "theme_color": "#e83e8c",
+        "description": "Authorised push payment fraud, account takeover, fraudulent SWIFT/payment instructions, or market manipulation. For a private bank these often sit at the intersection of cyber and financial crime teams.",
+        "defining_characteristic": "Financial loss or attempted financial loss through deception or manipulation.",
+        "response_priorities": "Transaction tracing, fund recovery, fraud team coordination, and regulatory reporting."
+    },
+    "business_continuity": {
+        "id": "business_continuity",
+        "title": "Business Continuity / Disaster Recovery",
+        "icon": "🌪️",
+        "theme_color": "#198754",
+        "description": "Natural disasters, power failures, building access loss, pandemic staffing crises, or major infrastructure outages that aren't caused by an adversary but still require structured incident response.",
+        "defining_characteristic": "Non-adversarial disruption requiring continuity planning activation.",
+        "response_priorities": "BCP activation, alternate site operations, staff welfare, and service restoration."
+    },
+    "reputational_crisis": {
+        "id": "reputational_crisis",
+        "title": "Reputational / Crisis Communications",
+        "icon": "📢",
+        "theme_color": "#ffc107",
+        "description": "Sometimes categorised separately because certain events (social media incidents, executive misconduct, leaked internal communications) demand a crisis response even without a technical incident.",
+        "defining_characteristic": "Reputational damage is the primary risk, regardless of technical impact.",
+        "response_priorities": "Crisis communications, media management, stakeholder engagement, and narrative control."
+    },
+    "legal_litigation": {
+        "id": "legal_litigation",
+        "title": "Legal / Litigation Hold",
+        "icon": "⚖️",
+        "theme_color": "#adb5bd",
+        "description": "Events requiring immediate evidence preservation due to threatened or actual legal proceedings, regulatory investigations, or law enforcement requests.",
+        "defining_characteristic": "Legal obligation to preserve evidence or respond to proceedings.",
+        "response_priorities": "Litigation hold implementation, evidence preservation, legal counsel coordination, and regulatory response."
+    }
+}
