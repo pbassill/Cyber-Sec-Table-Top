@@ -7,7 +7,7 @@
 $pageTitle = 'Cyber Quest — Player View';
 require_once 'includes/header.php';
 
-$code = isset($_GET['code']) ? preg_replace('/[^A-Z0-9]/', '', strtoupper($_GET['code'] ?? '')) : '';
+$code = isset($_GET['code']) ? preg_replace('/[^A-Z0-9]/', '', strtoupper($_GET['code'])) : '';
 $sharedSession = $code !== '' ? loadSharedSession($code) : null;
 
 // Load scenario data if session exists

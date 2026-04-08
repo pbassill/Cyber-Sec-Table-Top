@@ -9,7 +9,7 @@ header('X-Content-Type-Options: nosniff');
 
 require_once '../includes/functions.php';
 
-$code = isset($_GET['code']) ? preg_replace('/[^A-Z0-9]/', '', strtoupper($_GET['code'] ?? '')) : '';
+$code = isset($_GET['code']) ? preg_replace('/[^A-Z0-9]/', '', strtoupper($_GET['code'])) : '';
 $since = (int)($_GET['since'] ?? 0);
 
 if ($code === '') {

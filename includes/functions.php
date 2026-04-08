@@ -209,6 +209,7 @@ function saveSharedSession(array $data): void {
     $path = getSharedSessionPath($data['session_code']);
     $sharedState = [
         'session_code' => $data['session_code'],
+        'event_name' => $data['event_name'] ?? '',
         'scenarios' => $data['scenarios'] ?? [],
         'current_scenario' => $data['current_scenario'] ?? 0,
         'current_inject' => $data['current_inject'] ?? 0,
@@ -218,7 +219,10 @@ function saveSharedSession(array $data): void {
         'updated_at' => time()
     ];
 
-    file_put_contents($path, json_encode($sharedState, JSON_PRETTY_PRINT), LOCK_EX);
+    $result = file_put_contents($path, json_encode($sharedState, JSON_PRETTY_PRINT), LOCK_EX);
+    if ($result === false) {
+        error_log('Cyber Quest: Failed to write shared session file: ' . $path);
+    }
 }
 
 /**
