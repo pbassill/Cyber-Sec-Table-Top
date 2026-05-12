@@ -60,64 +60,64 @@ function runMigrations(PDO $db): void {
  */
 function getMigrations(): array {
     return [
-        1 => '
+        1 => "
             CREATE TABLE exercises (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 session_code TEXT NOT NULL UNIQUE,
-                event_name TEXT NOT NULL DEFAULT "",
-                campaign_category TEXT NOT NULL DEFAULT "",
-                scenarios TEXT NOT NULL DEFAULT "[]",
-                participants TEXT NOT NULL DEFAULT "[]",
-                notes TEXT NOT NULL DEFAULT "[]",
-                roll_history TEXT NOT NULL DEFAULT "[]",
-                status TEXT NOT NULL DEFAULT "active",
-                created_at TEXT NOT NULL DEFAULT (datetime("now")),
+                event_name TEXT NOT NULL DEFAULT '',
+                campaign_category TEXT NOT NULL DEFAULT '',
+                scenarios TEXT NOT NULL DEFAULT '[]',
+                participants TEXT NOT NULL DEFAULT '[]',
+                notes TEXT NOT NULL DEFAULT '[]',
+                roll_history TEXT NOT NULL DEFAULT '[]',
+                status TEXT NOT NULL DEFAULT 'active',
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
                 completed_at TEXT,
-                updated_at TEXT NOT NULL DEFAULT (datetime("now"))
+                updated_at TEXT NOT NULL DEFAULT (datetime('now'))
             );
             CREATE INDEX idx_exercises_status ON exercises(status);
             CREATE INDEX idx_exercises_created ON exercises(created_at);
-        ',
-        2 => '
+        ",
+        2 => "
             CREATE TABLE action_items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 exercise_id INTEGER NOT NULL,
-                gap_description TEXT NOT NULL DEFAULT "",
-                remediation_action TEXT NOT NULL DEFAULT "",
-                owner TEXT NOT NULL DEFAULT "",
+                gap_description TEXT NOT NULL DEFAULT '',
+                remediation_action TEXT NOT NULL DEFAULT '',
+                owner TEXT NOT NULL DEFAULT '',
                 target_date TEXT,
-                status TEXT NOT NULL DEFAULT "open",
-                created_at TEXT NOT NULL DEFAULT (datetime("now")),
-                updated_at TEXT NOT NULL DEFAULT (datetime("now")),
+                status TEXT NOT NULL DEFAULT 'open',
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                updated_at TEXT NOT NULL DEFAULT (datetime('now')),
                 FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
             );
             CREATE INDEX idx_actions_exercise ON action_items(exercise_id);
             CREATE INDEX idx_actions_status ON action_items(status);
-        ',
-        3 => '
+        ",
+        3 => "
             CREATE TABLE evaluations (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 exercise_id INTEGER NOT NULL,
                 question TEXT NOT NULL,
                 rating INTEGER NOT NULL DEFAULT 0,
-                created_at TEXT NOT NULL DEFAULT (datetime("now")),
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
                 FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
             );
             CREATE INDEX idx_evaluations_exercise ON evaluations(exercise_id);
-        ',
-        4 => '
+        ",
+        4 => "
             CREATE TABLE exercise_timeline (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 exercise_id INTEGER NOT NULL,
                 event_type TEXT NOT NULL,
                 scenario_index INTEGER NOT NULL DEFAULT 0,
                 inject_index INTEGER NOT NULL DEFAULT 0,
-                details TEXT NOT NULL DEFAULT "{}",
-                created_at TEXT NOT NULL DEFAULT (datetime("now")),
+                details TEXT NOT NULL DEFAULT '{}',
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
                 FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
             );
             CREATE INDEX idx_timeline_exercise ON exercise_timeline(exercise_id);
-        '
+        "
     ];
 }
 
@@ -137,7 +137,7 @@ function saveExercise(array $sessionData): ?int {
     $existing = $stmt->fetch();
 
     if ($existing) {
-        $stmt = $db->prepare('UPDATE exercises SET
+        $stmt = $db->prepare("UPDATE exercises SET
             event_name = ?,
             campaign_category = ?,
             scenarios = ?,
@@ -145,8 +145,8 @@ function saveExercise(array $sessionData): ?int {
             notes = ?,
             roll_history = ?,
             status = ?,
-            updated_at = datetime("now")
-            WHERE session_code = ?');
+            updated_at = datetime('now')
+            WHERE session_code = ?");
         $stmt->execute([
             $sessionData['event_name'] ?? '',
             $sessionData['selected_campaign'] ?? '',
@@ -181,7 +181,7 @@ function saveExercise(array $sessionData): ?int {
  */
 function completeExercise(string $sessionCode): void {
     $db = getDatabase();
-    $stmt = $db->prepare('UPDATE exercises SET status = "completed", completed_at = datetime("now"), updated_at = datetime("now") WHERE session_code = ?');
+    $stmt = $db->prepare("UPDATE exercises SET status = 'completed', completed_at = datetime('now'), updated_at = datetime('now') WHERE session_code = ?");
     $stmt->execute([$sessionCode]);
 }
 
@@ -360,9 +360,9 @@ function getExerciseStats(): array {
     $db = getDatabase();
 
     $total = $db->query('SELECT COUNT(*) as c FROM exercises')->fetch()['c'];
-    $completed = $db->query('SELECT COUNT(*) as c FROM exercises WHERE status = "completed"')->fetch()['c'];
-    $openActions = $db->query('SELECT COUNT(*) as c FROM action_items WHERE status = "open"')->fetch()['c'];
-    $closedActions = $db->query('SELECT COUNT(*) as c FROM action_items WHERE status = "closed"')->fetch()['c'];
+    $completed = $db->query("SELECT COUNT(*) as c FROM exercises WHERE status = 'completed'")->fetch()['c'];
+    $openActions = $db->query("SELECT COUNT(*) as c FROM action_items WHERE status = 'open'")->fetch()['c'];
+    $closedActions = $db->query("SELECT COUNT(*) as c FROM action_items WHERE status = 'closed'")->fetch()['c'];
 
     $avgRating = $db->query('SELECT AVG(rating) as avg FROM evaluations WHERE rating > 0')->fetch()['avg'];
 
