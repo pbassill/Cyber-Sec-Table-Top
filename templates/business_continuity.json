@@ -1,7 +1,7 @@
 {
   "id": "business_continuity",
   "campaign": "business_continuity",
-  "verticals": ["all"],
+  "verticals": ["banking"],
   "title": "The Great Storm of the Iron Citadel",
   "subtitle": "Major Infrastructure Outage & BCP Activation Following Cascading Power and Flood Failure",
   "description": "A catastrophic storm descends upon the Iron Citadel — your primary data centre — severing power and breaching flood defences. As the waters rise, critical systems fall silent one by one. The realm's core banking platforms, trading engines, and SWIFT gateways are plunged into darkness. The War Council must invoke the ancient rites of Business Continuity to restore order from chaos, activating the secondary fortress before dawn breaks on the markets.",

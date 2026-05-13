@@ -1,7 +1,7 @@
 {
   "id": "fraud_financial_crime",
   "campaign": "fraud_financial_crime",
-  "verticals": ["banking", "retail"],
+  "verticals": ["banking"],
   "title": "The Gilded Deception",
   "subtitle": "Authorised Push Payment Fraud & SWIFT Payment Compromise",
   "description": "A shadow has fallen over the vaults of your private banking citadel. A master deceiver — a sorcerer of silver tongues and forged seals — has woven an intricate enchantment around your most trusted payment channels. Through cunning manipulation and arcane forgery, fraudulent SWIFT messages have been conjured and an ultra-high-net-worth patron has been beguiled into authorising a devastating push payment to a phantom treasury. As the golden threads unravel, the guild must race against time to recover the stolen hoard, contain the breach, and answer to the Elder Councils of regulation before the realm's reputation crumbles to dust.",

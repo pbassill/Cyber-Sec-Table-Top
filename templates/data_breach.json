@@ -1,7 +1,7 @@
 {
   "id": "data_breach",
   "campaign": "data_breach",
-  "verticals": ["all"],
+  "verticals": ["banking"],
   "title": "The Shattered Vault of Secrets",
   "subtitle": "Accidental Data Exposure and Loss of UHNW Client Records",
   "description": "A catastrophic breach of the realm's most sacred vault has occurred — not through dark sorcery or siege, but through negligence within your own walls. A misconfigured cloud storage vessel has laid bare the personal records of your most prestigious patrons, while a misdirected enchanted scroll carrying sensitive client data has reached the hands of an unintended recipient. The Wardens of Data must act swiftly to seal the breach, notify the High Regulators, and restore the trust of those whose secrets were exposed.",

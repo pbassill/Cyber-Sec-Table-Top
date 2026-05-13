@@ -1,7 +1,7 @@
 {
   "id": "remote_working",
   "campaign": "cyber_attack",
-  "verticals": ["all"],
+  "verticals": ["banking"],
   "title": "The Scattered Legion",
   "subtitle": "Targeting Staff Working From Home",
   "description": "Your realm's defenders have been dispersed across distant lands, working from keeps and homesteads far from the central fortress. The enemy has seized upon this scattered formation, targeting the weakest outposts to find a way past the castle walls. When the guardians are far from home, every hearth becomes a potential breach point.",
