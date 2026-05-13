@@ -153,13 +153,17 @@ $participantsByDept = array_filter($participantsByDept, function($members) {
                         </div>
                     <?php endforeach; ?>
                 </div>
-                <?php if ($currentScenario): ?>
+                <?php if ($currentScenario):
+                    $playerInjectCount = is_array($currentScenario['injects'] ?? null) ? count($currentScenario['injects']) : 0;
+                ?>
+                <?php if ($playerInjectCount > 0): ?>
                 <div class="inject-progress mt-2">
-                    <small>Inject <?php echo $sharedSession['current_inject'] + 1; ?> of <?php echo count($currentScenario['injects']); ?></small>
+                    <small>Inject <?php echo $sharedSession['current_inject'] + 1; ?> of <?php echo $playerInjectCount; ?></small>
                     <div class="progress" style="height: 6px;">
-                        <div class="progress-bar bg-gold" style="width: <?php echo (($sharedSession['current_inject'] + 1) / count($currentScenario['injects'])) * 100; ?>%"></div>
+                        <div class="progress-bar bg-gold" style="width: <?php echo (($sharedSession['current_inject'] + 1) / $playerInjectCount) * 100; ?>%"></div>
                     </div>
                 </div>
+                <?php endif; ?>
                 <?php endif; ?>
             </div>
 
@@ -195,31 +199,77 @@ $participantsByDept = array_filter($participantsByDept, function($members) {
                     </div>
 
                     <!-- Discussion Prompts -->
+                    <?php
+                        $playerPrompts = isset($currentInject['facilitator_prompts']) && is_array($currentInject['facilitator_prompts'])
+                            ? $currentInject['facilitator_prompts'] : [];
+                        $playerHints = [
+                            'Share what your team would do first, and who would lead the response.',
+                            'Surface assumptions — what information would you need to be confident?',
+                            'Compare with your day-to-day procedure: would it apply, or fall short?',
+                            'Identify the trade-off — speed vs. accuracy, containment vs. continuity.',
+                            'Decide who you would escalate to, and how you would phrase the ask.',
+                            'Agree on the smallest concrete next action you could commit to today.'
+                        ];
+                    ?>
+                    <?php if (!empty($playerPrompts)): ?>
                     <div class="facilitator-prompts mt-4">
                         <h5 class="dnd-label"><i class="bi bi-chat-quote"></i> Discussion Prompts</h5>
-                        <ul class="prompt-list">
-                            <?php foreach ($currentInject['facilitator_prompts'] as $prompt): ?>
-                            <li class="prompt-item">
-                                <i class="bi bi-chevron-right"></i>
-                                <?php echo htmlspecialchars($prompt, ENT_QUOTES, 'UTF-8'); ?>
-                            </li>
+                        <p class="text-muted small mb-2"><i class="bi bi-info-circle"></i> Click a prompt to expand a hint and check it off as your team discusses it.</p>
+                        <div class="prompt-list">
+                            <?php foreach ($playerPrompts as $idx => $prompt): ?>
+                            <details class="prompt-item">
+                                <summary>
+                                    <i class="bi bi-chevron-right prompt-chevron"></i>
+                                    <span class="prompt-text"><?php echo htmlspecialchars($prompt, ENT_QUOTES, 'UTF-8'); ?></span>
+                                </summary>
+                                <div class="prompt-body">
+                                    <div class="prompt-notes-block">
+                                        <strong><i class="bi bi-people"></i> Discuss with your team:</strong>
+                                        <span><?php echo htmlspecialchars($playerHints[$idx % count($playerHints)], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    </div>
+                                </div>
+                            </details>
                             <?php endforeach; ?>
-                        </ul>
+                        </div>
                     </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
             <!-- Debrief Section (on last inject) -->
             <?php if ($sharedSession['current_inject'] === count($currentScenario['injects']) - 1): ?>
+            <?php
+                $playerDebriefQuestions = (isset($currentScenario['debrief']['questions']) && is_array($currentScenario['debrief']['questions']))
+                    ? $currentScenario['debrief']['questions'] : [];
+                $playerDebriefFocus = [
+                    'Reflect on what your team did, not just what was said.',
+                    'Tie this back to a specific moment in the inject.',
+                    'Decide who would own a follow-up action and by when.',
+                    'Compare this with how your real procedure would handle it.',
+                    'Capture the metric you would use to know you succeeded.',
+                    'Note any regulatory or contractual obligation worth raising.'
+                ];
+            ?>
             <div class="dnd-card debrief-section mb-4">
                 <div class="dnd-card-header">
-                    <h4><i class="bi bi-clipboard-check"></i> <?php echo htmlspecialchars($currentScenario['debrief']['title'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                    <h4><i class="bi bi-clipboard-check"></i> <?php echo htmlspecialchars($currentScenario['debrief']['title'] ?? 'Debrief', ENT_QUOTES, 'UTF-8'); ?></h4>
                 </div>
                 <div class="dnd-card-body">
-                    <p class="card-flavor-text">Review and discuss the following questions.</p>
-                    <ol class="dnd-list">
-                        <?php foreach ($currentScenario['debrief']['questions'] as $q): ?>
-                        <li><?php echo htmlspecialchars($q, ENT_QUOTES, 'UTF-8'); ?></li>
+                    <p class="card-flavor-text">Review and discuss the following questions. Click a question to reveal a discussion focus.</p>
+                    <ol class="debrief-question-list">
+                        <?php foreach ($playerDebriefQuestions as $idx => $q): ?>
+                        <li>
+                            <details class="debrief-question">
+                                <summary>
+                                    <i class="bi bi-chevron-right prompt-chevron"></i>
+                                    <span><?php echo htmlspecialchars($q, ENT_QUOTES, 'UTF-8'); ?></span>
+                                </summary>
+                                <div class="debrief-question-body">
+                                    <strong><i class="bi bi-bullseye"></i> Discussion focus:</strong>
+                                    <span><?php echo htmlspecialchars($playerDebriefFocus[$idx % count($playerDebriefFocus)], ENT_QUOTES, 'UTF-8'); ?></span>
+                                </div>
+                            </details>
+                        </li>
                         <?php endforeach; ?>
                     </ol>
                 </div>
@@ -287,9 +337,20 @@ $participantsByDept = array_filter($participantsByDept, function($members) {
 
         function pollForUpdates() {
             fetch('api/session_state.php?code=' + encodeURIComponent(code) + '&since=' + lastUpdate)
-                .then(function(r) { return r.json(); })
+                .then(function(r) {
+                    if (r.status === 404) {
+                        // The DM has ended the campaign — return to the join screen.
+                        window.location.href = 'player.php';
+                        return null;
+                    }
+                    if (!r.ok) {
+                        // Transient error — retry on the next poll.
+                        return null;
+                    }
+                    return r.json();
+                })
                 .then(function(data) {
-                    if (data.changed) {
+                    if (data && data.changed) {
                         // Reload the page to show updated state
                         window.location.reload();
                     }

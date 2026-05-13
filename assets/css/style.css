@@ -526,15 +526,17 @@ body {
 .prompt-list {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .prompt-item {
-    padding: 0.75rem 1rem;
+    padding: 0;
     border-left: 3px solid var(--gold-dark);
     margin-bottom: 0.5rem;
     background: rgba(0, 0, 0, 0.15);
     border-radius: 0 4px 4px 0;
     transition: border-color 0.2s, background 0.2s;
+    overflow: hidden;
 }
 
 .prompt-item:hover {
@@ -542,9 +544,160 @@ body {
     background: rgba(201, 169, 78, 0.05);
 }
 
-.prompt-item i {
+li.prompt-item {
+    /* Legacy <li> styling retained for any non-converted callers. */
+    padding: 0.75rem 1rem;
+}
+
+li.prompt-item i {
     color: var(--gold);
     margin-right: 0.5rem;
+}
+
+details.prompt-item > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: flex-start;
+    user-select: none;
+}
+
+details.prompt-item > summary::-webkit-details-marker {
+    display: none;
+}
+
+details.prompt-item > summary .prompt-chevron {
+    color: var(--gold);
+    margin-right: 0.5rem;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+details.prompt-item[open] > summary .prompt-chevron {
+    transform: rotate(90deg);
+}
+
+details.prompt-item > summary .prompt-text {
+    flex: 1;
+}
+
+details.prompt-item .prompt-body {
+    padding: 0 1rem 0.85rem 2rem;
+}
+
+details.prompt-item .prompt-notes-block {
+    background: rgba(201, 169, 78, 0.08);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.95rem;
+}
+
+details.prompt-item .prompt-notes-block i {
+    color: var(--gold);
+    margin-right: 0.35rem;
+}
+
+details.prompt-item .prompt-notes-block ul {
+    padding-left: 1.2rem;
+}
+
+/* Dice outcome preview list */
+.outcomes-details > summary {
+    list-style: none;
+    cursor: pointer;
+    user-select: none;
+    color: var(--gold);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+}
+
+.outcomes-details > summary::-webkit-details-marker {
+    display: none;
+}
+
+.outcomes-details > summary .prompt-chevron {
+    margin-right: 0.4rem;
+    transition: transform 0.2s ease;
+}
+
+.outcomes-details[open] > summary .prompt-chevron {
+    transform: rotate(90deg);
+}
+
+.outcomes-list .outcome-row {
+    padding: 0.6rem 0.75rem;
+    border-radius: 4px;
+    border-left: 3px solid var(--gold-dark);
+    background: rgba(0, 0, 0, 0.2);
+    margin-bottom: 0.4rem;
+}
+
+.outcomes-list .outcome-row.outcome-critical-fail { border-left-color: #8b1a1a; }
+.outcomes-list .outcome-row.outcome-fail { border-left-color: #c0392b; }
+.outcomes-list .outcome-row.outcome-partial { border-left-color: var(--gold-dark); }
+.outcomes-list .outcome-row.outcome-success { border-left-color: #2e8b57; }
+.outcomes-list .outcome-row.outcome-critical-success { border-left-color: #f1c40f; }
+
+/* Debrief expandable questions */
+.debrief-question-list {
+    padding-left: 1.25rem;
+    margin: 0;
+}
+
+.debrief-question-list > li {
+    margin-bottom: 0.5rem;
+}
+
+details.debrief-question {
+    border-left: 3px solid var(--gold-dark);
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 0 4px 4px 0;
+    transition: border-color 0.2s, background 0.2s;
+    overflow: hidden;
+}
+
+details.debrief-question:hover {
+    border-left-color: var(--gold);
+    background: rgba(201, 169, 78, 0.05);
+}
+
+details.debrief-question > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.6rem 0.85rem;
+    display: flex;
+    align-items: flex-start;
+    user-select: none;
+}
+
+details.debrief-question > summary::-webkit-details-marker {
+    display: none;
+}
+
+details.debrief-question > summary .prompt-chevron {
+    color: var(--gold);
+    margin-right: 0.5rem;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+details.debrief-question[open] > summary .prompt-chevron {
+    transform: rotate(90deg);
+}
+
+details.debrief-question .debrief-question-body {
+    padding: 0 0.85rem 0.7rem 2rem;
+    font-size: 0.95rem;
+}
+
+details.debrief-question .debrief-question-body i {
+    color: var(--gold);
+    margin-right: 0.35rem;
 }
 
 /* ════════════════════════════════════════════
