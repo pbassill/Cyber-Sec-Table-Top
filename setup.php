@@ -400,6 +400,13 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </form>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
                 <!-- Action Buttons -->
                 <div class="d-flex justify-content-between mb-5">
                     <form method="POST" class="d-inline" onsubmit="return confirm('Reset all event setup? This cannot be undone.');">
@@ -423,7 +430,6 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
 
             </div>
         </div>
-    </form>
 </div>
 
 <script>
