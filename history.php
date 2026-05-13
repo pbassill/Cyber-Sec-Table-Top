@@ -42,6 +42,15 @@ if ($viewId > 0) {
                 <div class="col-md-3"><strong>Created:</strong> <?php echo htmlspecialchars($exercise['created_at'], ENT_QUOTES, 'UTF-8'); ?></div>
                 <div class="col-md-3"><strong>Completed:</strong> <?php echo $exercise['completed_at'] ? htmlspecialchars($exercise['completed_at'], ENT_QUOTES, 'UTF-8') : '—'; ?></div>
                 <div class="col-md-3"><strong>Campaign:</strong> <?php echo htmlspecialchars($exercise['campaign_category'] ?: '—', ENT_QUOTES, 'UTF-8'); ?></div>
+                <?php
+                    $detailVerticalId = $exercise['industry_vertical'] ?? '';
+                    $detailVerticals = loadVerticals();
+                    $detailVerticalLabel = '—';
+                    if ($detailVerticalId !== '' && isset($detailVerticals[$detailVerticalId])) {
+                        $detailVerticalLabel = $detailVerticals[$detailVerticalId]['icon'] . ' ' . $detailVerticals[$detailVerticalId]['title'];
+                    }
+                ?>
+                <div class="col-md-3"><strong>Industry:</strong> <?php echo htmlspecialchars($detailVerticalLabel, ENT_QUOTES, 'UTF-8'); ?></div>
             </div>
 
             <?php if (!empty($exercise['scenarios'])): ?>
@@ -235,12 +244,14 @@ $stats = getExerciseStats();
         <p>Run your first exercise from the <a href="setup.php" class="text-decoration-none" style="color: var(--gold)">Event Setup</a> page.</p>
     </div>
     <?php else: ?>
+    <?php $listVerticals = loadVerticals(); ?>
     <div class="table-responsive">
         <table class="table table-dark table-hover dnd-table">
             <thead>
                 <tr>
                     <th>Event Name</th>
                     <th>Session Code</th>
+                    <th>Industry</th>
                     <th>Campaign</th>
                     <th>Scenarios</th>
                     <th>Participants</th>
@@ -251,9 +262,17 @@ $stats = getExerciseStats();
             </thead>
             <tbody>
                 <?php foreach ($data['exercises'] as $ex): ?>
+                <?php
+                    $rowVerticalId = $ex['industry_vertical'] ?? '';
+                    $rowVerticalLabel = '—';
+                    if ($rowVerticalId !== '' && isset($listVerticals[$rowVerticalId])) {
+                        $rowVerticalLabel = $listVerticals[$rowVerticalId]['icon'] . ' ' . $listVerticals[$rowVerticalId]['title'];
+                    }
+                ?>
                 <tr>
                     <td><?php echo htmlspecialchars($ex['event_name'] ?: 'Unnamed', ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><code><?php echo htmlspecialchars($ex['session_code'], ENT_QUOTES, 'UTF-8'); ?></code></td>
+                    <td><?php echo htmlspecialchars($rowVerticalLabel, ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><?php echo htmlspecialchars($ex['campaign_category'] ?: '—', ENT_QUOTES, 'UTF-8'); ?></td>
                     <td><?php echo count($ex['scenarios']); ?></td>
                     <td><?php echo count($ex['participants']); ?></td>

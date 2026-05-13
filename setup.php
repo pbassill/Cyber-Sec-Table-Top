@@ -9,6 +9,7 @@ require_once 'includes/header.php';
 
 $scenarios = loadScenarios();
 $campaigns = loadCampaigns();
+$verticals = loadVerticals();
 $session = getSessionData();
 $departments = getDefaultDepartments();
 
@@ -32,19 +33,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $session['event_name'] = substr($eventName, 0, 200);
 
+                // Save selected industry vertical (defaults to generic)
+                $selectedVertical = sanitizeId($_POST['selected_vertical'] ?? '');
+                if ($selectedVertical === '' || !isset($verticals[$selectedVertical])) {
+                    $selectedVertical = 'generic';
+                }
+                $session['selected_vertical'] = $selectedVertical;
+
                 // Save selected campaign
                 $selectedCampaign = sanitizeId($_POST['selected_campaign'] ?? '');
                 if ($selectedCampaign !== '' && isset($campaigns[$selectedCampaign])) {
                     $session['selected_campaign'] = $selectedCampaign;
                 }
 
-                // Save scenario order
+                // Save scenario order — filter out scenarios that don't
+                // match the chosen vertical, so a stale selection from a
+                // previous vertical can't sneak through.
                 $order = $_POST['scenario_order'] ?? '';
-                $scenarioIds = array_filter(explode(',', $order), function($id) use ($scenarios) {
-                    return isset($scenarios[sanitizeId($id)]);
+                $scenarioIds = array_filter(explode(',', $order), function($id) use ($scenarios, $selectedVertical) {
+                    $cleanId = sanitizeId($id);
+                    if (!isset($scenarios[$cleanId])) return false;
+                    return scenarioMatchesVertical($scenarios[$cleanId], $selectedVertical);
                 });
                 $scenarioIds = array_map('sanitizeId', $scenarioIds);
-                $session['scenarios'] = $scenarioIds;
+                $session['scenarios'] = array_values($scenarioIds);
 
                 // Save participants
                 $participantNames = $_POST['participant_name'] ?? [];
@@ -170,15 +182,63 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
                     </div>
                 </div>
 
-                <!-- Step 2: Choose Campaign Category -->
+                <!-- Step 2: Choose Industry Vertical -->
+                <?php
+                    $selectedVerticalId = $session['selected_vertical'] ?? 'generic';
+                    if (!isset($verticals[$selectedVerticalId])) {
+                        $selectedVerticalId = 'generic';
+                    }
+                ?>
                 <div class="dnd-card mb-4">
                     <div class="dnd-card-header">
-                        <h3><i class="bi bi-collection"></i> Step 2 — Choose Your Campaign</h3>
+                        <h3><i class="bi bi-buildings"></i> Step 2 — Choose Industry Vertical</h3>
+                    </div>
+                    <div class="dnd-card-body">
+                        <p class="card-flavor-text">
+                            Select the industry your players' organisation operates in. Adventures will
+                            be filtered to those appropriate for that sector. Choose
+                            <em>Generic / Any Industry</em> to see every adventure.
+                        </p>
+                        <input type="hidden" name="selected_vertical" id="selectedVerticalInput"
+                               value="<?php echo htmlspecialchars($selectedVerticalId, ENT_QUOTES, 'UTF-8'); ?>">
+                        <div class="row g-3" id="verticalGrid">
+                            <?php foreach ($verticals as $vId => $vertical): ?>
+                            <?php $isVerticalSelected = ($selectedVerticalId === $vId); ?>
+                            <div class="col-md-6 col-lg-4">
+                                <div class="campaign-select-card vertical-select-card <?php echo $isVerticalSelected ? 'campaign-selected' : ''; ?>"
+                                     data-vertical-id="<?php echo htmlspecialchars($vId, ENT_QUOTES, 'UTF-8'); ?>"
+                                     style="border-color: <?php echo htmlspecialchars($vertical['theme_color'], ENT_QUOTES, 'UTF-8'); ?>; cursor: pointer;">
+                                    <div class="campaign-card-inner" style="<?php echo $isVerticalSelected ? 'background: linear-gradient(135deg, ' . htmlspecialchars($vertical['theme_color'], ENT_QUOTES, 'UTF-8') . '22, transparent);' : ''; ?>">
+                                        <div class="d-flex align-items-start mb-2">
+                                            <span class="campaign-icon me-2" style="font-size: 1.5rem;"><?php echo $vertical['icon']; ?></span>
+                                            <div class="flex-grow-1">
+                                                <h5 class="mb-1"><?php echo htmlspecialchars($vertical['title'], ENT_QUOTES, 'UTF-8'); ?></h5>
+                                            </div>
+                                            <?php if ($isVerticalSelected): ?>
+                                            <i class="bi bi-check-circle-fill text-success ms-2" style="font-size: 1.3rem;"></i>
+                                            <?php endif; ?>
+                                        </div>
+                                        <p class="small mb-0 text-muted"><?php echo htmlspecialchars(mb_strimwidth($vertical['description'], 0, 180, '…'), ENT_QUOTES, 'UTF-8'); ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Choose Campaign Category -->
+                <div class="dnd-card mb-4">
+                    <div class="dnd-card-header">
+                        <h3><i class="bi bi-collection"></i> Step 3 — Choose Your Campaign</h3>
                     </div>
                     <div class="dnd-card-body">
                         <p class="card-flavor-text">
                             Select the type of incident campaign to run. Each campaign contains different
                             adventures (scenarios) tailored to that threat category.
+                            <span class="badge bg-secondary ms-1" id="verticalLensBadge">
+                                <?php echo htmlspecialchars($verticals[$selectedVerticalId]['icon'] . ' ' . $verticals[$selectedVerticalId]['title'], ENT_QUOTES, 'UTF-8'); ?>
+                            </span>
                         </p>
                         <input type="hidden" name="selected_campaign" id="selectedCampaignInput"
                                value="<?php echo htmlspecialchars($session['selected_campaign'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
@@ -188,19 +248,21 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
                                 $isSelected = ($session['selected_campaign'] ?? '') === $cId;
                                 $adventureCount = 0;
                                 foreach ($scenarios as $s) {
-                                    if (($s['campaign'] ?? '') === $cId) $adventureCount++;
+                                    if (($s['campaign'] ?? '') === $cId && scenarioMatchesVertical($s, $selectedVerticalId)) {
+                                        $adventureCount++;
+                                    }
                                 }
                             ?>
                             <div class="col-md-6 col-lg-4">
-                                <div class="campaign-select-card <?php echo $isSelected ? 'campaign-selected' : ''; ?>"
+                                <div class="campaign-select-card <?php echo $isSelected ? 'campaign-selected' : ''; ?> <?php echo $adventureCount === 0 ? 'campaign-empty' : ''; ?>"
                                      data-campaign-id="<?php echo htmlspecialchars($cId, ENT_QUOTES, 'UTF-8'); ?>"
-                                     style="border-color: <?php echo htmlspecialchars($campaign['theme_color'], ENT_QUOTES, 'UTF-8'); ?>; cursor: pointer;">
+                                     style="border-color: <?php echo htmlspecialchars($campaign['theme_color'], ENT_QUOTES, 'UTF-8'); ?>; cursor: pointer; <?php echo $adventureCount === 0 ? 'opacity: 0.5;' : ''; ?>">
                                     <div class="campaign-card-inner" style="<?php echo $isSelected ? 'background: linear-gradient(135deg, ' . htmlspecialchars($campaign['theme_color'], ENT_QUOTES, 'UTF-8') . '22, transparent);' : ''; ?>">
                                         <div class="d-flex align-items-start mb-2">
                                             <span class="campaign-icon me-2" style="font-size: 1.5rem;"><?php echo $campaign['icon']; ?></span>
                                             <div class="flex-grow-1">
                                                 <h5 class="mb-1"><?php echo htmlspecialchars($campaign['title'], ENT_QUOTES, 'UTF-8'); ?></h5>
-                                                <span class="badge" style="background-color: <?php echo htmlspecialchars($campaign['theme_color'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                <span class="badge campaign-count-badge" style="background-color: <?php echo htmlspecialchars($campaign['theme_color'], ENT_QUOTES, 'UTF-8'); ?>">
                                                     <?php echo $adventureCount; ?> adventure<?php echo $adventureCount !== 1 ? 's' : ''; ?>
                                                 </span>
                                             </div>
@@ -218,10 +280,10 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
                     </div>
                 </div>
 
-                <!-- Step 3: Select Scenarios (Adventures) -->
+                <!-- Step 4: Select Scenarios (Adventures) -->
                 <div class="dnd-card mb-4">
                     <div class="dnd-card-header">
-                        <h3><i class="bi bi-map"></i> Step 3 — Select Adventures</h3>
+                        <h3><i class="bi bi-map"></i> Step 4 — Select Adventures</h3>
                     </div>
                     <div class="dnd-card-body">
                         <p class="card-flavor-text">
@@ -239,11 +301,14 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
                                     $hasVisibleScenarios = false;
                                     foreach ($scenarios as $id => $scenario):
                                         $scenarioCampaign = $scenario['campaign'] ?? '';
-                                        $isVisible = ($selectedCampaignId !== '' && $scenarioCampaign === $selectedCampaignId);
+                                        $scenarioVerticals = $scenario['verticals'] ?? ['all'];
+                                        $matchesVertical = scenarioMatchesVertical($scenario, $selectedVerticalId);
+                                        $isVisible = ($selectedCampaignId !== '' && $scenarioCampaign === $selectedCampaignId && $matchesVertical);
                                         if ($isVisible) $hasVisibleScenarios = true;
                                     ?>
                                     <div class="scenario-card-mini" data-id="<?php echo htmlspecialchars($id, ENT_QUOTES, 'UTF-8'); ?>"
                                          data-campaign="<?php echo htmlspecialchars($scenarioCampaign, ENT_QUOTES, 'UTF-8'); ?>"
+                                         data-verticals="<?php echo htmlspecialchars(implode(',', $scenarioVerticals), ENT_QUOTES, 'UTF-8'); ?>"
                                          style="<?php echo $isVisible ? '' : 'display: none;'; ?>">
                                         <div class="d-flex align-items-center">
                                             <span class="scenario-icon me-3"><?php echo $scenario['icon']; ?></span>
@@ -279,10 +344,10 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
                     </div>
                 </div>
 
-                <!-- Step 4 — Assemble Your Party -->
+                <!-- Step 5 — Assemble Your Party -->
                 <div class="dnd-card mb-4">
                     <div class="dnd-card-header">
-                        <h3><i class="bi bi-people-fill"></i> Step 4 — Assemble Your Party</h3>
+                        <h3><i class="bi bi-people-fill"></i> Step 5 — Assemble Your Party</h3>
                     </div>
                     <div class="dnd-card-body">
                         <p class="card-flavor-text">
@@ -337,7 +402,7 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
                 <!-- Save & Session Code -->
                 <div class="dnd-card mb-4">
                     <div class="dnd-card-header">
-                        <h3><i class="bi bi-link-45deg"></i> Step 5 — Generate Event Link</h3>
+                        <h3><i class="bi bi-link-45deg"></i> Step 6 — Generate Event Link</h3>
                     </div>
                     <div class="dnd-card-body">
                         <p class="card-flavor-text">
@@ -406,9 +471,11 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
     // Pass data to JS
     window.scenarioData = <?php echo json_encode($scenarios, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
     window.campaignData = <?php echo json_encode($campaigns, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+    window.verticalData = <?php echo json_encode($verticals, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
     window.departmentData = <?php echo json_encode($departments, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
     window.preselectedScenarios = <?php echo json_encode($session['scenarios'] ?? [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
     window.preselectedCampaign = <?php echo json_encode($session['selected_campaign'] ?? '', JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+    window.preselectedVertical = <?php echo json_encode($selectedVerticalId, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
 </script>
 
 <?php require_once 'includes/footer.php'; ?>

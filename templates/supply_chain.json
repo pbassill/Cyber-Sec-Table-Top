@@ -1,6 +1,7 @@
 {
   "id": "supply_chain",
   "campaign": "third_party_supply_chain",
+  "verticals": ["all"],
   "title": "The Poisoned Alliance",
   "subtitle": "Third-Party Supply Chain Compromise",
   "description": "A trusted ally has been compromised. Your realm's managed services provider — once a stalwart guardian of your fortress walls — has fallen to dark forces. The enemy now holds the keys to your kingdom, and the true extent of the betrayal remains shrouded in fog.",

@@ -479,6 +479,18 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
                     <?php if (!empty($session['event_name'])): ?>
                     <p class="mb-2"><strong><?php echo htmlspecialchars($session['event_name'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
                     <?php endif; ?>
+                    <?php
+                        $sessionVerticalId = $session['selected_vertical'] ?? '';
+                        $sessionVerticals = loadVerticals();
+                        if ($sessionVerticalId !== '' && isset($sessionVerticals[$sessionVerticalId])):
+                            $sv = $sessionVerticals[$sessionVerticalId];
+                    ?>
+                    <p class="mb-2">
+                        <span class="badge" style="background-color: <?php echo htmlspecialchars($sv['theme_color'], ENT_QUOTES, 'UTF-8'); ?>;">
+                            <?php echo $sv['icon'] . ' ' . htmlspecialchars($sv['title'], ENT_QUOTES, 'UTF-8'); ?>
+                        </span>
+                    </p>
+                    <?php endif; ?>
                     <div class="session-code-value mb-2">
                         <?php echo htmlspecialchars($session['session_code'], ENT_QUOTES, 'UTF-8'); ?>
                     </div>

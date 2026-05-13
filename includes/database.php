@@ -117,6 +117,9 @@ function getMigrations(): array {
                 FOREIGN KEY (exercise_id) REFERENCES exercises(id) ON DELETE CASCADE
             );
             CREATE INDEX idx_timeline_exercise ON exercise_timeline(exercise_id);
+        ",
+        5 => "
+            ALTER TABLE exercises ADD COLUMN industry_vertical TEXT NOT NULL DEFAULT 'generic';
         "
     ];
 }
@@ -140,6 +143,7 @@ function saveExercise(array $sessionData): ?int {
         $stmt = $db->prepare("UPDATE exercises SET
             event_name = ?,
             campaign_category = ?,
+            industry_vertical = ?,
             scenarios = ?,
             participants = ?,
             notes = ?,
@@ -150,6 +154,7 @@ function saveExercise(array $sessionData): ?int {
         $stmt->execute([
             $sessionData['event_name'] ?? '',
             $sessionData['selected_campaign'] ?? '',
+            $sessionData['selected_vertical'] ?? 'generic',
             json_encode($sessionData['scenarios'] ?? []),
             json_encode($sessionData['participants'] ?? []),
             json_encode($sessionData['notes'] ?? []),
@@ -160,12 +165,13 @@ function saveExercise(array $sessionData): ?int {
         return (int)$existing['id'];
     } else {
         $stmt = $db->prepare('INSERT INTO exercises
-            (session_code, event_name, campaign_category, scenarios, participants, notes, roll_history, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+            (session_code, event_name, campaign_category, industry_vertical, scenarios, participants, notes, roll_history, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
         $stmt->execute([
             $sessionData['session_code'],
             $sessionData['event_name'] ?? '',
             $sessionData['selected_campaign'] ?? '',
+            $sessionData['selected_vertical'] ?? 'generic',
             json_encode($sessionData['scenarios'] ?? []),
             json_encode($sessionData['participants'] ?? []),
             json_encode($sessionData['notes'] ?? []),

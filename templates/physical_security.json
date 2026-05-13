@@ -1,6 +1,7 @@
 {
   "id": "physical_security",
   "campaign": "physical_security",
+  "verticals": ["all"],
   "title": "The Siege of the Iron Vault",
   "subtitle": "Physical Security Breach at Data Centre",
   "description": "The Iron Vault — your realm's most fortified stronghold, where the ledgers of every noble house and merchant guild are kept under lock, ward, and watchful eye — has been breached. In the dead of night, unknown intruders penetrated its outer defences and gained entry to the inner sanctum. The wards have been disturbed, the sentries deceived, and the full extent of the plunder remains unknown. Rally your council and defend what remains before the enemy strikes again.",

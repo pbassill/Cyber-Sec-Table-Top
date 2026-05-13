@@ -1,6 +1,7 @@
 {
   "id": "ddos",
   "campaign": "cyber_attack",
+  "verticals": ["all"],
   "title": "The Siege of a Thousand Arrows",
   "subtitle": "Distributed Denial of Service Attack",
   "description": "An unrelenting barrage of dark energy hammers against your fortress gates. Wave after wave of phantom warriors assault your realm's defences, seeking not to breach the walls but to ensure no one may pass through them. As the siege intensifies, your subjects are locked out and the enemy's true purpose may be more sinister than it appears.",

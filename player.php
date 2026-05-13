@@ -99,6 +99,18 @@ $participantsByDept = array_filter($participantsByDept, function($members) {
                     <?php if (!empty($sharedSession['event_name'])): ?>
                     <h4 class="dnd-subtitle mb-4"><?php echo htmlspecialchars($sharedSession['event_name'], ENT_QUOTES, 'UTF-8'); ?></h4>
                     <?php endif; ?>
+                    <?php
+                        $waitingVerticalId = $sharedSession['selected_vertical'] ?? '';
+                        $waitingVerticals = loadVerticals();
+                        if ($waitingVerticalId !== '' && isset($waitingVerticals[$waitingVerticalId])):
+                            $wv = $waitingVerticals[$waitingVerticalId];
+                    ?>
+                    <p class="mb-4">
+                        <span class="badge" style="background-color: <?php echo htmlspecialchars($wv['theme_color'], ENT_QUOTES, 'UTF-8'); ?>;">
+                            <?php echo $wv['icon'] . ' ' . htmlspecialchars($wv['title'], ENT_QUOTES, 'UTF-8'); ?>
+                        </span>
+                    </p>
+                    <?php endif; ?>
                     <p class="fs-5 mb-4">The event has not started yet. This page will automatically update when the Dungeon Master begins the campaign.</p>
 
                     <?php if (!empty($participantsByDept)): ?>
@@ -138,6 +150,16 @@ $participantsByDept = array_filter($participantsByDept, function($members) {
                 <h4 class="dnd-label mb-0">
                     <i class="bi bi-broadcast"></i> <?php echo htmlspecialchars($sharedSession['event_name'], ENT_QUOTES, 'UTF-8'); ?>
                     <span class="badge bg-success ms-2">LIVE</span>
+                    <?php
+                        $liveVerticalId = $sharedSession['selected_vertical'] ?? '';
+                        $liveVerticals = loadVerticals();
+                        if ($liveVerticalId !== '' && isset($liveVerticals[$liveVerticalId])):
+                            $lv = $liveVerticals[$liveVerticalId];
+                    ?>
+                    <span class="badge ms-2" style="background-color: <?php echo htmlspecialchars($lv['theme_color'], ENT_QUOTES, 'UTF-8'); ?>;">
+                        <?php echo $lv['icon'] . ' ' . htmlspecialchars($lv['title'], ENT_QUOTES, 'UTF-8'); ?>
+                    </span>
+                    <?php endif; ?>
                 </h4>
             </div>
             <?php endif; ?>

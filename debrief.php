@@ -45,6 +45,18 @@ $sessionCode = $session['session_code'] ?? '';
             <div class="text-center mb-5">
                 <h1 class="dnd-title">⚔️ Campaign Debrief ⚔️</h1>
                 <h2 class="dnd-subtitle">Hot Wash & After-Action Review</h2>
+                <?php
+                    $debriefVerticalId = $session['selected_vertical'] ?? '';
+                    $debriefVerticals = loadVerticals();
+                    if ($debriefVerticalId !== '' && isset($debriefVerticals[$debriefVerticalId])):
+                        $dv = $debriefVerticals[$debriefVerticalId];
+                ?>
+                <p class="mt-2 mb-0">
+                    <span class="badge" style="background-color: <?php echo htmlspecialchars($dv['theme_color'], ENT_QUOTES, 'UTF-8'); ?>;">
+                        <?php echo $dv['icon'] . ' ' . htmlspecialchars($dv['title'], ENT_QUOTES, 'UTF-8'); ?>
+                    </span>
+                </p>
+                <?php endif; ?>
                 <div class="hero-divider">═══════ ⚜️ ═══════</div>
             </div>
 

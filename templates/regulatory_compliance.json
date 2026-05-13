@@ -1,6 +1,7 @@
 {
   "id": "regulatory_compliance",
   "campaign": "regulatory_compliance",
+  "verticals": ["banking", "healthcare", "government", "energy_utilities", "legal_professional_services"],
   "title": "The Tribunal of the Elder Council",
   "subtitle": "Regulatory Investigation — Critical Compliance Failure",
   "description": "The Elder Council — the supreme arbiters of law and order across the realm — have dispatched their most feared inquisitors to your gates. Ancient wards of protection that should have shielded the realm from dark gold and forbidden transactions have been found shattered and neglected. Worse still, a sacred oath to notify the Council of a breach within the prescribed celestial cycle has been broken. The inquisitors carry scrolls of enforcement, and the very charter of your guild hangs in the balance.",
