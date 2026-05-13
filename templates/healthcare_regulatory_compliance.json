@@ -1,0 +1,193 @@
+{
+  "id": "healthcare_regulatory_compliance",
+  "campaign": "regulatory_compliance",
+  "verticals": ["healthcare"],
+  "title": "The Reckoning of the Healers' Council",
+  "subtitle": "DSPT Failure, ICO Audit and CQC Inspection in Convergence",
+  "description": "Three sets of inspectors have arrived on the same week, by accident or by design. The Data Security and Protection Toolkit submission was signed off in haste. The ICO has opened a compliance audit on the back of a complaint. And the CQC's well-led inspection has just asked, mildly and politely, to see your information governance policies. Each on their own would be survivable. Together, they are a reckoning.",
+  "severity": "P2 — High",
+  "theme_color": "#20c997",
+  "icon": "📋",
+  "estimated_duration_minutes": 40,
+  "recommended_players": 4,
+  "max_players": 10,
+  "difficulty_class": 13,
+  "compliance_frameworks": ["NHS Data Security & Protection Toolkit", "UK GDPR & DPA 2018", "CQC Regulation 17 (Good Governance)", "Caldicott Principles", "NIS2 / NIS Regulations"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Coordinates the converging regulatory engagements and the internal response",
+      "required": true
+    },
+    {
+      "name": "SIRO / Senior Information Risk Owner",
+      "title": "High Council Elder",
+      "description": "Owns information risk at board level and signs off on regulatory submissions",
+      "required": true
+    },
+    {
+      "name": "Data Protection Officer",
+      "title": "Keeper of the Codex",
+      "description": "Leads ICO engagement, breach register, and DSPT remediation evidence",
+      "required": true
+    },
+    {
+      "name": "Caldicott Guardian",
+      "title": "Warden of the Inner Sanctum",
+      "description": "Advises on patient confidentiality questions raised during the audit",
+      "required": true
+    },
+    {
+      "name": "Director of Governance / Quality",
+      "title": "Loremaster",
+      "description": "Owns the CQC engagement and well-led evidence base",
+      "required": true
+    },
+    {
+      "name": "CISO / Head of Cyber",
+      "title": "Shadow Watcher",
+      "description": "Owns technical control evidence underpinning DSPT and NIS submissions",
+      "required": false
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Herald of the Realm",
+      "description": "Manages internal messaging during a high-pressure inspection week",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "RC1",
+      "title": "The Three Letters — A Week of Inspections",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "On the same Monday morning, three pieces of correspondence land. First: NHS Digital's DSPT team confirm that the trust's most recent submission has been selected for independent audit, citing 'inconsistencies between self-assessment and previously reported incidents'. Second: the ICO writes to confirm a formal compliance audit, triggered by a complaint from a former patient whose subject access request the trust failed to respond to within statutory timeframes — and by an apparent pattern of similar complaints. Third: the CQC inspection lead phones to advise that the long-planned 'well-led' inspection will, after all, occur this Thursday, and would like to see the Information Governance and Cyber Security policies as part of the evidence pack.\n\nA quick internal review confirms a number of uncomfortable facts. The DSPT was signed off with 23 'standards met' on the basis of policy documents that, in some cases, were drafted but not implemented. Subject access request backlog is currently 137 cases. The IG and cyber policies are versioned, in places, to 2019. And the SIRO — who must sign the DSPT — is six weeks into post.",
+      "facilitator_prompts": [
+        "Do we treat these three engagements as related and coordinate a single 'trust narrative', or run them in silos?",
+        "What do we tell the new SIRO about the state of the assertions she has effectively inherited?",
+        "What is our position when DSPT auditors ask to see evidence of controls we marked as 'met' that, in truth, are partial?",
+        "Do we proactively disclose the SAR backlog to the ICO, or wait to be asked?",
+        "How do we prepare for the CQC well-led inspection in three days without manufacturing evidence in a way that itself breaches the standard?",
+        "Who, if anyone, must be told that previous submissions may have been signed off on incomplete information — and at what point does that become a notifiable matter in itself?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "evidence_pack_readiness",
+          "description": "Roll to determine the genuine state of the evidence pack against the assertions made",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Systemic Misalignment",
+              "description": "A walk-through reveals 11 DSPT assertions are not just over-stated but materially incorrect. Some controls were dropped when a team was reorganised in 2022 and never reinstated. There is no honest path to maintaining the previous submission as accurate.",
+              "modifier": "Self-disclosure required. DSPT 'Standards Not Met'. Risk of NIS regulator action."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Significant Gaps",
+              "description": "Six assertions are over-stated. Most controls exist but are partially evidenced, undertested, or rely on people who have since left. A credible improvement plan is possible but the gap between current state and assertion is material.",
+              "modifier": "Substantial remediation plan required. Likely public 'Standards Not Met'."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Patchy Evidence",
+              "description": "Most assertions are defensible but evidence is scattered and informal. The audit will likely conclude 'Approaching Standards', requiring a remediation plan and re-audit within a year.",
+              "modifier": "Workable position. Plan and re-audit. Reputational impact contained."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Sound, Disorganised",
+              "description": "The underlying controls are sound and the evidence exists. The team can produce a credible pack with a focused effort over the next 48 hours. The previous SIRO's sign-off is defensible.",
+              "modifier": "Pass likely. Tactical effort needed this week."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Continuous Assurance",
+              "description": "The team's continuous assurance dashboard shows real-time control status and produces, automatically, the artefacts each regulator wants. The trust is in a position to volunteer additional evidence and use the week to demonstrate maturity, not just compliance.",
+              "modifier": "Auditors leave with a positive narrative. Strong basis for NIS/CAF designation."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The DSPT independent auditor's lead is the same person who, in their previous role, was the trust's interim IG manager — and they have explicitly recused themselves, replaced by a more sceptical senior partner.",
+        "A junior governance officer mentions in the team meeting that the SAR backlog 'has been hidden from the integrated performance report for two quarters' because of how the metric is calculated.",
+        "The Chair of the trust board emails to ask the CEO for a 'reassurance brief' before the CQC visit on Thursday — but the brief itself will become a disclosable document in the audit.",
+        "An NHS England regional director's office calls to indicate they would like to attend at least one day of the CQC inspection — adding to the audience."
+      ]
+    },
+    {
+      "id": "RC2",
+      "title": "The Findings — Standing Before the Council",
+      "phase": 2,
+      "time_offset": "T+10 Days",
+      "narrative": "The inspections have concluded. The CQC well-led report, in draft, notes 'inconsistent evidence of effective information governance and cyber risk oversight at board level'. The DSPT independent audit has placed the trust at 'Standards Not Met', with five priority remediation areas and a 12-month deadline. The ICO has issued a draft enforcement notice highlighting systemic SAR failures and is consulting on a monetary penalty.\n\nThe trust has 28 days to respond to each. Internally, the picture is bruising but not fatal: there is a serious remediation plan, the new SIRO has earned credibility, and the Caldicott Guardian's evidence to the ICO has been notably strong. However, NHS England's commissioner has asked for a meeting, the local MP has written a public letter, and the trade press has a story 'Trust Fails Three Tests in a Single Week'. The board's annual governance statement is due in three months, and the auditors are now asking pointed questions about whether previous statements should be qualified.",
+      "facilitator_prompts": [
+        "Do we treat the three findings as one programme of work with a single accountable owner, or three workstreams with separate plans?",
+        "How do we respond to the ICO's draft enforcement — accept, mitigate, contest in part — and who signs off?",
+        "What is our position on representations to the CQC about the 'well-led' finding, particularly given that some criticisms are fair and some are not?",
+        "How do we manage the relationship with the commissioner, the MP and the trade press without inflaming any of them?",
+        "What does an honest annual governance statement now look like, and do previous years' statements need qualifying?",
+        "How do we sustain energy and morale on a 12-month remediation programme with no immediate quick win?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "regulator_response_path",
+          "description": "Roll to determine how regulators and stakeholders respond to the trust's remediation posture",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Special Measures",
+              "description": "The convergence of CQC, DSPT and ICO findings triggers a formal escalation: the trust is placed in regulatory 'special measures' for governance. NHS England appoints an Improvement Director. Two non-executives resign. The CEO's position becomes untenable within a quarter.",
+              "modifier": "Special measures. Leadership change. Multi-year recovery."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Public Enforcement",
+              "description": "The ICO issues a substantial monetary penalty. The CQC well-led rating drops to 'Requires Improvement'. DSPT remains 'Standards Not Met' but with a credible plan. The trust must publish a Section 31 board response.",
+              "modifier": "Significant fine. Reputational damage. Improvement plan publicly tracked."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Manageable Sanctions",
+              "description": "ICO issues a reprimand rather than a penalty after the trust's representations. CQC well-led drops to 'Requires Improvement' with a clear path back. DSPT 'Approaching Standards' on re-audit within nine months.",
+              "modifier": "Reputational impact bounded. Recovery path credible."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Recovery Accepted",
+              "description": "Regulators credit the trust's transparency, remediation plan and improved governance. The ICO accepts undertakings; the CQC keeps the well-led rating at 'Good' with a focused recommendation; DSPT clears at the next submission.",
+              "modifier": "Reputational recovery within the cycle. No financial penalty."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Sector Exemplar",
+              "description": "The trust's response — convergent governance, transparent self-disclosure, board-level engagement — is cited by NHS England and the ICO in subsequent guidance as best practice. The CISO and DPO are asked to speak at national fora. Recruitment to senior governance roles becomes notably easier.",
+              "modifier": "Net reputational gain. Sector lead role. Strong board recruitment."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "An internal auditor's report, due to be published the week after the regulator findings, includes findings that materially overlap with the regulators' — and was drafted before either was known.",
+        "A clinical director threatens to resign citing 'governance bureaucracy distracting from patient care', and copies the local MP into the resignation letter.",
+        "The trust's cyber insurer indicates that 'Standards Not Met' on DSPT may affect renewal pricing and excess.",
+        "A previous CEO writes a private letter to the Chair claiming that 'the picture was the same in my time but nobody asked' — raising historical accountability questions."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Was our DSPT self-assessment honest — and did we have the assurance to back the assertions we made?",
+      "Did our board-level information risk oversight (SIRO, Caldicott, audit committee) actually function in practice?",
+      "Did we engage proactively with our regulators, or were we surprised by predictable findings?",
+      "Were the three engagements (DSPT, ICO, CQC) treated as one converging story, or three disconnected problems?",
+      "Did we manage the political, media and commissioner narratives in a way consistent with our regulatory posture?",
+      "What investment in continuous assurance, evidence automation and capacity in IG/cyber/quality is now justified?"
+    ]
+  }
+}

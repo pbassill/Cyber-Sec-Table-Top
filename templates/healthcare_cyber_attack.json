@@ -1,0 +1,193 @@
+{
+  "id": "healthcare_cyber_attack",
+  "campaign": "cyber_attack",
+  "verticals": ["healthcare"],
+  "title": "The Plague of Locked Wards",
+  "subtitle": "Hospital Ransomware Outbreak",
+  "description": "A dark hex has fallen across the healing halls. Workstations stand silent, the electronic health record glows only with the attacker's ransom note, and imaging systems refuse to surrender their visions. Ambulances are turning away from your gates, and somewhere within the wards, clinicians are reaching for paper they have not used in a decade.",
+  "severity": "P1 — Critical",
+  "theme_color": "#dc3545",
+  "icon": "⚔️",
+  "estimated_duration_minutes": 45,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 16,
+  "compliance_frameworks": ["NIS2", "NHS DSPT", "HIPAA Security Rule", "GDPR Art.33", "ICO Personal Data Breach"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the response, coordinates between clinical and technical teams, owns escalation",
+      "required": true
+    },
+    {
+      "name": "Chief Medical Officer",
+      "title": "Grand Healer",
+      "description": "Owns patient safety decisions, ambulance diversion, and clinical continuity",
+      "required": true
+    },
+    {
+      "name": "IT Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Manages containment, isolation of clinical networks, and restoration sequencing",
+      "required": true
+    },
+    {
+      "name": "SOC Analyst",
+      "title": "Shadow Watcher",
+      "description": "Hunts for the threat actor, scopes the blast radius, preserves forensic evidence",
+      "required": true
+    },
+    {
+      "name": "Data Protection Officer",
+      "title": "Keeper of the Codex",
+      "description": "Assesses ICO/HIPAA notification obligations and patient data exposure",
+      "required": true
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Herald of the Realm",
+      "description": "Manages patient, public, and media communications during the outage",
+      "required": false
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on ransom payment legality, sanctions screening, and law enforcement engagement",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "H1",
+      "title": "The Locked Wards — Dawn of the Outage",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "At 04:12 the night-shift charge nurse on the acute medical unit reports that the EHR is 'frozen' on every workstation she has tried. Within ten minutes the help desk has fielded 47 calls. The on-call IT engineer logs into a workstation and sees a full-screen ransom note: 'Your files are encrypted. Contact us within 72 hours.'\n\nBy 05:00 it is clear that file shares, the EHR application servers, the PACS imaging archive, and the pathology LIMS are all encrypted. The pharmacy automated dispensing cabinets are still operational but cannot pull patient drug charts. Domain controllers in the primary data centre are responding intermittently. The disaster recovery site appears unaffected but has not been failed over in 18 months and was last tested with a partial dataset.\n\nThe Emergency Department is busy. The on-call ED consultant is asking whether to declare a 'Major IT Incident' and divert ambulances, but the major trauma centre 30 miles away has limited capacity.",
+      "facilitator_prompts": [
+        "Do we declare a Major IT Incident and divert ambulances now, or wait for more information?",
+        "Which clinical services can run safely on paper, and for how long?",
+        "Do we isolate the entire clinical network from the internet, knowing this also takes out telemedicine and remote consultant cover?",
+        "Who has authority to authorise a DR failover, and what is the data loss tolerance (RPO) we are accepting?",
+        "What is our position on engaging with the attacker — even just to understand the demand?",
+        "When and how do we inform NHS England / OCR / the ICO under the 72-hour breach window?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "backup_integrity_check",
+          "description": "Roll to determine the state of backups when the team attempts to assess recovery options",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Backups Encrypted",
+              "description": "The backup catalogue is reachable from the production domain and the threat actor reached it first. Every online backup of the EHR, PACS and LIMS dating back six months has been encrypted. The only surviving copy is a quarterly tape rotated off-site eleven weeks ago.",
+              "modifier": "Maximum data loss. Recovery from 11-week-old tape only. Patient records will be inaccurate."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Partial Loss",
+              "description": "Online backups for the EHR are intact, but PACS imaging studies were stored on the same SAN as production and have been encrypted. Pathology results from the last 30 days exist only in printed form on the wards.",
+              "modifier": "Imaging history lost. Pathology reconciliation needed manually."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Slow Restore",
+              "description": "Backups are intact and validated, but restoring the full EHR will take an estimated 36–48 hours over the available network links. Critical care modules can be prioritised but elective surgery scheduling is unrecoverable in the short term.",
+              "modifier": "Restore feasible but slow. Elective work cancelled for 72 hours."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Clean DR Site",
+              "description": "The DR site is air-gapped, replication was paused 30 minutes before the encryption began due to an unrelated network change, and the DR EHR is restorable to within 4 hours of the incident. Imaging is available but pathology has a 6-hour gap.",
+              "modifier": "Service restorable within shift. Minimal data loss."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Immutable Backups",
+              "description": "Six weeks ago the team finished migrating to immutable, object-locked backups in a separate cloud tenancy with independent credentials. The backups are pristine. Restoration can begin immediately, and forensics can be performed against snapshot copies without disturbing production evidence.",
+              "modifier": "Full clean recovery available. Investigation and restoration can run in parallel."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A local journalist tweets a photo of an ambulance being turned away at the ED entrance, attaching the hashtag #NHShack — it begins trending within the hour.",
+        "The hospital's switchboard is overwhelmed: it runs on a VoIP system hosted on an encrypted virtual machine. External callers cannot reach any extension.",
+        "A consultant cardiologist insists on continuing with a scheduled cardiac catheter procedure because the patient travelled from overseas and 'cannot be rescheduled'.",
+        "Three children admitted overnight are on chemotherapy protocols whose dosing calculations are only stored in the EHR — paper backup copies are 18 months out of date."
+      ]
+    },
+    {
+      "id": "H2",
+      "title": "The Ransom Note Returns — Double Extortion",
+      "phase": 2,
+      "time_offset": "T+24 Hours",
+      "narrative": "A second message has arrived. The attacker — claiming affiliation with a known ransomware-as-a-service group — has published a 'proof pack' on their leak site: 200 patient records including names, NHS numbers, diagnoses, and in eight cases HIV status. They claim to hold 2.1 TB of clinical data and threaten to release everything in 48 hours unless paid.\n\nThe National Cyber Security Centre has been engaged and confirms the group is subject to UK and US sanctions designations. The cyber insurer has confirmed cover in principle but is asking for forensic evidence before authorising any payment. A senior politician has tweeted demanding the hospital 'refuse to negotiate with terrorists.' Meanwhile, three patient families have contacted the press claiming their loved ones' care has been compromised.",
+      "facilitator_prompts": [
+        "Sanctions designations mean paying the ransom is likely unlawful. What is our formal position, and who signs off?",
+        "Eight patients with HIV diagnoses are in the proof pack. What is our duty of care to contact them before the data is published?",
+        "Do we proactively notify all 200 named patients now, or wait for forensics to confirm the full scope?",
+        "How do we manage the press and political narrative without confirming what the attackers know?",
+        "What evidence preservation do we need for the regulator, the NCA, and potential class-action litigation?",
+        "Is there an argument that paying — even if unlawful — would prevent patient harm? Who could even raise that argument?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "data_exfiltration_scoping",
+          "description": "Roll to determine the true scope of exfiltration once forensics complete egress analysis",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Catastrophic Exposure",
+              "description": "Egress logs show 4.8 TB transferred — more than twice what the attacker claimed. The exfiltrated data includes the full mental health service archive, maternity records including stillbirths, and a research cohort of genomic data shared under a clinical trial agreement with a US partner.",
+              "modifier": "Largest UK healthcare breach on record. International regulator engagement required."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Confirmed Bulk Exfiltration",
+              "description": "Approximately 2.4 TB was exfiltrated, broadly matching the attacker's claim. The data includes 480,000 patient records across all specialties. The ICO must be notified within 72 hours and all affected individuals contacted.",
+              "modifier": "Mass notification required. Class action likely."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Scope Uncertain",
+              "description": "Egress monitoring captured 600 GB of confirmed transfers, but the network sensors were blind for an 18-hour window. The 200-record sample appears to be the only material the attacker has actually staged, but this cannot be proven.",
+              "modifier": "Must notify on worst-case basis. Negotiating position weakened by uncertainty."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Limited Exfiltration Confirmed",
+              "description": "Forensics confirm the 200 records in the proof pack are the only data the attacker successfully exfiltrated. DLP controls blocked larger transfers. The breach is real but contained, and notification can be targeted.",
+              "modifier": "Targeted notification only. Reputational damage manageable."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Bluff Called",
+              "description": "Investigation reveals the 'proof pack' was assembled from a separate, smaller breach at a discharged-letters processing supplier and was never on the hospital's systems. The ransomware actor is bluffing about the 2.1 TB. NCSC and law enforcement can publicly attribute the bluff, restoring confidence.",
+              "modifier": "No mass exfiltration. Reputational recovery accelerated."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The trust's cyber insurance broker advises that the policy excludes events where the attacker is on a sanctions list, regardless of whether payment is made.",
+        "A nurse who left the trust six months ago posts on LinkedIn that 'I warned them about the firewall rules' — journalists begin contacting her.",
+        "The attacker emails a named clinician directly, threatening to publish records of her own family who are patients at the trust.",
+        "An MP on the Health Select Committee announces an emergency hearing in three days and demands the CEO appear in person."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Was patient safety prioritised appropriately throughout the response?",
+      "Were our backup and disaster recovery arrangements fit for purpose, and were they actually tested?",
+      "Did clinical and technical teams communicate effectively, or did each silo make decisions in isolation?",
+      "Were our notification obligations to the ICO, NHS England, and affected patients met within the required timeframes?",
+      "How did the team handle the sanctions and ransom payment question, and is the policy now clear?",
+      "What investment in segmentation, immutable backups, and clinical-safe IT design is now justified?"
+    ]
+  }
+}

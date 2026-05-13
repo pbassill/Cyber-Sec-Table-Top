@@ -1,0 +1,193 @@
+{
+  "id": "healthcare_business_continuity",
+  "campaign": "business_continuity",
+  "verticals": ["healthcare"],
+  "title": "The Great Deluge of the Healing Halls",
+  "subtitle": "Flood, Power Loss and Staffing Crisis",
+  "description": "Storm after storm has battered the realm. The river burst its banks overnight, the substation supplying the main hospital is underwater, and on the same morning a third of the nursing roster has called in sick from a winter virus tearing through the workforce. No enemy hand is behind it. The walls still stand, the records are unbreached — but the realm cannot heal without power, without people, and without the means to keep both warm and fed.",
+  "severity": "P1 — Critical",
+  "theme_color": "#198754",
+  "icon": "🌪️",
+  "estimated_duration_minutes": 45,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 14,
+  "compliance_frameworks": ["NHS Emergency Preparedness, Resilience and Response (EPRR)", "Civil Contingencies Act 2004", "ISO 22301", "CQC Fundamental Standards"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Activates the Major Incident plan and chairs the strategic command group",
+      "required": true
+    },
+    {
+      "name": "Operations Director",
+      "title": "Captain of the Watch",
+      "description": "Owns operational tactical command and bed management across the estate",
+      "required": true
+    },
+    {
+      "name": "Chief Nurse",
+      "title": "Matron of the Realm",
+      "description": "Owns staffing, patient safety and welfare across affected wards",
+      "required": true
+    },
+    {
+      "name": "Estates and Facilities Lead",
+      "title": "Stonemaster",
+      "description": "Owns the buildings, generators, water, fuel and contractor mobilisation",
+      "required": true
+    },
+    {
+      "name": "EPRR Lead",
+      "title": "Loremaster of Calamity",
+      "description": "Owns external liaison with LRF, ambulance service, councils and utilities",
+      "required": true
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Herald of the Realm",
+      "description": "Manages staff, patient, public and political communications throughout",
+      "required": false
+    },
+    {
+      "name": "Finance Director",
+      "title": "Master of the Treasury",
+      "description": "Authorises emergency expenditure and tracks BCP cost recovery claims",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "BC1",
+      "title": "The Waters Rise — Lights Out at Dawn",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "At 04:55 the main electrical substation supplying the acute hospital trips offline. CCTV from the substation compound shows water at door height. Within 90 seconds the hospital's standby generators have started — but only six of the eight have load. The fuel reserve, by the operating contract, is sufficient for 72 hours at full clinical load.\n\nThe network operator confirms three substations in the area are out. Restoration time is 'at least 48 hours, possibly longer'. The bulk fuel supplier confirms they are servicing six other priority sites and the trust is fourth in the queue.\n\nMeanwhile, the on-call duty manager is fielding sickness calls. The overnight occupational health system reports 31% of the day-shift nursing rota and 22% of medical staff have called in unfit due to a Norovirus-like outbreak in the local community. The bus service into the hospital has been suspended due to floodwater on two main routes. A&E is already busy with weather-related injuries and one cardiac arrest brought in by a member of the public after the ambulance crew were diverted.",
+      "facilitator_prompts": [
+        "What is our immediate prioritisation between clinical loads on the surviving six generator circuits — theatres, ICU, dialysis, neonates, EHR?",
+        "Do we activate full mutual aid with neighbouring trusts now and start patient transfers, or hold until the fuel position is clear?",
+        "How do we get staff to work when public transport is down and many are looking after sick family members?",
+        "What is our decision-making framework on cancelling elective work — for today, tomorrow, the week?",
+        "What is our patient safety position on continuing IVF, oncology infusions and renal dialysis on partial power?",
+        "Who declares a Major Incident externally, on what trigger, and what does that unlock from the LRF and NHS England?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "infrastructure_resilience",
+          "description": "Roll to determine the true state of the hospital's resilience infrastructure",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Cascading Failure",
+              "description": "Two further generators fail within four hours due to a fuel contamination issue traced to the bulk fuel supplier's last delivery. ICU is on UPS only. Two ventilated patients must be hand-bagged and transferred within an hour. The clinical IT estate goes dark when UPS capacity is exceeded.",
+              "modifier": "Loss of life threatened. Emergency mutual aid evacuation. National media."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Fuel Crisis",
+              "description": "Generators run at reduced load. Fuel reserves will run out in 32 hours, not 72, due to higher-than-modelled draw. The bulk supplier cannot guarantee delivery for 24 hours. The trust must self-supply from local petrol stations and farms.",
+              "modifier": "Tight fuel window. Improvised supply. Reputational risk if it fails."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Holding On Six",
+              "description": "Six generators hold load. Clinical priorities are maintained but elective and outpatient services are stopped. Fuel will last 60 hours. Mutual aid covers the most acute transfers.",
+              "modifier": "Holding. Elective stand-down. Mutual aid effective."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Resilience Holds",
+              "description": "All eight generators come online once the engineer resets the load shedding logic. Fuel is sufficient. A pre-arranged contract with a regional fuel cooperative delivers ahead of the bulk supplier.",
+              "modifier": "Service largely maintained. Confidence in BCP arrangements."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Microgrid Ready",
+              "description": "An on-site microgrid project completed last year automatically isolates the hospital from the failed grid, draws from on-site solar and battery, and offloads non-essential loads. Generators run only at 40%. Fuel position is comfortable. The trust offers spare capacity to neighbours.",
+              "modifier": "Energy-resilient site. Surplus capacity. Net regional contribution."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The hospital kitchen's cold store has lost power on the non-essential circuit; £40,000 of stock is at risk and the contracted out-of-hours catering service cannot reach the site.",
+        "A national newspaper helicopter is filming over the flooded substation and posting live to social media — staff start to ask which patients have been evacuated, before any have.",
+        "Two patients on outpatient dialysis are stranded at home with no transport and rising potassium; the community team are not contactable.",
+        "The trust's emergency control room runs on the same UPS circuit as a non-clinical research server farm, which a researcher refuses to shut down because of 'irreplaceable in-flight experiments'."
+      ]
+    },
+    {
+      "id": "BC2",
+      "title": "Day Three — The Long Tail of Recovery",
+      "phase": 2,
+      "time_offset": "T+60 Hours",
+      "narrative": "Sixty hours in, power is partially restored to the area but not yet to the hospital. The acute response has held: no patient has come to harm, mutual aid transfers have run smoothly, and a temporary fuel supply line is in place. But the strain is showing.\n\nStaff sickness is now at 38% across nursing, 26% across medical and 51% across porters and domestics. Cancelled elective procedures number 312, including 22 cancer-pathway cases on 62-day targets. The temporary kitchen is feeding 2,400 meals a day from a marquee. The local LRF is asking the trust to take patients from a smaller community hospital that has been completely evacuated.\n\nMeanwhile, the regional director has indicated that NHS England 'expects' the trust to begin restoring elective activity from Monday, even though the engineers cannot confirm full grid restoration by then. The board has had to authorise £4.6m of emergency expenditure to date. A backbench MP has tabled a written question about the trust's preparedness, and the local press are running daily 'hospital under siege' coverage that is, broadly, sympathetic but increasingly impatient for a 'when will it be over' date.",
+      "facilitator_prompts": [
+        "Do we accept the request to take patients from the evacuated community hospital, knowing it will worsen our staffing and bed position?",
+        "What is our honest answer to NHS England on Monday's elective restart, and how do we manage the political pressure if our answer is 'not yet'?",
+        "How do we prioritise the 22 cancer 62-day cases — clinically and equitably — against the rest of the elective backlog?",
+        "What welfare support do we put in place for staff who have worked four 12-hour shifts in five days, many themselves unwell?",
+        "What is the right tone and pace of public communications when the public want certainty and we can only offer probability?",
+        "What evidence are we preserving now for the lessons-learned review, the cost-recovery claim, and any future statutory inquiry?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "recovery_path",
+          "description": "Roll to determine the recovery trajectory over the next week",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Second Wave",
+              "description": "On day five, the Norovirus outbreak reaches the wards, closing four of them to admissions for a week. A second weather system brings further flooding and the grid is set back five days. The trust's elective restart is delayed by a fortnight and a Serious Incident is declared for a missed cancer-pathway case.",
+              "modifier": "Compound crisis. Cancer SI. Elective backlog severe."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Prolonged Disruption",
+              "description": "Grid restoration is delayed to day nine. Staff sickness eases slowly. Elective activity resumes piecemeal over three weeks. Several cancer cases breach 62-day targets despite mutual aid. The board acknowledges that BCP plans were inadequate for the combined event.",
+              "modifier": "Multi-week recovery. Plan inadequacy publicly recognised."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Slow but Steady",
+              "description": "Grid is restored on day six. Sickness peaks on day four and improves. Elective restart begins selectively in week two. No cancer breaches. Cost recovery from NHSE and the LRF is partial.",
+              "modifier": "Recovery within month. Manageable performance impact."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Effective Recovery",
+              "description": "Grid is restored on day four. Mutual aid is repaid in kind in subsequent weeks. The trust meets all its agreed performance trajectories within a fortnight. Cost recovery is fully achieved.",
+              "modifier": "Reputation for resilience confirmed. Strong regional partnership."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Resilient Recovery",
+              "description": "The combined response is held up by NHS England, the LRF and the Cabinet Office as a model. The trust's leadership are asked to present at the National Resilience Forum. A national review of acute hospital substation resilience is launched on the back of the experience.",
+              "modifier": "Sector-leading reputation. National policy influence."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The temporary fuel arrangement has involved purchases on personal credit cards by estates managers; finance discovers this on day three and must regularise £140,000 of off-system spend.",
+        "Two consultant surgeons, frustrated by the elective cancellations, briefly suggest 'taking some private patients in the unaffected day surgery unit' — the chief medical officer must respond carefully.",
+        "An LRF partner asks for one of the trust's emergency generators to be loaned to a neighbouring care home for 48 hours, on the basis that 'lives are at risk'.",
+        "A senior medic publishes a blog post titled 'Why our hospital was never going to be ready for this', which is sympathetic but factually patchy and is picked up by national media."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Were our BCP and EPRR plans tested for compound events, not just single failures?",
+      "Did our energy, fuel, water and food resilience match the criticality of the services we deliver?",
+      "Did we look after our staff — physically, emotionally, financially — through a multi-day crisis?",
+      "Were our mutual aid, LRF and NHS England relationships genuine partnerships or paper arrangements?",
+      "Did we balance political and operational pressure to restart electives against patient safety and staff sustainability?",
+      "What investment in microgrids, substation diversity, surge staffing, and welfare support is now justified?"
+    ]
+  }
+}

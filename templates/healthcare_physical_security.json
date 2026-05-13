@@ -1,0 +1,193 @@
+{
+  "id": "healthcare_physical_security",
+  "campaign": "physical_security",
+  "verticals": ["healthcare"],
+  "title": "The Thief in the Apothecary",
+  "subtitle": "Overnight Break-In and Hardware Theft",
+  "description": "Not every breach travels through fibre. In the small hours, a door that should have been locked was not. By dawn, two unencrypted laptops, the pharmacy's CD register, and a stack of paper case notes are gone — and so is whatever cycled across the screens of the ward clerk who left their workstation logged in. The realm has been entered through the kitchen door.",
+  "severity": "P2 — High",
+  "theme_color": "#6c757d",
+  "icon": "🏢",
+  "estimated_duration_minutes": 40,
+  "recommended_players": 4,
+  "max_players": 10,
+  "difficulty_class": 12,
+  "compliance_frameworks": ["UK GDPR Art.32-34", "Misuse of Drugs Regulations 2001 (CDs)", "NHS DSPT", "ICO Personal Data Breach", "CQC Regulation 12"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Coordinates security, IT, clinical and police response across the affected sites",
+      "required": true
+    },
+    {
+      "name": "Head of Security / Estates",
+      "title": "Warden of the Walls",
+      "description": "Owns physical containment, CCTV, access control, and liaison with police",
+      "required": true
+    },
+    {
+      "name": "Data Protection Officer",
+      "title": "Keeper of the Codex",
+      "description": "Assesses ICO notification, identifies affected data subjects, manages communications",
+      "required": true
+    },
+    {
+      "name": "Chief Pharmacist",
+      "title": "Master of Elixirs",
+      "description": "Owns the controlled drugs response, accountable officer notification, and stock reconciliation",
+      "required": true
+    },
+    {
+      "name": "IT Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Reviews device encryption status, remote wipe, and account compromise impact",
+      "required": true
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Herald of the Realm",
+      "description": "Manages staff briefings, patient communications, and any media handling",
+      "required": false
+    },
+    {
+      "name": "Caldicott Guardian",
+      "title": "Warden of the Inner Sanctum",
+      "description": "Advises on confidentiality of the lost paper records and proportionate response",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "P1",
+      "title": "The Cleaner Found the Door Ajar",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "At 05:48 the cleaning supervisor at the outpatient annexe finds the back fire door propped open with a brick. The records storage room next to it has clearly been entered: drawers are open, files are on the floor, and the small pharmacy preparation room beyond it is in disarray. The pharmacy's controlled drugs cabinet is intact, but the CD register — the legally required handwritten record of every controlled drug movement — is missing.\n\nThe locked office of the deputy clinical director, who works flexibly from the annexe, has been forced. Two laptops have been taken. One is her trust laptop, less than a week old, full-disk encrypted with a strong passphrase. The other is described by security as 'an older one she used for the integration project' — the IT team are not yet sure of its provenance or encryption status. A printed risk register and a ring-bound folder marked 'Serious Incident Reviews — DO NOT REMOVE' are also missing.\n\nThe police have been called and a scenes-of-crime officer is en route. The annexe sees its first patients in two hours.",
+      "facilitator_prompts": [
+        "What do we do about today's outpatient clinic — open, close, divert?",
+        "What is the immediate response to a missing Controlled Drugs register, and who must be told (Accountable Officer, CQC, police, NHSE controlled drugs lead)?",
+        "Who owns the determination of whether the older laptop was encrypted, and how do we evidence it?",
+        "What is on the printed risk register and the SI folder — and how do we work out what was in there before we panic, or worse, before the press do?",
+        "How do we preserve scene integrity while still allowing scheduled patient care to proceed?",
+        "Who is the right named contact for the police, the ICO, and the Accountable Officer for Controlled Drugs at the same time?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "device_encryption_status",
+          "description": "Roll to determine the encryption and identification status of the older missing laptop",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Unencrypted and Unmanaged",
+              "description": "The older laptop is a personal device the deputy clinical director was permitted to use 'temporarily' four years ago for an integration project. It has no encryption, no MDM enrolment, and contains an Outlook archive with three years of correspondence including sensitive HR matters, SI investigations, and several thousand patient identifiers.",
+              "modifier": "Worst case: unencrypted, unmanaged, full of sensitive content. ICO notification mandatory."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Encrypted, Weak Password",
+              "description": "The laptop is encrypted but with a four-digit local PIN that was used to bypass BitLocker for service reasons. The device is recoverable to a determined attacker within hours.",
+              "modifier": "Encryption ineffective. Treat as exposed."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Encrypted, Stale Patches",
+              "description": "The laptop is encrypted with a strong passphrase but has not connected to the network in 11 months and is far behind on patches. Contains a snapshot of project data from a year ago.",
+              "modifier": "Encryption likely effective. Stale data exposure if compromised."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Encrypted and Wiped",
+              "description": "The laptop is encrypted with a strong passphrase and was remotely wiped two months ago when the integration project closed. It contains essentially no data and cannot be unlocked.",
+              "modifier": "Negligible data exposure from the older device."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Decoy Device",
+              "description": "The 'older laptop' was, in fact, a decommissioned chassis kept in the office for spare parts. Asset records confirm it had no drive installed. Photographic evidence supports this. The only laptop actually taken is the new, fully-encrypted one.",
+              "modifier": "Older device not a data-bearing asset. Single managed device only."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The annexe's CCTV system has been recording to a local DVR which appears to have been physically ripped off the wall and taken too.",
+        "The deputy clinical director is on a sailing holiday in Croatia with intermittent phone signal and is unaware her office has been broken into.",
+        "A junior pharmacy technician quietly admits that she could not find a controlled drug ampoule yesterday afternoon and was going to report it this morning — she is now in tears, fearing she will be blamed.",
+        "A regional newspaper photographer is already in the car park, having heard about police activity on a scanner, and is asking patients arriving for clinics what is going on."
+      ]
+    },
+    {
+      "id": "P2",
+      "title": "Following the Trail — What Was Really Taken?",
+      "phase": 2,
+      "time_offset": "T+24 Hours",
+      "narrative": "The police's initial view is that the break-in is opportunistic — likely linked to a series of similar burglaries in the area targeting cash and electronics — rather than a targeted attack on the trust. They have lifted prints, are recovering nearby town-centre CCTV, and have an early sighting of two figures leaving the area on bicycles with bags.\n\nHowever, the picture has complicated overnight. A trust laptop bag answering the description of the deputy clinical director's bag has been found dumped at a local park, contents partially scattered. The new encrypted laptop is missing, but its bag also contained a printed copy of the trust's full ED escalation protocol, a USB stick of unknown provenance, and the deputy's printed personal diary, in which she had logged her concerns about a long-running medical staff dispute and named several colleagues.\n\nMeanwhile, a manual stock count of the pharmacy preparation room has identified one missing ampoule of a high-strength opioid in addition to the missing CD register. Whether this was diverted in the break-in or in the preceding days cannot be determined without the register. A local addiction service has, separately and coincidentally, contacted the trust asking whether they should expect any unusual presentations this week.",
+      "facilitator_prompts": [
+        "How do we reconcile a 'just-an-opportunistic-break-in' narrative with the recovered diary, the named colleagues, and the missing ampoule?",
+        "Who is told that named colleagues appear in the deputy's diary — them, HR, the medical director, or nobody?",
+        "What is our notification to the ICO now, given recovered (but read?) printed material and a confirmed but encrypted device loss?",
+        "Do we share the diary's content with the police even though it touches on legally privileged HR matters?",
+        "How do we manage the controlled drug investigation: is it diversion, theft, or genuinely lost paperwork — and how do we protect staff from premature blame?",
+        "What is our reassurance to staff, particularly women working alone in the annexe, that this won't recur?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "underlying_motive",
+          "description": "Roll to determine the true nature of the incident as investigation progresses",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Targeted Attack",
+              "description": "Forensics on the recovered bag and CCTV link the offenders to a former contractor with a grievance against the deputy clinical director. The break-in was targeted; the diary, the SI folder, and the pharmacy items were specific objectives. The threat is ongoing.",
+              "modifier": "Targeted, ongoing threat. Personal protection measures needed for named staff."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Drug-Motivated Theft",
+              "description": "The break-in is linked to an organised group targeting NHS premises for controlled drugs. The diary and SI material were collateral. The opioid ampoule was definitely taken, and traces of related substances are found on the recovered bag.",
+              "modifier": "Confirmed CD theft. National pattern. CD Accountable Officer engages NHS BSA Counter Fraud."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Opportunistic, Mixed Loss",
+              "description": "The break-in is one of a series of opportunistic incidents. The new laptop is unlikely to be exploited. The printed materials were probably discarded with the bag — but cannot be guaranteed to have been. The missing ampoule remains unaccounted for.",
+              "modifier": "Probable opportunistic theft. ICO notification on precautionary basis."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Opportunistic, Limited Impact",
+              "description": "Two local offenders are arrested 48 hours later in possession of the laptop bag's electronics. The printed material was found dumped, intact, and forensically recovered. The missing ampoule is found behind a fridge in the preparation room — a counting error.",
+              "modifier": "Arrests made. Data largely recovered. Reputational risk minimised."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Recovered and Resolved",
+              "description": "Police arrest the offenders within 24 hours, recover all printed materials and the laptop intact (unattempted), and confirm via forensic interview that nothing was read. The pharmacy reconciliation closes cleanly. The trust's incident response is praised by the local police as exemplary.",
+              "modifier": "Materially no data exposure. Strong police partnership demonstrated."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The trust's insurer notes that the annexe has not had its physical security risk assessment refreshed since 2019 and queries whether all conditions of cover are being met.",
+        "One of the named colleagues in the diary hears unofficially that they appear in it and complains to HR about a breach of their own privacy.",
+        "A local addiction service informs the trust they have just seen a presentation involving a high-strength opioid ampoule consistent with the missing batch.",
+        "The Chief Pharmacist points out that the CD register, if found, will contain entries dating back to before the current digital CD system was deployed — making reconstruction extremely difficult."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Were our physical security controls — doors, CCTV, alarms, access control — proportionate to the data and drugs held on site?",
+      "Did our device encryption, MDM and asset inventory actually cover the long tail of legacy devices?",
+      "Did we manage Controlled Drugs governance correctly: notification, reconciliation, and protection of staff?",
+      "Was the response to recovered personal/HR material handled in a way that respected privacy and legal privilege?",
+      "Was the police partnership effective, and was the right information shared at the right time?",
+      "What investment in physical security, secure printing, clear-desk culture and legacy device retirement is now justified?"
+    ]
+  }
+}

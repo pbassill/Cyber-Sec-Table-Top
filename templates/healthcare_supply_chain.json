@@ -1,0 +1,193 @@
+{
+  "id": "healthcare_supply_chain",
+  "campaign": "third_party_supply_chain",
+  "verticals": ["healthcare"],
+  "title": "The Tainted Elixir",
+  "subtitle": "Medical Device Manufacturer Compromise",
+  "description": "The hands that crafted the healing tools have been turned against you. A medical device manufacturer — whose pumps, monitors and ventilators are wired through every ward in your realm — has been breached. Now their firmware update channel is suspect, the devices on your wards are quietly phoning home, and someone, somewhere, may be able to whisper to a pump that ought only ever to listen to a nurse.",
+  "severity": "P1 — Critical",
+  "theme_color": "#0d6efd",
+  "icon": "🔗",
+  "estimated_duration_minutes": 45,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 15,
+  "compliance_frameworks": ["MHRA Medical Device Regulations", "FDA 21 CFR Part 820 / Cybersecurity Guidance", "IEC 62304 / 81001-5-1", "NIS2", "NHS DSPT"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the response and bridges clinical engineering, IT and clinical safety",
+      "required": true
+    },
+    {
+      "name": "Clinical Engineering Lead",
+      "title": "Arcane Engineer",
+      "description": "Owns the medical device estate, vendor liaison, and safe device isolation",
+      "required": true
+    },
+    {
+      "name": "Medical Director",
+      "title": "Grand Healer",
+      "description": "Owns patient safety decisions including stopping or replacing affected devices",
+      "required": true
+    },
+    {
+      "name": "SOC Analyst",
+      "title": "Shadow Watcher",
+      "description": "Hunts for indicators of compromise on the device network and looks for lateral movement",
+      "required": true
+    },
+    {
+      "name": "Procurement / Vendor Manager",
+      "title": "Alliance Keeper",
+      "description": "Manages contractual response, SBOM disclosure, and replacement-device logistics",
+      "required": true
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Herald of the Realm",
+      "description": "Manages clinician, patient and regulator communications during the response",
+      "required": false
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on regulatory notification, vendor liability, and pre-action duties to patients",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "S1",
+      "title": "The Vendor Bulletin — Trust the Pump No More",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "The trust's procurement inbox has received a Field Safety Notice from a major medical device manufacturer. The notice — also published by the MHRA — confirms that the manufacturer's cloud-based firmware distribution platform was breached approximately five weeks ago. The threat actor had write access to firmware repositories for the manufacturer's syringe drivers, infusion pumps and patient monitors for an estimated eleven days.\n\nThe manufacturer is unable to confirm whether tampered firmware was published during the exposure window, but two devices — both in clinical use in mainland Europe — have been recalled after exhibiting 'anomalous dose-rate behaviour'. The trust operates approximately 4,200 of the affected pump models across its sites, all of them on the clinical biomedical network. The pumps reach out to the manufacturer's cloud nightly to check for firmware updates.\n\nThe notice arrived at 16:40 on a Friday afternoon. The clinical engineering on-call engineer is the only one in the office. The trust's CISO is on annual leave.",
+      "facilitator_prompts": [
+        "What is our immediate action on the 4,200 pumps in clinical use right now — block egress, replace, leave alone, or air-gap?",
+        "Which pumps are running infusions of high-risk drugs (insulin, opioids, vasopressors) and what is our priority order?",
+        "Do we have the alternative capacity — non-affected pumps or manual administration — to remove these from service safely, and if so, where do we start?",
+        "What is our obligation under MHRA / FDA to notify, and what is the difference between a recall, a withdrawal and a field safety corrective action here?",
+        "Who, on a Friday evening, has the authority to issue a trust-wide instruction to ward staff to change infusion practice, and how do we get to them?",
+        "What is our position with the vendor: cooperate, demand transparency, or escalate to the regulator and our peer trusts?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "device_segmentation_state",
+          "description": "Roll to determine the state of the clinical biomedical network segmentation",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Flat Network",
+              "description": "The biomedical network is flat, NATted to the corporate network, and the pumps' egress is uncontrolled. Every pump in the trust has called home to the vendor cloud in the last 24 hours. There is no easy way to block firmware updates without taking the pumps offline.",
+              "modifier": "Cannot block egress without taking devices out of service. Worst-case assumption required."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Partial Segmentation",
+              "description": "The biomed network is on its own VLAN but is permitted broad outbound access. Egress logs are partial. Some pumps can be blocked at the firewall; others, on a legacy site, share infrastructure with non-clinical systems and cannot be easily isolated.",
+              "modifier": "Limited isolation possible. Some sites cannot be protected without service impact."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Adequate Segmentation",
+              "description": "The biomed network is segmented with whitelisted egress destinations. The vendor's update domains can be blocked centrally within 90 minutes. Firmware status of each device is queryable.",
+              "modifier": "Egress can be cut. Device inventory accurate. Investigation time bought."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Strong Segmentation",
+              "description": "The trust runs a dedicated medical device segment with explicit egress proxying. Firmware updates have always required clinical engineering review and have not been applied automatically. Devices in clinical use are running firmware older than the breach window.",
+              "modifier": "Current devices unaffected. Investigation can be measured."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — SBOM Driven Response",
+              "description": "Procurement insisted on Software Bill of Materials (SBOM) and signed-firmware verification two years ago. The trust can prove cryptographically that no tampered firmware was ever accepted by any device on the estate. The MHRA cites the trust as an exemplar.",
+              "modifier": "Cryptographically proven safe estate. Regulator engagement minimal."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The manufacturer's UK incident contact has just gone home for the weekend and is not contactable. The next named contact is in California, where it is 09:00 — but on a public holiday.",
+        "The infusion pumps in the paediatric oncology day unit are mid-cycle for chemotherapy administration to nine children. Interrupting the infusion has its own clinical risk.",
+        "A clinical engineer mentions that 'we did stop the auto-update three years ago, I think' but cannot find the documentation.",
+        "A regional newspaper has already been contacted by an anonymous source claiming 'NHS pumps have been hacked' and is asking for comment within the hour."
+      ]
+    },
+    {
+      "id": "S2",
+      "title": "The Hunt — Are They Already in the Veins?",
+      "phase": 2,
+      "time_offset": "T+18 Hours",
+      "narrative": "Through the night, clinical engineering, the SOC and the vendor's CISO have worked together on a rolling call. The vendor has released indicators of compromise and a signed verification tool that can confirm the integrity of firmware on each device. By dawn, the trust has scanned 3,100 of its 4,200 pumps. Of these, six are running unexpected firmware hashes. Three are in clinical use; three are stored. The vendor confirms the hashes match a build that was published from their compromised pipeline during the exposure window.\n\nIn parallel, the SOC has identified that one of the three in-use pumps — currently delivering a heparin infusion in cardiac ICU — has attempted to make outbound connections to a domain associated with a known threat actor seven times in the last 48 hours. The connections were blocked by a default-deny rule on the biomed firewall, but only by chance: that pump should never have been able to reach the internet directly. The investigation now needs to pivot from 'are we exposed' to 'what is on the device, what has it tried to do, and what else has it touched'.\n\nThe MHRA wants a written report by close of business. NHS England has asked for a national impact assessment. A peer trust — newly aware of the issue — has called for advice and the trust's response will set a precedent.",
+      "facilitator_prompts": [
+        "Do we leave the cardiac ICU pump in place to preserve evidence, or replace it immediately because of the risk to the patient?",
+        "What is our forensic plan for a live medical device — and who is qualified to perform it?",
+        "How do we communicate to clinicians that 'six pumps were affected, three were stored, three were in use' without losing trust in the entire pump estate?",
+        "What is our position to the peer trust calling for advice — share everything, share carefully, or refer them to the vendor?",
+        "Do we publish to the wider sector via NHS England / NCSC, or hold while the investigation continues?",
+        "What is our remediation roadmap, and how do we fund 4,200 replacement devices if it comes to that?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "device_forensics_outcome",
+          "description": "Roll to determine the outcome of forensic analysis of the affected pumps",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Active Remote Control",
+              "description": "Forensics confirm the tampered firmware contains a remote control module that allowed the threat actor to alter dose rates from a command and control server. The default-deny rule alone has prevented harm. NHS England raises the issue to ministerial level and a national audit of all infusion devices is mandated.",
+              "modifier": "Confirmed active threat. National investigation. Patient safety risk historic but contained by luck."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Dormant Backdoor",
+              "description": "The tampered firmware contains a dormant backdoor that was never activated against the trust. Patients on those three in-use pumps were not harmed, but the existence of the backdoor must be disclosed widely.",
+              "modifier": "No harm. Backdoor confirmed. Disclosure required. Sector-wide remediation."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Test Build, Not Malicious",
+              "description": "Forensics show the unexpected firmware hashes are from a vendor internal test build that was inadvertently pushed during the breach window — not a malicious payload. The outbound connections from the cardiac ICU pump turn out to be a misconfigured telemetry feature.",
+              "modifier": "No malicious code. Vendor process failure rather than attack. Reputational impact moderate."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Vendor Hashes Mismatched",
+              "description": "Re-running the verification tool against an updated vendor manifest shows the six pumps are actually running approved firmware. The original mismatch was a tooling bug. The integrity of the estate is confirmed.",
+              "modifier": "No compromise. Verification process improved. Trust restored."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Industry Leadership",
+              "description": "The trust's response, forensic discipline and transparency become the template for the MHRA's national medical-device cyber-incident playbook. The vendor settles for a substantial credit, fund replacement devices, and a permanent on-site liaison engineer.",
+              "modifier": "Reputational gain. Vendor remediation funded. Sector lead role."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A nurse on the affected ICU has spoken to a journalist 'in confidence' and a quote attributed to her appears in the trade press: 'they told us not to worry but they swapped every pump on my unit in the night'.",
+        "The vendor's contract caps liability at the value of the contract — roughly the cost of 30 pumps, not 4,200.",
+        "An MP whose constituent was on one of the affected pumps demands a meeting and wants the constituent's records reviewed independently.",
+        "Two anaesthetists, independently, raise concerns that other devices — the brand of anaesthetic workstation — use the same firmware portal and may share the exposure."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Did our medical device procurement requirements (SBOM, signed firmware, segmentation) reflect the actual threat model?",
+      "Did we have a current, accurate inventory of every networked medical device — and could we segment it under pressure?",
+      "Was clinical engineering integrated with the cyber and clinical safety teams, or treated as a separate world?",
+      "Did we balance evidence preservation and patient safety in a way we can defend to the MHRA and a coroner?",
+      "Did our contract with the vendor actually help — and what should we demand from future vendors as a result?",
+      "What investment in medical device cyber, replacement planning, and vendor SBOM disclosure is now justified?"
+    ]
+  }
+}

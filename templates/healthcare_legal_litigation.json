@@ -1,0 +1,193 @@
+{
+  "id": "healthcare_legal_litigation",
+  "campaign": "legal_litigation",
+  "verticals": ["healthcare"],
+  "title": "The Summons of the High Court",
+  "subtitle": "Class Action, Coroner's Inquest and Litigation Hold",
+  "description": "A scroll bearing the seal of the High Court has arrived, and behind it three more. A group action over a historic data breach now numbers four thousand claimants. A coroner has paused an inquest to demand evidence about a fatal medication error. A regulator has issued a Section 35 notice. And inside the realm, every keyboard, every server, every WhatsApp message must now be preserved as if a chronicler from a future age were watching — because they are.",
+  "severity": "P2 — High",
+  "theme_color": "#adb5bd",
+  "icon": "⚖️",
+  "estimated_duration_minutes": 40,
+  "recommended_players": 4,
+  "max_players": 10,
+  "difficulty_class": 14,
+  "compliance_frameworks": ["Civil Procedure Rules Part 31 (Disclosure)", "Coroners and Justice Act 2009", "UK GDPR Art.6/9", "Senior Courts Act 1981", "NHS Resolution Litigation Authority Standards"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Coordinates the multi-stream legal response and bridges Legal, IT, clinical and governance",
+      "required": true
+    },
+    {
+      "name": "General Counsel",
+      "title": "Loremaster",
+      "description": "Owns the legal strategy across class action, inquest and regulatory engagement",
+      "required": true
+    },
+    {
+      "name": "IT / E-discovery Lead",
+      "title": "Archivist of the Realm",
+      "description": "Owns the technical implementation of the litigation hold and forensic preservation",
+      "required": true
+    },
+    {
+      "name": "Data Protection Officer",
+      "title": "Keeper of the Codex",
+      "description": "Owns the interplay between disclosure obligations and data protection rights",
+      "required": true
+    },
+    {
+      "name": "Medical Director",
+      "title": "Grand Healer",
+      "description": "Owns the clinical witness picture, fitness to give evidence, and Duty of Candour",
+      "required": true
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Herald of the Realm",
+      "description": "Manages disciplined communications under sub judice and reporting restrictions",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive authority and engages NHS Resolution and the board",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "L1",
+      "title": "The Three Letters Before Action",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "Within 36 hours, three pieces of correspondence have arrived at General Counsel's desk. The first is a Pre-Action Protocol letter from a claimant law firm representing 4,217 individuals affected by a data breach the trust suffered three years ago. The letter seeks particulars of disclosure and indicates intended issue of proceedings as a Group Litigation Order within 28 days. The second is a Schedule 5 notice from the senior coroner in connection with the inquest into the death of a patient eight months ago — a medication error case — requiring production of named individuals' email correspondence, the trust's incident review, and CCTV. The third is a Section 35 notice from the CQC requesting documents in support of an ongoing regulatory investigation into the same medication error.\n\nGeneral Counsel must now implement a litigation hold spanning at least six years of email, EHR audit logs, ePrescribing data, incident reporting, board papers, WhatsApp messages on personal devices used for work, and the CCTV system that overwrites every 31 days. Several of the named custodians have since left the trust. One has died. Two are currently the subject of a parallel HR investigation. The trust uses a major cloud productivity suite with retention policies that, in places, override the hold unless they are paused.",
+      "facilitator_prompts": [
+        "What is the scope of the litigation hold — the narrowest defensible scope, or a broad freeze of everything?",
+        "Who issues the hold notices, to whom, and how do we evidence receipt and compliance?",
+        "How do we handle WhatsApp on personal devices used for work — particularly for staff who object on privacy grounds?",
+        "What do we do about CCTV with a 31-day rolling overwrite — preserve the named day, or all relevant days, or all CCTV?",
+        "How do we treat the deceased custodian's mailbox, particularly given family interest in some of the same correspondence?",
+        "What is our approach to the two staff under HR investigation whose conduct overlaps with the litigation — who advises them, and on what basis?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "preservation_capability",
+          "description": "Roll to determine the trust's ability to implement and evidence the litigation hold",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Spoliation Risk",
+              "description": "Routine retention policies have already deleted material relevant to the named custodians. CCTV from the day in question was overwritten three weeks ago. Two leavers' mailboxes were deleted under the standard 30-day post-leaver process. The trust faces adverse inference and a potential strike-out application.",
+              "modifier": "Material spoliation. Adverse inferences likely. Significant settlement pressure."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Patchy Preservation",
+              "description": "Hold is implemented but with gaps: WhatsApp on personal devices is unrecoverable, the EHR audit logs are incomplete for one of the years requested, and Slack messages from a since-decommissioned workspace cannot be retrieved. Disclosure will be partial and contested.",
+              "modifier": "Contested disclosure. Increased cost. Reputational risk in court."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Adequate but Manual",
+              "description": "Most material is preserved through a combination of automated holds and manual instruction. The CCTV gap is mitigated by witness statements. The process is sound but the e-discovery cost runs into seven figures.",
+              "modifier": "Defensible position. High cost. Manageable risk."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Effective E-discovery",
+              "description": "The trust's e-discovery platform handles the hold elegantly. Retention overrides are applied, leaver mailboxes are still available, CCTV is preserved within hours. Disclosure can be staged and proportionate.",
+              "modifier": "Strong defensive position. Cost contained."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Modern Information Governance",
+              "description": "The trust's records management programme — implemented after a previous near-miss — has the requested material indexed, classified and ready for review under privilege. WhatsApp is already managed via a sanctioned enterprise channel. The disclosure is faster, cleaner and cheaper than the claimant firm anticipated.",
+              "modifier": "Disclosure advantage. Settlement leverage. Reputational credit."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The trust's outside law firm has a conflict on the group action because they previously advised one of the named third parties. A second firm must be instructed and brought up to speed in days.",
+        "The coroner is asking for an interim narrative response in three working days; the medical director who would normally lead the response is herself a named witness.",
+        "A WhatsApp group used by senior clinicians includes humour about a colleague who is now a key witness. The group is potentially disclosable.",
+        "An IT engineer points out that some of the email being preserved is encrypted with personal PGP keys held only by individuals who have left — the messages are technically preserved but unreadable."
+      ]
+    },
+    {
+      "id": "L2",
+      "title": "The Witness Stand — Live Issues Across Forums",
+      "phase": 2,
+      "time_offset": "T+8 Weeks",
+      "narrative": "Eight weeks in, the trust is engaged simultaneously across three forums. The Group Litigation Order has been issued and a Case Management Conference is scheduled for two weeks' time. The inquest resumes in three weeks, with the coroner indicating she will consider a Prevention of Future Deaths report. The CQC investigation is progressing, with interviews of key staff scheduled. Costs and reserves are running at £1.8m and rising.\n\nClinical and operational disclosure has surfaced an uncomfortable thread: an internal audit completed five months before the medication error specifically warned about the ePrescribing configuration that contributed to the death, and an action plan that should have been delivered before the error was never closed. The action plan was reported as 'green' to the audit committee in three successive quarters. The clinician who chaired the relevant committee has retired.\n\nA national broadsheet, citing 'sources close to the case', publishes a story that 'NHS trust ignored its own warnings'. Two further deaths, occurring in the year after the audit but before the indexed case, are now being re-examined by the family law firm to see whether they should also be added to the action.",
+      "facilitator_prompts": [
+        "What is our position on the unclosed audit action — disclose proactively, surface only on request, or wait until ordered?",
+        "How do we handle the audit committee reporting that incorrectly flagged the action as 'green' — including the role of the retired chair?",
+        "Do we approach the families of the two further deaths now, under Duty of Candour, or via NHS Resolution / claimant firm channels?",
+        "What is the public statement, if any, in response to the broadsheet — particularly when court reporting restrictions may apply?",
+        "How do we sequence cooperation with the coroner, the regulator and the civil claimants without prejudicing any one of them?",
+        "What is our settlement strategy: defend, settle on liability and quantum, or a structured admission with public learning?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "case_trajectory",
+          "description": "Roll to determine the trajectory of the cases over the next quarter",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Adverse Findings Across Forums",
+              "description": "The coroner issues a Prevention of Future Deaths report naming the trust. The CQC issues an enforcement notice. The group action expands to include three further deaths and settles at £14m plus costs. Two executives are referred for individual regulatory action.",
+              "modifier": "Combined findings catastrophic. National story. Senior accountability."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Significant Liability",
+              "description": "The group action settles for £8m on a no-admissions basis. The PFD report is issued in critical terms. CQC issues a Section 29A warning notice. The trust accepts a number of structural improvements.",
+              "modifier": "Substantial settlement. Public criticism. Multi-year improvement plan."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Mixed but Manageable",
+              "description": "The group action settles at £4.5m with a partial admission limited to the specific cohort. The PFD report is constructive and the CQC accepts assurance. Disclosure errors require an apology but do not change outcomes.",
+              "modifier": "Material cost. Reputational damage bounded. Genuine learning."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Defended Robustly",
+              "description": "Disclosure is comprehensive and on time. Several heads of claim are struck out at CMC. The group settles at £2m for a narrower cohort. The coroner notes the trust's openness. The CQC closes its investigation with recommendations only.",
+              "modifier": "Costs contained. Reputational position holds."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Restorative Outcome",
+              "description": "The trust adopts a restorative approach: structured apology, family-led learning, joint statement with claimants' representatives. The coroner credits the trust as a model. The CQC closes with no enforcement. The settlement is in the lower millions and the families publicly endorse the trust's response.",
+              "modifier": "Defensible cost. Reputational position improved. Sector example."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The retired audit committee chair offers to give evidence 'his way' to the press and refuses initial legal advice not to comment.",
+        "A junior doctor at the trust posts on a doctors' forum that 'we all knew the ePrescribing setup was unsafe'; the post is screenshotted and shared with the claimant firm.",
+        "NHS Resolution indicates that the trust's contribution to the indemnity pool may rise materially in the next risk-pooling cycle.",
+        "A bereaved family member of one of the two further deaths writes to the chair, not asking for compensation, but for a meeting and an apology."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Did our litigation hold and e-discovery capability match the scale and complexity of a multi-forum legal event?",
+      "Was our records management — including WhatsApp, Slack, personal devices and CCTV — fit for the modern litigation environment?",
+      "Did we coordinate civil, coronial and regulatory responses, or did each cannibalise the other?",
+      "Did we balance Duty of Candour and openness with the legitimate protection of the trust's position?",
+      "Did our internal audit and assurance function actually surface and close the risks that mattered?",
+      "What investment in e-discovery, sanctioned messaging, records lifecycle and a restorative justice capability is now justified?"
+    ]
+  }
+}
