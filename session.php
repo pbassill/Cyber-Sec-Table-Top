@@ -5,6 +5,7 @@
  */
 $pageTitle = 'Cyber Quest — War Room';
 require_once 'includes/header.php';
+require_once __DIR__ . '/includes/database.php';
 
 $scenarios = loadScenarios();
 $randomEvents = loadRandomEvents();
@@ -102,6 +103,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ];
                 saveSessionData($session);
                 break;
+
+            case 'launch_exercise':
+                $code = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $_POST['session_code'] ?? ''));
+                if ($code !== '') {
+                    $exercise = getExerciseByCode($code);
+                    if ($exercise && !empty($exercise['scenarios'])) {
+                        // Filter to scenarios that still exist on disk
+                        $scenarioIds = array_values(array_filter(
+                            array_map('sanitizeId', $exercise['scenarios']),
+                            function ($id) use ($scenarios) { return isset($scenarios[$id]); }
+                        ));
+                        if (!empty($scenarioIds)) {
+                            $session = [
+                                'scenarios' => $scenarioIds,
+                                'current_scenario' => 0,
+                                'current_inject' => 0,
+                                'roll_history' => [],
+                                'notes' => $exercise['notes'] ?? [],
+                                'participants' => $exercise['participants'] ?? [],
+                                'session_code' => $exercise['session_code'],
+                                'event_name' => $exercise['event_name'] ?? '',
+                                'selected_campaign' => $exercise['campaign_category'] ?? '',
+                                'started' => true
+                            ];
+                            saveSessionData($session);
+                        } else {
+                            $error = 'That campaign has no valid scenarios remaining.';
+                        }
+                    } else {
+                        $error = 'Campaign not found.';
+                    }
+                }
+                break;
         }
     }
 }
@@ -119,20 +153,98 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
 ?>
 
 <div class="container py-4">
+    <?php if (!empty($error)): ?>
+        <div class="alert alert-danger"><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
+    <?php endif; ?>
     <?php if (!$session['started'] || empty($session['scenarios'])): ?>
+    <?php
+        // Surface campaigns saved via Event Setup so the DM can start them from here.
+        $pendingExercises = [];
+        try {
+            $setupList = listExercises(1, 50, 'setup');
+            $activeList = listExercises(1, 50, 'active');
+            $pendingExercises = array_merge($setupList['exercises'] ?? [], $activeList['exercises'] ?? []);
+        } catch (Throwable $e) {
+            $pendingExercises = [];
+        }
+    ?>
     <!-- No active campaign -->
     <div class="row justify-content-center">
-        <div class="col-lg-8 text-center">
+        <div class="col-lg-10 text-center">
             <div class="dnd-card">
                 <div class="dnd-card-body py-5">
                     <h2 class="dnd-title">The War Room Awaits</h2>
                     <div class="hero-divider mb-4">═══════ ⚜️ ═══════</div>
-                    <p class="fs-5 mb-4">No campaign is currently active. Visit the Tavern to assemble your quests and begin.</p>
-                    <a href="index.php" class="btn btn-gold btn-lg">
-                        <i class="bi bi-house-door"></i> Return to Tavern
-                    </a>
+                    <?php if (empty($pendingExercises)): ?>
+                        <p class="fs-5 mb-4">No campaign is currently active. Visit the Tavern to assemble your quests and begin.</p>
+                        <a href="index.php" class="btn btn-gold btn-lg">
+                            <i class="bi bi-house-door"></i> Return to Tavern
+                        </a>
+                    <?php else: ?>
+                        <p class="fs-5 mb-4">Choose a campaign to begin, or <a href="setup.php">forge a new one in the Setup Hall</a>.</p>
+                    <?php endif; ?>
                 </div>
             </div>
+
+            <?php if (!empty($pendingExercises)): ?>
+            <div class="row g-3 mt-2 text-start">
+                <?php foreach ($pendingExercises as $ex): ?>
+                    <?php
+                        $exScenarios = is_array($ex['scenarios'] ?? null) ? $ex['scenarios'] : [];
+                        $exParticipants = is_array($ex['participants'] ?? null) ? $ex['participants'] : [];
+                        $exStatus = $ex['status'] ?? 'setup';
+                        $isActive = $exStatus === 'active';
+                        $btnLabel = $isActive ? 'Resume Campaign' : 'Begin Campaign';
+                        $btnIcon = $isActive ? 'bi-play-circle' : 'bi-rocket-takeoff';
+                    ?>
+                    <div class="col-md-6">
+                        <div class="dnd-card h-100">
+                            <div class="dnd-card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-journal-bookmark"></i>
+                                    <?php echo htmlspecialchars($ex['event_name'] !== '' ? $ex['event_name'] : 'Cyber Quest Event', ENT_QUOTES, 'UTF-8'); ?>
+                                </h5>
+                                <span class="badge <?php echo $isActive ? 'bg-success' : 'bg-secondary'; ?>">
+                                    <?php echo htmlspecialchars(ucfirst($exStatus), ENT_QUOTES, 'UTF-8'); ?>
+                                </span>
+                            </div>
+                            <div class="dnd-card-body">
+                                <p class="mb-2">
+                                    <strong>Session Code:</strong>
+                                    <code><?php echo htmlspecialchars($ex['session_code'], ENT_QUOTES, 'UTF-8'); ?></code>
+                                </p>
+                                <p class="mb-2">
+                                    <strong>Scenarios:</strong> <?php echo count($exScenarios); ?>
+                                    &nbsp;·&nbsp;
+                                    <strong>Participants:</strong> <?php echo count($exParticipants); ?>
+                                </p>
+                                <?php if (!empty($exScenarios)): ?>
+                                    <p class="mb-3 small text-muted">
+                                        <?php
+                                            $names = [];
+                                            foreach ($exScenarios as $sid) {
+                                                $sid = sanitizeId($sid);
+                                                if (isset($scenarios[$sid])) {
+                                                    $names[] = $scenarios[$sid]['title'];
+                                                }
+                                            }
+                                            echo htmlspecialchars(implode(' → ', $names), ENT_QUOTES, 'UTF-8');
+                                        ?>
+                                    </p>
+                                <?php endif; ?>
+                                <form method="POST" class="mb-0">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" name="session_code" value="<?php echo htmlspecialchars($ex['session_code'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <button type="submit" name="action" value="launch_exercise" class="btn btn-gold w-100" <?php echo empty($exScenarios) ? 'disabled' : ''; ?>>
+                                        <i class="bi <?php echo $btnIcon; ?>"></i> <?php echo $btnLabel; ?>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
         </div>
     </div>
 
