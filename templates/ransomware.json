@@ -1,7 +1,7 @@
 {
   "id": "ransomware",
   "campaign": "cyber_attack",
-  "verticals": ["all"],
+  "verticals": ["banking"],
   "title": "The Crypt of Encrypted Shadows",
   "subtitle": "Ransomware Attack on Core Banking Infrastructure",
   "description": "A devastating ransomware attack strikes the heart of your banking fortress. Encrypted shadows spread across your domain as a dark sorcerer demands tribute in cursed coin. Your realm's most guarded secrets — the portfolios of ultra-high-net-worth patrons — hang in the balance.",

@@ -1,7 +1,7 @@
 {
   "id": "insider_threat",
   "campaign": "insider_threat",
-  "verticals": ["all"],
+  "verticals": ["banking"],
   "title": "The Traitor Within the Keep",
   "subtitle": "Insider Threat — Privileged Data Theft",
   "description": "A trusted member of your inner council has turned traitor. Under cover of darkness, they have plundered the realm's most sacred records — the identities and fortunes of your most powerful patrons. As the treachery unravels, the conspiracy may reach higher than anyone expected.",
