@@ -81,7 +81,7 @@
       "dice_events": [
         {
           "trigger": "failover_assessment",
-          "description": "Roll to determine the state of the bank's failover and business continuity capabilities",
+          "description": "Roll to determine the state of the organisation's failover and business continuity capabilities",
           "dice": "d20",
           "outcomes": {
             "critical_fail": {
@@ -136,7 +136,7 @@
         "The cloud provider's support line has a 4-hour wait time due to the volume of affected customers. The organisation's designated technical account manager is on leave.",
         "The organisation's BCP documentation is stored in SharePoint — which is hosted on the same cloud platform that is down. No offline copies exist.",
         "The organisation's VoIP telephone system is also cloud-hosted and begins dropping calls as the outage extends, cutting off the customer service centre.",
-        "A competitor competitor tweets that their services are 'fully operational and ready to help customers who need reliable service' — a clear dig at your outage."
+        "A competitor tweets that their services are 'fully operational and ready to help customers who need reliable service' — a clear dig at your outage."
       ]
     },
     {
@@ -144,7 +144,7 @@
       "title": "The Prolonged Siege — Hours Without Resolution",
       "phase": 2,
       "time_offset": "T+20 Minutes",
-      "narrative": "Four hours have passed. The cloud provider has upgraded the incident to a 'major outage' but still provides no estimated time to recovery. Their latest communication states: 'We have identified the root cause as a cascading failure in our storage subsystem. Engineering teams are working to restore service. We will provide an update in 2 hours.'\n\nThe organisation now faces mounting pressure from multiple directions:\n\n1. The FCA's operational resilience framework requires the organisation to remain within its impact tolerances for important business services. The online portal has now exceeded its 4-hour maximum tolerable downtime.\n\n2. Approximately 200 customer transactions that were in-flight when the outage occurred are in an unknown state. It is unclear whether payments were processed, partially processed, or failed.\n\n3. Staff productivity has dropped to near zero. Without email, Teams, CRM, or document access, most departments cannot function. Some staff have begun using personal email and WhatsApp to communicate, raising data protection concerns.\n\n4. The organisation's social media channels are being flooded with complaints from customers unable to access their accounts.",
+      "narrative": "Four hours have passed. The cloud provider has upgraded the incident to a 'major outage' but still provides no estimated time to recovery. Their latest communication states: 'We have identified the root cause as a cascading failure in our storage subsystem. Engineering teams are working to restore service. We will provide an update in 2 hours.'\n\nThe organisation now faces mounting pressure from multiple directions:\n\n1. The sector regulator's operational resilience framework requires the organisation to remain within its impact tolerances for important business services. The online portal has now exceeded its 4-hour maximum tolerable downtime.\n\n2. Approximately 200 customer transactions that were in-flight when the outage occurred are in an unknown state. It is unclear whether payments were processed, partially processed, or failed.\n\n3. Staff productivity has dropped to near zero. Without email, Teams, CRM, or document access, most departments cannot function. Some staff have begun using personal email and WhatsApp to communicate, raising data protection concerns.\n\n4. The organisation's social media channels are being flooded with complaints from customers unable to access their accounts.",
       "facilitator_prompts": [
         "We have exceeded our impact tolerance for online services. What is the regulatory escalation process?",
         "200 transactions are in an unknown state. How do we reconcile these and what do we tell affected customers?",
@@ -192,7 +192,7 @@
                 19
               ],
               "title": "Clean Recovery",
-              "description": "The bank's payment processing architecture includes idempotency controls that prevent duplicate transactions. All 200 transactions can be definitively reconciled using the payment processor's records. No customer funds are at risk.",
+              "description": "The organisation's payment processing architecture includes idempotency controls that prevent duplicate transactions. All 200 transactions can be definitively reconciled using the payment processor's records. No customer funds are at risk.",
               "modifier": "All transactions reconciled. No financial impact to customers."
             },
             "critical_success": {
@@ -201,7 +201,7 @@
                 20
               ],
               "title": "Critical Success — Resilience Validated",
-              "description": "The bank's transaction queuing system held all 200 transactions in a local buffer. When cloud services restore, the queue processes automatically with full integrity checks. Not a single transaction is lost or duplicated. The architecture team's resilience design is validated.",
+              "description": "The organisation's transaction queuing system held all 200 transactions in a local buffer. When cloud services restore, the queue processes automatically with full integrity checks. Not a single transaction is lost or duplicated. The architecture team's resilience design is validated.",
               "modifier": "Zero transaction loss. Queuing system performed flawlessly."
             }
           }
@@ -211,7 +211,7 @@
         "A national news outlet runs a story: 'Major organisation's systems down for hours as customers locked out of accounts.' The story trends on social media.",
         "The sector regulator contacts the organisation directly to ask about the operational resilience impact and whether the organisation can meet its end-of-day settlement obligations.",
         "An enterprising staff member sets up a shared Google Docs spreadsheet to track customer queries — using their personal Google account, exposing customer data to a third-party cloud provider.",
-        "The cloud provider's status page goes down as well, leaving the bank with no official channel for updates on the recovery progress."
+        "The cloud provider's status page goes down as well, leaving the organisation with no official channel for updates on the recovery progress."
       ]
     },
     {
@@ -249,7 +249,7 @@
                 7
               ],
               "title": "Supervisory Concerns",
-              "description": "The sector regulator raises concerns about the organisation's concentration risk with a single cloud provider and the untested failover arrangements. The bank is required to submit a remediation plan within 30 days and faces enhanced supervisory attention for the next 12 months.",
+              "description": "The sector regulator raises concerns about the organisation's concentration risk with a single cloud provider and the untested failover arrangements. The organisation is required to submit a remediation plan within 30 days and faces enhanced supervisory attention for the next 12 months.",
               "modifier": "Remediation plan required. Enhanced supervision for 12 months."
             },
             "partial": {
@@ -276,7 +276,7 @@
                 20
               ],
               "title": "Critical Success — Industry Leadership",
-              "description": "The sector regulator invites the organisation to participate in an industry working group on cloud resilience. The organisation's handling of the incident is cited as a best practice example in the regulator's next communication on operational resilience. The CISO is invited to speak at an regulatory conference.",
+              "description": "The sector regulator invites the organisation to participate in an industry working group on cloud resilience. The organisation's handling of the incident is cited as a best practice example in the regulator's next communication on operational resilience. The CISO is invited to speak at a regulatory conference.",
               "modifier": "Industry recognition. Regulatory relationship strengthened."
             }
           }
