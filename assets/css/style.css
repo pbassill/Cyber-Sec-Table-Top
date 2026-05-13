@@ -1449,6 +1449,13 @@ body.light-theme .btn-outline-gold:hover {
     color: #fff;
 }
 
+body.light-theme .dnd-hero {
+    background:
+        linear-gradient(135deg, #faf9f7 0%, #e8e4de 100%);
+    border-color: #d1c8b8;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
 body.light-theme .dnd-hero,
 body.light-theme .dnd-title,
 body.light-theme .dnd-subtitle {
