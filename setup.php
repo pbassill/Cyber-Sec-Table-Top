@@ -170,7 +170,6 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
 
     <form id="setupForm" method="POST">
         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-        <input type="hidden" name="action" value="save_setup">
         <input type="hidden" name="scenario_order" id="scenarioOrder" value="<?php echo htmlspecialchars(implode(',', $session['scenarios'] ?? []), ENT_QUOTES, 'UTF-8'); ?>">
 
         <div class="row justify-content-center">
@@ -367,7 +366,7 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
                         </p>
 
                         <div class="text-center mb-4">
-                            <button type="submit" class="btn btn-gold btn-lg">
+                            <button type="submit" name="action" value="save_setup" class="btn btn-gold btn-lg">
                                 <i class="bi bi-floppy"></i> Save Event Setup
                             </button>
                         </div>
@@ -411,8 +410,7 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
                 <div class="d-flex justify-content-between mb-5">
                     <form method="POST" class="d-inline" onsubmit="return confirm('Reset all event setup? This cannot be undone.');">
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                        <input type="hidden" name="action" value="reset_setup">
-                        <button type="submit" class="btn btn-outline-danger">
+                        <button type="submit" name="action" value="reset_setup" class="btn btn-outline-danger">
                             <i class="bi bi-arrow-counterclockwise"></i> Reset Setup
                         </button>
                     </form>
@@ -420,8 +418,7 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
                     <?php if (!empty($session['scenarios']) && !empty($session['session_code'])): ?>
                     <form method="POST" class="d-inline">
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                        <input type="hidden" name="action" value="start_event">
-                        <button type="submit" class="btn btn-gold btn-lg">
+                        <button type="submit" name="action" value="start_event" class="btn btn-gold btn-lg">
                             <i class="bi bi-shield-exclamation"></i> Begin Campaign
                         </button>
                     </form>
