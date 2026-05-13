@@ -91,26 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 break;
 
-            case 'reset_setup':
-                $oldCode = $session['session_code'] ?? '';
-                if ($oldCode !== '') {
-                    deleteSharedSession($oldCode);
-                }
-                $session = [
-                    'scenarios' => [],
-                    'current_scenario' => 0,
-                    'current_inject' => 0,
-                    'roll_history' => [],
-                    'notes' => [],
-                    'participants' => [],
-                    'session_code' => '',
-                    'event_name' => '',
-                    'selected_campaign' => '',
-                    'started' => false
-                ];
-                saveSessionData($session);
-                $success = 'Event setup has been reset.';
-                break;
         }
     }
 }
@@ -407,14 +387,7 @@ $playerUrl = buildPlayerUrl($session['session_code'] ?? '');
         <div class="col-lg-10">
 
                 <!-- Action Buttons -->
-                <div class="d-flex justify-content-between mb-5">
-                    <form method="POST" class="d-inline" onsubmit="return confirm('Reset all event setup? This cannot be undone.');">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                        <button type="submit" name="action" value="reset_setup" class="btn btn-outline-danger">
-                            <i class="bi bi-arrow-counterclockwise"></i> Reset Setup
-                        </button>
-                    </form>
-
+                <div class="d-flex justify-content-end mb-5">
                     <?php if (!empty($session['scenarios']) && !empty($session['session_code'])): ?>
                     <form method="POST" class="d-inline">
                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
