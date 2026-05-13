@@ -265,11 +265,15 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
                     <?php endforeach; ?>
                 </div>
                 <div class="inject-progress mt-2">
-                    <?php if ($currentScenario): ?>
-                    <small>Inject <?php echo $session['current_inject'] + 1; ?> of <?php echo count($currentScenario['injects']); ?></small>
+                    <?php if ($currentScenario):
+                        $injectCount = is_array($currentScenario['injects'] ?? null) ? count($currentScenario['injects']) : 0;
+                    ?>
+                    <?php if ($injectCount > 0): ?>
+                    <small>Inject <?php echo $session['current_inject'] + 1; ?> of <?php echo $injectCount; ?></small>
                     <div class="progress" style="height: 6px;">
-                        <div class="progress-bar bg-gold" style="width: <?php echo (($session['current_inject'] + 1) / count($currentScenario['injects'])) * 100; ?>%"></div>
+                        <div class="progress-bar bg-gold" style="width: <?php echo (($session['current_inject'] + 1) / $injectCount) * 100; ?>%"></div>
                     </div>
+                    <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -326,9 +330,11 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
                         </h4>
                         <span class="badge bg-secondary"><?php echo htmlspecialchars($currentInject['time_offset'], ENT_QUOTES, 'UTF-8'); ?></span>
                     </div>
-                    <?php if (!empty($currentInject['compliance_frameworks'])): ?>
+                    <?php $injectFrameworks = isset($currentInject['compliance_frameworks']) && is_array($currentInject['compliance_frameworks'])
+                        ? $currentInject['compliance_frameworks'] : []; ?>
+                    <?php if (!empty($injectFrameworks)): ?>
                     <div class="mt-2">
-                        <?php foreach ($currentInject['compliance_frameworks'] as $fw): ?>
+                        <?php foreach ($injectFrameworks as $fw): ?>
                         <span class="badge bg-info text-dark me-1" style="font-size: 0.7rem;"><i class="bi bi-shield-check"></i> <?php echo htmlspecialchars($fw, ENT_QUOTES, 'UTF-8'); ?></span>
                         <?php endforeach; ?>
                     </div>
@@ -345,25 +351,61 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
                     </div>
 
                     <!-- Facilitator Prompts -->
+                    <?php
+                        $injectPrompts = isset($currentInject['facilitator_prompts']) && is_array($currentInject['facilitator_prompts'])
+                            ? $currentInject['facilitator_prompts'] : [];
+                        $injectFacNotes = isset($currentInject['facilitator_notes']) && is_array($currentInject['facilitator_notes'])
+                            ? $currentInject['facilitator_notes'] : [];
+                        $facTips = [
+                            'Listen for who claims ownership of the decision and who defers.',
+                            'Probe for the supporting evidence — "How would we know that?"',
+                            'Surface the hidden assumption — "What must be true for this to work?"',
+                            'Push for a timebox — "By when, and who confirms it is done?"',
+                            'Test the contrary view — "What would change your mind on that?"',
+                            'Capture the action: owner, deadline, success criterion.'
+                        ];
+                    ?>
+                    <?php if (!empty($injectPrompts)): ?>
                     <div class="facilitator-prompts mt-4">
                         <h5 class="dnd-label"><i class="bi bi-chat-quote"></i> Facilitator Discussion Prompts</h5>
-                        <ul class="prompt-list">
-                            <?php foreach ($currentInject['facilitator_prompts'] as $prompt): ?>
-                            <li class="prompt-item">
-                                <i class="bi bi-chevron-right"></i>
-                                <?php echo htmlspecialchars($prompt, ENT_QUOTES, 'UTF-8'); ?>
-                            </li>
+                        <p class="text-muted small mb-2"><i class="bi bi-info-circle"></i> Click a prompt to reveal facilitation notes.</p>
+                        <div class="prompt-list">
+                            <?php foreach ($injectPrompts as $idx => $prompt): ?>
+                            <details class="prompt-item">
+                                <summary>
+                                    <i class="bi bi-chevron-right prompt-chevron"></i>
+                                    <span class="prompt-text"><?php echo htmlspecialchars($prompt, ENT_QUOTES, 'UTF-8'); ?></span>
+                                </summary>
+                                <div class="prompt-body">
+                                    <?php if ($idx === 0 && !empty($injectFacNotes)): ?>
+                                    <div class="prompt-notes-block">
+                                        <strong><i class="bi bi-lightbulb"></i> Talking points for this inject:</strong>
+                                        <ul class="mb-0 mt-1">
+                                            <?php foreach ($injectFacNotes as $n): ?>
+                                            <li><?php echo htmlspecialchars($n, ENT_QUOTES, 'UTF-8'); ?></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                    <?php else: ?>
+                                    <div class="prompt-notes-block">
+                                        <strong><i class="bi bi-lightbulb"></i> Facilitation tip:</strong>
+                                        <span><?php echo htmlspecialchars($facTips[$idx % count($facTips)], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    </div>
+                                    <?php endif; ?>
+                                </div>
+                            </details>
                             <?php endforeach; ?>
-                        </ul>
+                        </div>
                     </div>
+                    <?php endif; ?>
 
                     <!-- Facilitator Private Notes (DM Only) -->
-                    <?php if (!empty($currentInject['facilitator_notes'])): ?>
+                    <?php if (!empty($injectFacNotes)): ?>
                     <div class="facilitator-notes mt-4" id="dmNotesPanel" style="display:none;">
                         <h5 class="dnd-label"><i class="bi bi-eye-slash"></i> DM Notes <span class="badge bg-danger ms-1">Facilitator Only</span></h5>
                         <div class="dm-notes-content" style="background: rgba(139, 26, 26, 0.15); border: 1px dashed var(--blood-red); border-radius: 8px; padding: 1rem;">
                             <ul class="mb-0">
-                                <?php foreach ($currentInject['facilitator_notes'] as $note): ?>
+                                <?php foreach ($injectFacNotes as $note): ?>
                                 <li class="mb-1"><?php echo htmlspecialchars($note, ENT_QUOTES, 'UTF-8'); ?></li>
                                 <?php endforeach; ?>
                             </ul>
@@ -372,36 +414,75 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
                     <?php endif; ?>
 
                     <!-- Dice Events -->
-                    <?php if (!empty($currentInject['dice_events'])): ?>
+                    <?php
+                        $injectDiceEvents = isset($currentInject['dice_events']) && is_array($currentInject['dice_events'])
+                            ? $currentInject['dice_events'] : [];
+                    ?>
+                    <?php if (!empty($injectDiceEvents)): ?>
                     <div class="dice-events mt-4">
                         <h5 class="dnd-label"><i class="bi bi-dice-5"></i> Dice Events</h5>
-                        <?php foreach ($currentInject['dice_events'] as $diceEvent): ?>
+                        <?php foreach ($injectDiceEvents as $diceEvent): ?>
                         <div class="dice-event-card">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0"><?php echo htmlspecialchars($diceEvent['description'], ENT_QUOTES, 'UTF-8'); ?></h6>
-                                <span class="badge bg-primary"><?php echo htmlspecialchars(strtoupper($diceEvent['dice']), ENT_QUOTES, 'UTF-8'); ?></span>
+                                <h6 class="mb-0"><?php echo htmlspecialchars($diceEvent['description'] ?? '', ENT_QUOTES, 'UTF-8'); ?></h6>
+                                <span class="badge bg-primary"><?php echo htmlspecialchars(strtoupper($diceEvent['dice'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></span>
                             </div>
                             <button type="button"
                                     class="btn btn-gold roll-dice-btn"
-                                    data-dice="<?php echo htmlspecialchars($diceEvent['dice'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-trigger="<?php echo htmlspecialchars($diceEvent['trigger'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-outcomes='<?php echo json_encode($diceEvent['outcomes'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>'>
-                                <i class="bi bi-dice-5"></i> Roll <?php echo htmlspecialchars(strtoupper($diceEvent['dice']), ENT_QUOTES, 'UTF-8'); ?>
+                                    data-dice="<?php echo htmlspecialchars($diceEvent['dice'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                                    data-trigger="<?php echo htmlspecialchars($diceEvent['trigger'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                                    data-outcomes='<?php echo json_encode(isset($diceEvent['outcomes']) && is_array($diceEvent['outcomes']) ? $diceEvent['outcomes'] : [], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>'>
+                                <i class="bi bi-dice-5"></i> Roll <?php echo htmlspecialchars(strtoupper($diceEvent['dice'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
                             </button>
-                            <div class="dice-result mt-3" id="result-<?php echo htmlspecialchars($diceEvent['trigger'], ENT_QUOTES, 'UTF-8'); ?>" style="display:none;">
+                            <div class="dice-result mt-3" id="result-<?php echo htmlspecialchars($diceEvent['trigger'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" style="display:none;">
                                 <!-- Filled by JS -->
                             </div>
+                            <?php if (!empty($diceEvent['outcomes']) && is_array($diceEvent['outcomes'])): ?>
+                            <details class="outcomes-details mt-3">
+                                <summary>
+                                    <i class="bi bi-chevron-right prompt-chevron"></i>
+                                    View possible outcomes
+                                </summary>
+                                <div class="outcomes-list mt-2">
+                                    <?php foreach ($diceEvent['outcomes'] as $outcomeKey => $outcome):
+                                        $range = $outcome['range'] ?? [null, null];
+                                        $rangeLabel = '';
+                                        if (isset($range[0], $range[1])) {
+                                            $rangeLabel = ($range[0] === $range[1]) ? (string)$range[0] : ($range[0] . '–' . $range[1]);
+                                        }
+                                    ?>
+                                    <div class="outcome-row <?php echo htmlspecialchars(getOutcomeClass($outcomeKey), ENT_QUOTES, 'UTF-8'); ?>">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <span class="outcome-icon me-2"><?php echo getOutcomeIcon($outcomeKey); ?></span>
+                                            <span class="outcome-range badge bg-secondary me-2">Roll <?php echo htmlspecialchars($rangeLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <strong><?php echo htmlspecialchars($outcome['title'] ?? '', ENT_QUOTES, 'UTF-8'); ?></strong>
+                                        </div>
+                                        <?php if (!empty($outcome['description'])): ?>
+                                        <p class="mb-1 small"><?php echo htmlspecialchars($outcome['description'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                        <?php endif; ?>
+                                        <?php if (!empty($outcome['modifier'])): ?>
+                                        <p class="mb-0 small"><strong>Effect:</strong> <?php echo htmlspecialchars($outcome['modifier'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </details>
+                            <?php endif; ?>
                         </div>
                         <?php endforeach; ?>
                     </div>
                     <?php endif; ?>
 
                     <!-- Random Complication Button -->
-                    <?php if (!empty($currentInject['random_complications'])): ?>
+                    <?php
+                        $injectComplications = isset($currentInject['random_complications']) && is_array($currentInject['random_complications'])
+                            ? $currentInject['random_complications'] : [];
+                    ?>
+                    <?php if (!empty($injectComplications)): ?>
                     <div class="random-complications mt-4">
                         <h5 class="dnd-label"><i class="bi bi-exclamation-triangle"></i> Random Complications</h5>
                         <button type="button" class="btn btn-outline-danger draw-complication-btn"
-                                data-complications='<?php echo json_encode($currentInject['random_complications'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>'>
+                                data-complications='<?php echo json_encode($injectComplications, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>'>
                             <i class="bi bi-lightning"></i> Draw a Complication Card
                         </button>
                         <div class="complication-result mt-3" style="display:none;">
@@ -447,15 +528,38 @@ if ($currentScenario && isset($currentScenario['injects'][$session['current_inje
 
             <!-- Debrief Section (shown on last inject of a scenario) -->
             <?php if ($session['current_inject'] === count($currentScenario['injects']) - 1): ?>
+            <?php
+                $debriefQuestions = (isset($currentScenario['debrief']['questions']) && is_array($currentScenario['debrief']['questions']))
+                    ? $currentScenario['debrief']['questions'] : [];
+                $debriefFocus = [
+                    'Focus the team on what worked, what failed, and what to change.',
+                    'Tie this back to the inject events — name the specific decision points.',
+                    'Identify the owner of any follow‑up action and the deadline.',
+                    'Compare to the documented procedure — was it followed, or improvised?',
+                    'Capture metrics: time-to-detect, time-to-decide, time-to-resolve.',
+                    'Surface any regulatory or contractual obligation that was triggered.'
+                ];
+            ?>
             <div class="dnd-card debrief-section mb-4">
                 <div class="dnd-card-header">
-                    <h4><i class="bi bi-clipboard-check"></i> <?php echo htmlspecialchars($currentScenario['debrief']['title'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                    <h4><i class="bi bi-clipboard-check"></i> <?php echo htmlspecialchars($currentScenario['debrief']['title'] ?? 'Debrief', ENT_QUOTES, 'UTF-8'); ?></h4>
                 </div>
                 <div class="dnd-card-body">
-                    <p class="card-flavor-text">Review and discuss the following questions before proceeding to the next quest.</p>
-                    <ol class="dnd-list">
-                        <?php foreach ($currentScenario['debrief']['questions'] as $q): ?>
-                        <li><?php echo htmlspecialchars($q, ENT_QUOTES, 'UTF-8'); ?></li>
+                    <p class="card-flavor-text">Review and discuss the following questions before proceeding to the next quest. Click a question to reveal a discussion focus.</p>
+                    <ol class="debrief-question-list">
+                        <?php foreach ($debriefQuestions as $idx => $q): ?>
+                        <li>
+                            <details class="debrief-question">
+                                <summary>
+                                    <i class="bi bi-chevron-right prompt-chevron"></i>
+                                    <span><?php echo htmlspecialchars($q, ENT_QUOTES, 'UTF-8'); ?></span>
+                                </summary>
+                                <div class="debrief-question-body">
+                                    <strong><i class="bi bi-bullseye"></i> Discussion focus:</strong>
+                                    <span><?php echo htmlspecialchars($debriefFocus[$idx % count($debriefFocus)], ENT_QUOTES, 'UTF-8'); ?></span>
+                                </div>
+                            </details>
+                        </li>
                         <?php endforeach; ?>
                     </ol>
                 </div>
