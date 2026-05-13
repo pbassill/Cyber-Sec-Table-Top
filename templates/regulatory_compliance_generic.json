@@ -1,0 +1,338 @@
+{
+  "id": "regulatory_compliance_generic",
+  "campaign": "regulatory_compliance",
+  "verticals": ["generic"],
+  "title": "The Tribunal of the Elder Council",
+  "subtitle": "Regulatory Investigation — Critical Compliance Failure",
+  "description": "The Elder Council — the supreme arbiters of law and order across the realm — have dispatched their most feared inquisitors to your gates. Ancient wards of protection that should have shielded the realm from dark gold and forbidden transactions have been found shattered and neglected. Worse still, a sacred oath to notify the Council of a breach within the prescribed celestial cycle has been broken. The inquisitors carry scrolls of enforcement, and the very charter of your guild hangs in the balance.",
+  "severity": "P1 — Critical",
+  "theme_color": "#20c997",
+  "icon": "📋",
+  "estimated_duration_minutes": 60,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 14,
+  "compliance_frameworks": ["NIST CSF", "ISO 27001", "GDPR Art.33-34", "NIS2 Art.21"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the response team, coordinates across all workstreams, and makes escalation decisions",
+      "required": true
+    },
+    {
+      "name": "Compliance Officer",
+      "title": "Keeper of the Codex",
+      "description": "Assesses the scope of regulatory screening failures, manages the sector regulator relationship, and coordinates remediation evidence",
+      "required": true
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on regulatory enforcement exposure, legal privilege, and enforcement strategy",
+      "required": true
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive authority, manages senior manager personal accountability implications, and engages the board",
+      "required": true
+    },
+    {
+      "name": "Data Protection Officer",
+      "title": "Warden of the Sacred Scrolls",
+      "description": "Manages GDPR breach notification obligations, liaises with the ICO, and assesses data subject impact",
+      "required": false
+    },
+    {
+      "name": "Compliance Lead",
+      "title": "Sentinel of the Golden Seal",
+      "description": "Assesses the regulatory screening failure scope, manages suspicious activity reporting obligations, and coordinates NCA engagement",
+      "required": false
+    },
+    {
+      "name": "Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Provides technical context on screening system failures, data flows, and remediation feasibility",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "G1",
+      "title": "The Inquisitors Arrive — A Writ of Judgement",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "compliance_frameworks": ["ISO 27001 A.18 — Compliance", "NIST CSF ID.GV — Governance", "NIS2 Art.21 — Risk Management", "GDPR Art.5 — Principles"],
+      "narrative": "At 08:47 UTC on a Tuesday morning, the organisation's Compliance Director receives a formal notification from the sector regulator's Enforcement and Market Oversight Division. The regulator has completed a thematic review of regulatory screening controls across mid-tier providers, and the results for your institution are severe. The regulator's findings indicate that the organisation's automated transaction monitoring system has been operating with a critically misconfigured rule set for the past 14 months. Specifically, the sanctions screening module has been running against an outdated consolidated sanctions list — the list was last updated in January of the previous year, meaning 14 months of new designations have not been screened against.\n\nThe regulator's preliminary analysis, based on a sample of 200 customer accounts, identified 23 transactions totalling £8.7 million that involved counterparties who were added to the consolidated sanctions list during the gap period. At least three of these counterparties are designated persons linked to a sanctioned regime. The regulator has issued a formal Requirement Notice appointing an independent skilled person to conduct an external review of the organisation's entire compliance framework. The skilled person will be on site within 48 hours.\n\nSimultaneously, the DPO discovers that a data breach involving the exfiltration of 340 customer due-diligence records — detected internally 80 hours ago by the IT security team — was never escalated to the DPO. The 72-hour GDPR notification window to the ICO has now expired. The IT Security Manager who detected the breach assumed it was a false positive and closed the ticket without escalation.",
+      "facilitator_prompts": [
+        "Who takes ownership of the regulator relationship from this point forward? Is the current Compliance Director the right person, or is there a conflict given the failures occurred on their watch?",
+        "What is the immediate priority — responding to the regulator's Requirement Notice or addressing the missed GDPR notification to the ICO?",
+        "Under the senior manager accountability regime, which senior manager function holders have personal accountability for the screening failures? What are their obligations right now?",
+        "The 72-hour GDPR notification deadline has been missed. What is the legal strategy for late notification to the ICO, and how do we explain the 80-hour internal delay?",
+        "Should we engage external legal counsel immediately to manage the regulatory enforcement process under legal privilege?",
+        "Do we need to make a Suspicious Activity Report to the NCA for the 23 identified transactions, and what is the tipping-off risk?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "screening_gap_assessment",
+          "description": "Roll to determine the full scope of the screening failure when the team conducts an emergency review",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Catastrophic Systemic Failure",
+              "description": "The emergency review reveals the sanctions screening failure is far worse than the regulator identified. Not only was the consolidated sanctions list outdated, but the politically exposed person (PEP) screening module was completely disabled during a system upgrade 18 months ago and never reactivated. Over 4,200 customer relationships have never been screened against PEP databases. Additionally, the Compliance team discovers that three current customers are designated persons on an active sanctions list, and live transactions have been processed in the last 30 days.",
+              "modifier": "Total compliance framework collapse. Active sanctions breaches confirmed. Criminal referral likely."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Significant Expansion of Scope",
+              "description": "The review confirms the regulator's findings and identifies an additional 47 transactions totalling £14.2 million involving sanctioned counterparties. The sanctions list update failure also affected the organisation's partner-organisation screening, meaning payments routed through the organisation on behalf of other institutions may also be affected. Two partner organisations must be notified.",
+              "modifier": "Scope expanded significantly. Partner organisation exposure creates contagion risk."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Contained but Serious",
+              "description": "The regulator's findings are broadly confirmed. The 23 transactions and £8.7 million exposure represents the bulk of the issue. However, three additional transactions totalling £1.1 million are identified. The screening gap did not affect PEP screening, which operates on a separate system. The partner-organisation channel was unaffected.",
+              "modifier": "Scope broadly as expected. No additional systemic failures identified but remediation still extensive."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Narrower Than Feared",
+              "description": "Detailed analysis reveals that 14 of the 23 flagged transactions involved counterparties who were designated after the transaction completed — reducing the true exposure to 9 transactions totalling £3.1 million. The screening gap was limited to one sanctions list only; international sanctions lists were updated correctly. The team can present a credible remediation narrative.",
+              "modifier": "Exposure narrower than the regulator's initial assessment. Strong basis for constructive engagement."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Mitigating Evidence Discovered",
+              "description": "The review reveals that while the automated screening was misconfigured, the organisation's manual enhanced due diligence process — conducted by the Compliance team for all transactions over £50,000 — independently caught and blocked 19 of the 23 flagged transactions before settlement. Only 4 transactions totalling £890,000 actually completed. Documentation of the manual blocks is comprehensive and demonstrates a functioning second line of defence despite the systems failure.",
+              "modifier": "Strong mitigating evidence. Manual controls compensated for system failure. Significantly reduces enforcement risk."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A journalist from a national news outlet contacts the organisation's press office stating they have received a leaked copy of the regulator's Requirement Notice and are publishing a story tomorrow morning.",
+        "The Compliance Director, upon learning of the regulator's findings, submits their immediate resignation via email to the CEO, creating a leadership vacuum at the worst possible moment.",
+        "The organisation's transaction monitoring system vendor contacts the Compliance team to state that they issued a critical update notification 14 months ago that was never actioned — and they have the delivery receipt.",
+        "The organisation's external auditors request an urgent meeting, stating that the screening failure may require a qualification of the organisation's most recent annual accounts."
+      ],
+      "facilitator_notes": [
+        "The dual crisis structure — sector regulator enforcement plus missed GDPR notification — is deliberate. Guide the team to recognise they are fighting on two regulatory fronts simultaneously and must allocate resources accordingly. Many teams will focus entirely on the sector regulator and neglect the ICO notification.",
+        "Senior manager personal accountability is a critical thread. Under most modern accountability regimes, senior managers must take reasonable steps to ensure compliance in their areas. The compliance oversight and money laundering reporting function holders face personal regulatory risk. Prompt the team to discuss this explicitly.",
+        "The IT Security Manager's failure to escalate the data breach is a cultural and governance failure, not just a process one. Guide discussion toward root cause — was the escalation path unclear, was there fear of blame, or was there inadequate training?"
+      ]
+    },
+    {
+      "id": "G2",
+      "title": "The Investigation Deepens — Unearthing Forgotten Relics",
+      "phase": 2,
+      "time_offset": "T+15 Minutes",
+      "compliance_frameworks": ["ISO 27001 A.9 — Access Control", "NIST CSF PR.AC — Identity Management", "GDPR Art.33", "GDPR Art.34"],
+      "narrative": "The internal investigation team — assembled under the direction of external legal counsel to preserve legal privilege — has been working for four hours. The findings are escalating. A forensic review of the screening system's configuration change log reveals that the sanctions list update failure was caused by an expired API credential. The credential was tied to a service account managed by a Compliance analyst who left the organisation 16 months ago. When their user accounts were decommissioned by IT during offboarding, the service account that powered the automated sanctions list update was inadvertently disabled. No one noticed because the system continued to screen transactions — it simply screened them against the stale list. There were no alerts configured for list staleness.\n\nThe Compliance Lead has completed a preliminary review of the 23 flagged transactions and confirmed that Suspicious Activity Reports must be filed with the NCA for at least 11 of them. However, three of the transactions involve a long-standing key customer — a politically connected individual who has been a customer for 12 years and is a personal acquaintance of the organisation's Chairman. The Compliance Lead is concerned about tipping-off risk if the customer's senior account manager is informed of the investigation.\n\nMeanwhile, the DPO has prepared a late GDPR breach notification to the ICO. However, the investigation into the due-diligence data exfiltration has revealed that the breach is larger than initially thought — 340 records were confirmed exfiltrated, but log analysis suggests the attacker had access to the full due-diligence document repository containing scanned passports, proof of address, and source-of-funds documentation for all 1,247 key customers. The attacker may have accessed but not exfiltrated the wider dataset.",
+      "facilitator_prompts": [
+        "The sanctions list staleness was caused by a leaver's service account being disabled. What does this tell us about the organisation's change management and offboarding processes?",
+        "How do we handle the key customer who is a personal acquaintance of the Chairman? The Compliance Lead has a legal obligation to file SARs — does the Chairman's relationship create a conflict?",
+        "The GDPR breach scope has expanded from 340 to potentially 1,247 customers. How does this change the ICO notification, and do we now need to notify affected data subjects under Article 34?",
+        "Legal privilege is being used to protect the investigation findings. What are the boundaries of privilege in a regulatory investigation, and can the sector regulator compel disclosure?",
+        "Should we proactively self-report the missed GDPR notification to the sector regulator as well, given their concurrent investigation?",
+        "What is our obligation to notify partner organisations and counterparties about the sanctions screening gap?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "due_diligence_breach_scope",
+          "description": "Roll to determine the true scope of the due-diligence data breach and whether exfiltration extended beyond the confirmed 340 records",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Total Compromise Confirmed",
+              "description": "Forensic analysis confirms the attacker exfiltrated the entire due-diligence repository — all 1,247 customer files including scanned passports, source-of-funds declarations, and account holdings. Worse, the forensics team discovers the attacker maintained persistent access via a web shell and accessed the repository again just 6 hours ago, downloading updated records that were added since the initial breach. The breach is ongoing.",
+              "modifier": "Active ongoing breach. Full customer base compromised. Immediate containment required before any notification."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Extensive Exfiltration",
+              "description": "Log analysis confirms approximately 890 customer due-diligence files were exfiltrated, including passport scans and source-of-funds documentation. The attacker specifically targeted key customers with accounts over £5 million, suggesting this was a targeted attack rather than opportunistic. The data has appeared on a dark web marketplace with a price tag of £200,000.",
+              "modifier": "Targeted attack on key customers. Data already for sale. Customer notification under Article 34 is mandatory."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Confirmed 340 — Wider Access Uncertain",
+              "description": "The confirmed exfiltration remains at 340 records. The attacker had read access to the wider repository but the evidence is inconclusive on whether they accessed or downloaded additional files. The forensics firm recommends treating all 1,247 records as potentially compromised for notification purposes, but this is a precautionary assessment.",
+              "modifier": "Ambiguous scope. Conservative approach requires treating all 1,247 customers as affected."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Breach Contained to 340 Records",
+              "description": "Forensic analysis confirms with high confidence that only the 340 records were exfiltrated. The attacker's access was limited by network segmentation — they reached the due-diligence staging server used for onboarding but could not access the primary document management system. The web application firewall logged and blocked multiple attempts to access the wider repository.",
+              "modifier": "Breach scope confirmed and contained. Strong evidence for ICO that controls limited the damage."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Breach Attribution Achieved",
+              "description": "Not only is the breach confirmed at 340 records, but the forensics team has identified the attacker. The IP addresses trace to a known threat actor group that has been targeting enterprises in this sector. NCSC confirms they are tracking this group and can provide intelligence support. The attacker's infrastructure has been seized by law enforcement in a parallel investigation, meaning the exfiltrated data has likely been recovered before sale.",
+              "modifier": "Attacker identified. Data likely recovered. Strong narrative for ICO and affected customers."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The key customer whose transactions triggered SAR obligations contacts their senior account manager directly, stating they have heard 'rumours' about a compliance investigation at the organisation and demanding reassurance. The tipping-off risk is now acute.",
+        "The sector regulator's independent skilled person arrives a day early and requests immediate access to the transaction monitoring system — before the internal investigation team has completed their privilege-protected review.",
+        "The organisation's cyber insurance provider states that the due-diligence data breach notification was made outside the policy's 48-hour notification window, and coverage may be denied.",
+        "A board member who sits on the organisation's Risk Committee leaks the existence of the regulator investigation to a contact at a trade publication, triggering a media inquiry."
+      ],
+      "facilitator_notes": [
+        "The key customer / Chairman relationship is designed to test whether the team will allow personal relationships to influence regulatory obligations. The Compliance Lead's duty to file SARs is absolute and cannot be overridden by commercial considerations. If the team hesitates, challenge them directly.",
+        "The service account issue is a very common real-world failure. Guide the team to explore the systemic governance question: who owns service accounts, how are they tracked, and what happens to them during offboarding? This is a control that many organisations get wrong.",
+        "Legal privilege in regulatory investigations is complex. Most regulators cannot compel production of privileged material, but voluntary disclosure as part of cooperative engagement is often strategically advisable. Guide the team to weigh the trade-offs."
+      ]
+    },
+    {
+      "id": "G3",
+      "title": "Forging the Shield — The Remediation Compact",
+      "phase": 3,
+      "time_offset": "T+30 Minutes",
+      "compliance_frameworks": ["ISO 27001 A.18 — Compliance", "NIS2 Art.21 — Risk Management", "GDPR Art.34", "NIST CSF RS.CO — Response Communications"],
+      "narrative": "Forty-eight hours have passed since the regulator's Requirement Notice was received. The independent skilled-person review is underway and the initial findings call has been held with the regulator's supervisory team. The regulator's tone was measured but firm — they have indicated that this matter has been referred to the Enforcement Division and that a formal investigation is likely. The regulator has also indicated they are considering whether to impose a Voluntary Requirement (VREQ) restricting the organisation from onboarding new customers until remediation is complete.\n\nThe organisation must now prepare a comprehensive remediation plan. The Compliance Lead has filed 11 SARs with the NCA and is preparing a further 6 based on the expanded review. The sanctions screening system has been emergency-patched and is now operating against the current consolidated sanctions list. A full lookback review of all transactions processed during the 14-month gap period — estimated at 47,000 transactions across 1,247 customer accounts — has been scoped but will require 6-8 weeks to complete with external support at an estimated cost of £2.4 million.\n\nThe ICO has acknowledged the late GDPR breach notification and has opened its own investigation. The ICO has asked the organisation to explain the 80-hour internal delay and has indicated that the late notification itself may constitute an additional infringement. The DPO is preparing Article 34 notifications to affected data subjects, but the Communications team is concerned that individual customer notifications — particularly to key customers — will trigger a wave of customer departures and reputational damage.",
+      "facilitator_prompts": [
+        "The sector regulator is considering a new-customer onboarding restriction (VREQ). What is the commercial impact, and should we negotiate or accept it proactively as a sign of good faith?",
+        "The lookback review will cost £2.4 million and take 6-8 weeks. Who authorises this expenditure, and can it be accelerated?",
+        "How do we notify 340 (or potentially 1,247) key customers about the due-diligence data breach without triggering mass customer departures?",
+        "Under the senior manager accountability regime, the regulator may seek to interview senior manager function holders. How do we prepare them, and should each have independent legal counsel?",
+        "The ICO and sector regulator investigations are running in parallel. How do we ensure consistency in what we tell each regulator without creating contradictions?",
+        "What is the board's role at this stage? Should the Chairman recuse themselves given their relationship with the key customer under SAR investigation?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "regulator_enforcement_posture",
+          "description": "Roll to determine the sector regulator's enforcement posture following the initial skilled-person findings",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Maximum Enforcement Action",
+              "description": "The regulator's Enforcement Division escalates aggressively. The skilled person's interim report identifies not just the sanctions screening failure but evidence that previous internal audit reports flagged compliance system weaknesses two years ago and the recommendations were never implemented. The regulator issues a First Supervisory Notice imposing an immediate restriction on the organisation processing any international payments, and publicly announces the investigation. Share price implications are severe if the organisation were listed.",
+              "modifier": "Public enforcement action. Payment processing restricted. Existential regulatory risk."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Formal Investigation Confirmed",
+              "description": "The regulator confirms a formal investigation and imposes the VREQ restricting new customer onboarding. The skilled-person report is critical of the organisation's compliance culture and governance, noting that the Compliance function is under-resourced relative to the organisation's risk profile. The regulator indicates it is considering personal action against the compliance oversight and money laundering reporting function holders.",
+              "modifier": "Formal investigation with personal accountability proceedings. New business restricted."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Supervisory Engagement",
+              "description": "The regulator adopts a supervisory rather than enforcement approach, contingent on the organisation's full cooperation and timely completion of the remediation plan. The VREQ is held in reserve as a backstop. The skilled-person report is critical but acknowledges the organisation's proactive response since discovery. The regulator expects monthly progress reports.",
+              "modifier": "Enforcement deferred but not ruled out. Cooperation is critical."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Constructive Regulatory Engagement",
+              "description": "The regulator's supervisory team acknowledges the organisation's comprehensive and transparent response. The skilled person's interim findings confirm the issue was a technical configuration failure rather than a cultural or governance deficiency. The regulator agrees to a collaborative approach with quarterly progress reviews and no VREQ. Personal action against senior managers is not being pursued at this stage.",
+              "modifier": "Positive regulatory relationship. No restrictions imposed. Remediation proceeds collaboratively."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Exemplary Response Recognised",
+              "description": "The regulator's supervisory team commends the organisation's response as a model of how organisations should handle compliance failures. The proactive SAR filings, immediate system remediation, and transparent engagement are noted positively. The regulator closes the enforcement referral and keeps the matter in supervision. The skilled-person review is narrowed in scope, reducing costs significantly. The regulator invites the organisation to participate in an industry working group on screening system resilience.",
+              "modifier": "Enforcement closed. Organisation recognised as exemplary responder. Reputational recovery accelerated."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The NCA contacts the Compliance Lead to state that one of the filed SARs relates to an ongoing criminal investigation into a sanctioned regime's procurement network. The NCA requests that the organisation maintain the customer relationship and continue processing transactions under a consent regime to support intelligence gathering — directly conflicting with the organisation's instinct to exit the relationship.",
+        "The external law firm managing the investigation discovers a conflict of interest — they also act for one of the counterparties identified in the sanctions screening review. They must withdraw from the engagement, requiring the organisation to instruct new counsel mid-investigation.",
+        "Three key customers who received Article 34 breach notifications have instructed solicitors and are threatening group litigation for breach of confidence and negligence.",
+        "A separate operational resilience regulator contacts the organisation, expressing concern about the operational resilience implications of the screening system failure and requesting a briefing."
+      ],
+      "facilitator_notes": [
+        "The VREQ discussion is commercially significant. A new-customer onboarding restriction can be devastating for a customer-operations business's growth pipeline. Guide the team to consider whether proactively offering a temporary restriction demonstrates good faith and may result in a shorter restriction period than a contested one.",
+        "The parallel ICO and sector regulator investigations create a coordination challenge. In reality, regulators share information under cooperation agreements. The team should assume that anything told to one regulator will be known by the other.",
+        "Senior manager interview preparation is a critical thread. Senior managers are entitled to legal representation in regulatory interviews, and they should be briefed on the distinction between cooperation and self-incrimination. This is a nuance many teams miss."
+      ]
+    },
+    {
+      "id": "G4",
+      "title": "The Council's Verdict — Restoring the Realm's Honour",
+      "phase": 4,
+      "time_offset": "T+45 Minutes",
+      "compliance_frameworks": ["GDPR Art.83 — Administrative Fines", "NIS2 Art.34 — Penalties", "ISO 27001 A.16 — Incident Management", "NIST CSF RC.IM — Improvements"],
+      "narrative": "Six weeks have elapsed. The lookback review of 47,000 transactions is nearing completion. The final results show that 31 transactions totalling £11.3 million involved sanctioned counterparties during the screening gap period. Of these, 7 transactions totalling £4.1 million involved counterparties who were designated at the time of the transaction — representing clear sanctions breaches. The remaining 24 transactions involved counterparties designated after the transaction date but during the screening gap, meaning they should have been caught by ongoing monitoring.\n\nThe sector regulator has completed its preliminary investigation and has issued a Warning Notice indicating it intends to impose a financial penalty on the organisation. The proposed penalty, calculated under the regulator's penalty framework, is £12.8 million — reflecting the seriousness of the breach, the 14-month duration, and the organisation's initial failure to detect the issue internally. The regulator has offered a 30% discount for early settlement. The Warning Notice also names the former money laundering reporting function holder personally, proposing a prohibition order and a personal fine of £76,000.\n\nThe ICO has issued its preliminary decision on the GDPR breach. The late notification under Article 33, combined with the inadequate internal escalation processes, has resulted in a proposed fine of £1.2 million. The ICO has also required the organisation to implement a comprehensive data protection improvement plan, subject to audit in 12 months. Customer litigation from the three key customers has been joined by an additional eight customers and is now being coordinated as group litigation.",
+      "facilitator_prompts": [
+        "The regulator proposes a £12.8 million fine with a 30% early settlement discount. Do we accept, negotiate, or contest the fine through the regulator's decisions committee?",
+        "The former money laundering reporting function holder faces personal prohibition and a fine. What are the organisation's obligations to support them, and what are the accountability implications for current senior managers?",
+        "The ICO fine of £1.2 million is in addition to the regulator's penalty. What is the total financial exposure when litigation costs and remediation are included?",
+        "Group litigation from 11 key customers is underway. What is the organisation's litigation strategy, and should we consider a settlement offer?",
+        "What governance and structural changes must the organisation implement to prevent recurrence? Consider people, process, and technology.",
+        "How does the organisation rebuild trust with customers, regulators, and the market following this episode?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "penalty_negotiation_outcome",
+          "description": "Roll to determine the outcome of the organisation's engagement with the sector regulator on the proposed penalty",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Aggravated Penalty",
+              "description": "During the settlement negotiations, the regulator discovers that a key document provided during the skilled-person review was incomplete — a compliance monitoring report had been edited to remove references to a previous near-miss with sanctions screening. The regulator treats this as a failure to cooperate and increases the proposed penalty to £19.5 million. The matter is referred to the regulator's decisions committee for a contested hearing. The regulator also expands the personal action to include the current compliance oversight function holder.",
+              "modifier": "Penalty increased. Cooperation credit lost. Additional personal action. Contested proceedings."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Penalty Upheld",
+              "description": "The regulator declines to reduce the proposed penalty, citing the 14-month duration and the failure to detect the issue internally. The organisation accepts the £12.8 million fine with the 30% early settlement discount, resulting in a final penalty of £8.96 million. The prohibition order against the former money laundering reporting function holder proceeds. The final notice is published on the regulator's register, generating significant press coverage.",
+              "modifier": "Settled at £8.96 million. Public final notice. Function holder prohibited. Reputational damage crystallised."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Partial Reduction Achieved",
+              "description": "The organisation's representations to the regulator, supported by evidence of the comprehensive remediation programme and cooperation throughout the investigation, result in a modest reduction. The penalty is reduced to £10.2 million before the 30% discount, resulting in a final settlement of £7.14 million. The function-holder prohibition is replaced with a public censure and a personal fine of £45,000.",
+              "modifier": "Reduced penalty of £7.14 million. Function holder censured but not prohibited."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Significant Mitigation",
+              "description": "The organisation's early and proactive engagement, comprehensive remediation, and evidence of manual controls that caught the majority of transactions result in a substantial reduction. The penalty is reduced to £6.4 million before discount, settling at £4.48 million. The regulator acknowledges the organisation's exemplary post-discovery response in the final notice. The function-holder personal action is dropped due to evidence that the system failure preceded their appointment.",
+              "modifier": "Settlement of £4.48 million with positive acknowledgement. Function-holder action dropped."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Regulatory Resolution",
+              "description": "The organisation's legal team presents compelling evidence that the sanctions screening failure was a narrow technical issue in an otherwise robust compliance framework, supported by the manual controls that prevented the majority of transactions from completing. The regulator agrees to resolve the matter by private warning rather than financial penalty, contingent on completion of the remediation plan within 12 months. The function-holder personal action is withdrawn. The ICO, informed of the sector regulator's approach, reduces its fine to £400,000. The total regulatory cost is a fraction of the worst-case scenario.",
+              "modifier": "Private warning. No public penalty. Function holder cleared. ICO fine reduced. Best achievable outcome."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A whistleblower within the Compliance team contacts the sector regulator directly, alleging that senior management was aware of compliance system weaknesses before the regulator's thematic review and failed to act. The regulator requests all board and Risk Committee minutes for the past two years.",
+        "The group litigation claimants obtain a court order for disclosure of the skilled-person report, challenging the organisation's assertion that it is subject to regulatory confidentiality.",
+        "A partner organisation terminates its relationship with the organisation, citing the sanctions screening failure. This threatens the organisation's ability to process international payments, affecting 60% of its key customers.",
+        "The organisation's professional indemnity insurer indicates it may decline to cover the regulatory fine on the basis that regulatory penalties are not insurable losses under English law."
+      ],
+      "facilitator_notes": [
+        "The penalty negotiation is the culmination of the exercise. Guide the team to consider the full picture: financial penalty, personal action, litigation costs, remediation costs, reputational damage, and customer attrition. The regulatory fine is often the smallest component of the total cost of a compliance failure.",
+        "The early settlement discount is a real feature of most regulator enforcement processes. A 30% discount for early-stage settlement is significant and most organisations accept it. Guide the team to weigh the certainty of settlement against the risk and cost of contested proceedings.",
+        "Close the exercise by asking the team to reflect on what a 'good' compliance culture looks like — not just systems and controls, but the behaviours, incentives, and accountability structures that would have prevented this scenario from occurring."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Were the screening failures detected in a timely manner, and what controls should have identified the issue earlier?",
+      "Was the GDPR breach notification process adequate, and why did the internal escalation fail?",
+      "Were senior manager accountability structures clear, and did senior managers understand their personal obligations?",
+      "How effective was the coordination between the sector regulator and ICO response workstreams?",
+      "Was legal privilege appropriately managed throughout the investigation?",
+      "What governance, process, and technology changes would prevent recurrence of both the screening and GDPR failures?",
+      "How should the organisation's compliance culture be strengthened to ensure issues are escalated rather than suppressed?"
+    ]
+  }
+}

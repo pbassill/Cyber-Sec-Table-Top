@@ -1,0 +1,253 @@
+{
+  "id": "phishing_generic",
+  "campaign": "cyber_attack",
+  "verticals": ["generic"],
+  "title": "The Enchanted Scroll",
+  "subtitle": "Phishing Attack Leading to Network Compromise",
+  "description": "A cunning enchantment disguised as a routine missive has ensnared one of your realm's trusted servants. The deception has breached your outer defences, granting dark forces a foothold within the fortress walls. As the scope of the infiltration becomes clear, the race begins to purge the corruption before the enemy plunders your most sensitive records.",
+  "severity": "P2 — High",
+  "theme_color": "#6f42c1",
+  "icon": "🟣",
+  "estimated_duration_minutes": 45,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 13,
+  "compliance_frameworks": ["NIST CSF PR.AT", "ISO 27001 A.7.2.2", "NIS2 Art.21"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the response team, makes containment and escalation decisions",
+      "required": true
+    },
+    {
+      "name": "IT Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Provides technical context, assesses system impact, manages endpoint containment",
+      "required": true
+    },
+    {
+      "name": "SOC Analyst",
+      "title": "Shadow Watcher",
+      "description": "Analyses phishing artefacts, traces lateral movement, monitors for further compromise",
+      "required": true
+    },
+    {
+      "name": "Compliance / DPO",
+      "title": "Keeper of the Codex",
+      "description": "Assesses data exposure, regulatory notification obligations under GDPR",
+      "required": true
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Town Crier",
+      "description": "Drafts internal warnings to staff, manages external communications if required",
+      "required": false
+    },
+    {
+      "name": "HR Representative",
+      "title": "Guild Master",
+      "description": "Supports affected staff, advises on conduct aspects if negligence is suspected",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive decision authority, approves customer notifications",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "D1",
+      "title": "The Poisoned Missive — A Lure Takes Hold",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "It is 09:15 UTC on a Monday morning. The IT Service Desk receives a call from a senior account manager in the Customer Operations division. They report unusual behaviour on their workstation after clicking a link in an email that appeared to come from a well-known business data provider. The email subject line was 'Urgent: Updated Customer Due-Diligence Requirements — Action Required Today' and contained a link to what appeared to be a document portal.\n\nUpon clicking, the user was briefly shown a fake Microsoft 365 login page where they entered their corporate credentials. The page then redirected to the legitimate provider's website, making the user believe it was a routine login.\n\nThe SOC's email gateway logs show the same phishing email was delivered to 47 recipients across the organisation between 08:30 and 09:00 UTC. Preliminary analysis shows the email passed SPF and DKIM checks because the sending domain was a lookalike — 'businessdata-provider.com' rather than 'businessdataprovider.com'. Six users have clicked the link so far based on proxy logs.",
+      "facilitator_prompts": [
+        "What is the immediate response? Do we block the sending domain and quarantine all copies of the email?",
+        "Six users have clicked — do we assume all six sets of credentials are compromised?",
+        "Should we force a password reset for the six users immediately, or for all 47 recipients as a precaution?",
+        "What additional telemetry should the SOC review to determine if the stolen credentials have been used?",
+        "How do we communicate to staff without causing panic — and do we need to warn about further phishing attempts?",
+        "Is this a reportable incident under our regulatory framework at this stage?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "credential_usage_check",
+          "description": "Roll to determine whether the stolen credentials have already been used by the attacker",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Total Compromise",
+              "description": "The attacker used the first set of stolen credentials within minutes. They accessed the user's mailbox via IMAP from an overseas IP, set up mail forwarding rules to exfiltrate all incoming messages, and used the mailbox to send a second wave of highly targeted spear-phishing emails to 12 major customers directly, posing as their account manager.",
+              "modifier": "Customer-facing attack launched from compromised mailbox. Reputational crisis imminent."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Mailbox Access Confirmed",
+              "description": "Azure AD sign-in logs confirm that three of the six compromised accounts were accessed from a VPN exit node in Eastern Europe within 30 minutes of credential capture. The attacker downloaded email attachments containing customer records and upcoming transaction details.",
+              "modifier": "Three mailboxes accessed. Customer data exfiltrated. Breach notification likely required."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Attempted Access Detected",
+              "description": "Conditional access policies blocked sign-in attempts from two unrecognised locations. However, one account with a legacy authentication exemption was successfully accessed for approximately 10 minutes before the session was terminated.",
+              "modifier": "Conditional access partially effective. One account breached briefly."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Defences Hold",
+              "description": "Multi-factor authentication prevented all external login attempts. The attacker has the passwords but cannot bypass MFA. However, the credentials could be used in password-spraying attacks against other services that may not enforce MFA.",
+              "modifier": "MFA blocked access. Credential rotation still required as a precaution."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Threat Intelligence Windfall",
+              "description": "MFA blocked all access attempts. Additionally, the SOC's automated threat intelligence platform has correlated the phishing infrastructure with a known threat actor group that has been targeting organisations across Europe. The national cybersecurity centre has an active advisory on this campaign. The organisation is now ahead of the threat.",
+              "modifier": "No compromise achieved. Threat actor identified. Intelligence shared with sector peers."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "One of the six users who clicked the link is the CISO's executive assistant, whose mailbox contains sensitive security programme documents and board reports.",
+        "The phishing email was also forwarded internally by a helpful team leader to their entire department (23 additional people) with the note 'Please action this today.'",
+        "The organisation's email filtering vendor confirms a misconfiguration meant URL rewriting was disabled for the past 72 hours, so safe-links protection was not active.",
+        "A second phishing campaign — unrelated to the first — is detected targeting the Finance team with fake invoice attachments containing macro-enabled malware."
+      ]
+    },
+    {
+      "id": "D2",
+      "title": "The Spreading Blight — Lateral Movement Detected",
+      "phase": 2,
+      "time_offset": "T+20 Minutes",
+      "narrative": "The SOC's investigation escalates. Endpoint Detection and Response (EDR) telemetry reveals that one of the compromised users — a senior account manager — had their workstation accessed remotely by the threat actor using legitimate remote desktop tools. The attacker installed a commercial remote access tool (AnyDesk) on the workstation and used it to move laterally within the network.\n\nThe attacker has enumerated Active Directory, identified service accounts, and attempted to access the CRM database server. The CRM system holds personal data, financial records, and account documentation for 3,200 customers.\n\nAdditionally, the compromised user had saved several passwords in their browser, including credentials for the organisation's customer onboarding portal and a third-party background-checking service.",
+      "facilitator_prompts": [
+        "The attacker has moved from email compromise to endpoint compromise. How does this change our containment strategy?",
+        "Should we isolate the entire Customer Operations network segment, even if it disrupts business operations?",
+        "What is the exposure if the CRM database was accessed? Do we know if the attacker succeeded?",
+        "Saved browser passwords have been compromised. How do we identify and rotate all affected credentials?",
+        "The third-party background-checking service credentials are compromised. Do we notify the third party?",
+        "At what point do we engage external incident response support and/or law enforcement?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "crm_access_investigation",
+          "description": "Roll to determine the extent of CRM database access",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Full Database Exfiltration",
+              "description": "Network flow analysis confirms a large data transfer from the CRM database server to an external IP address. Approximately 2.8 GB of data — the entire customer database including PII, financial records, and due-diligence documents — has been exfiltrated. Evidence suggests the data is already being offered for sale on a dark web marketplace.",
+              "modifier": "Full customer database exfiltrated. Mandatory breach notification to ICO within 72 hours. All 3,200 customers must be notified."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Partial Access Achieved",
+              "description": "The attacker successfully authenticated to the CRM using the saved browser credentials and executed several database queries. Export logs show approximately 400 customer records were accessed, focused on major customers with high-value accounts. Data exfiltration cannot be confirmed or ruled out.",
+              "modifier": "400 major customer records potentially compromised. Targeted data theft suspected."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Access Attempted But Limited",
+              "description": "The attacker authenticated to the CRM but the database access was read-only at the application tier. Several queries were executed but the application's data export functionality was restricted by role-based access controls. Some customer names and contact details may have been viewed on screen.",
+              "modifier": "Limited CRM access. Data exfiltration unlikely but viewing of records confirmed."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "CRM Access Blocked",
+              "description": "The CRM system's IP allowlist prevented the attacker from authenticating from the compromised workstation, which was on a different network segment. The saved credentials are compromised but were not successfully used.",
+              "modifier": "CRM protected by network controls. No customer data accessed via CRM."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Attacker Trapped",
+              "description": "The CRM's anomaly detection system flagged the unusual login attempt and triggered a honeypot response, feeding the attacker fabricated customer data while alerting the SOC. The deception technology has captured the attacker's tools, techniques, and infrastructure details, providing invaluable threat intelligence.",
+              "modifier": "Attacker deceived by honeypot. Full TTP profile captured. No real data compromised."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The AnyDesk remote access tool was installed using a legitimate IT admin account, making it initially indistinguishable from authorised remote support sessions.",
+        "The compromised background-checking service account was shared among 15 staff members, and the third-party provider's logs show access from multiple suspicious IPs over the past week.",
+        "A customer calls their account manager to query a suspicious email they received — it appears the attacker is using compromised mailbox data to target customers directly with business email compromise.",
+        "The EDR platform reaches its maximum isolation capacity and begins queuing endpoints, leaving some compromised machines active on the network."
+      ]
+    },
+    {
+      "id": "D3",
+      "title": "The Reckoning — Containment and Recovery",
+      "phase": 3,
+      "time_offset": "T+35 Minutes",
+      "narrative": "Twelve hours into the incident, containment is underway but significant challenges remain. The threat actor has been ejected from the network, all compromised credentials have been rotated, and affected endpoints are being rebuilt.\n\nHowever, the following issues require immediate executive attention:\n\n1. The ICO notification deadline is approaching. The DPO must determine whether this constitutes a notifiable personal data breach and prepare the submission.\n\n2. Three major customers have independently contacted the organisation reporting suspicious emails and phone calls that reference details only the organisation would hold. The attacker appears to be using stolen data to conduct social engineering attacks against customers.\n\n3. The organisation's cyber insurance broker is requesting a detailed timeline of events. Early indications from the insurer suggest that the phishing email bypassed controls because of a known misconfiguration, which may affect coverage.\n\n4. A national news outlet journalist has contacted the communications team asking about 'a significant cyber incident at the organisation' — the source of the leak is unknown.",
+      "facilitator_prompts": [
+        "What is the ICO notification strategy? Do we have sufficient information to file within 72 hours?",
+        "How do we protect customers who are now being targeted by the attacker using stolen organisational data?",
+        "What is our media response strategy? Do we issue a proactive statement or respond only to direct inquiries?",
+        "How do we manage the insurance claim given the potential coverage dispute over the email misconfiguration?",
+        "What lessons have already emerged that should be addressed immediately, not deferred to a post-incident review?",
+        "How do we restore trust with affected customers and what remediation or compensation should be offered?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "client_impact_assessment",
+          "description": "Roll to determine the extent of customer-facing impact from the stolen data",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Customer Losses",
+              "description": "Two customers have fallen victim to business email compromise attacks using data stolen from the organisation. A total of £1.4 million has been transferred to attacker-controlled accounts. The customers hold the organisation responsible and are engaging solicitors. Media coverage is intensifying.",
+              "modifier": "£1.4 million in customer losses. Legal action initiated. Full media crisis."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Widespread Customer Targeting",
+              "description": "Over 50 customers report receiving suspicious communications. While no financial losses have occurred yet, several customers are demanding to close their accounts. The organisation's customer retention team is overwhelmed.",
+              "modifier": "Mass customer contact required. Significant customer attrition risk."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Contained Impact",
+              "description": "The organisation's proactive outreach to potentially affected customers has been well-received. Some customers are concerned but appreciate the transparency. Three customers request enhanced security measures on their accounts.",
+              "modifier": "Customer impact manageable through proactive communication."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Effective Customer Protection",
+              "description": "The rapid customer notification campaign, combined with temporary enhanced authentication measures, has prevented any customer losses. Feedback from customers is largely positive, praising the organisation's swift and transparent response.",
+              "modifier": "No customer losses. Reputation preserved through strong response."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Strengthened Relationships",
+              "description": "The organisation's exemplary incident handling becomes a case study in effective breach response. Several prospects cite the transparent handling as a reason to move their business to the organisation. The sector regulator commends the organisation's response in its next supervisory letter.",
+              "modifier": "Reputational gain from excellent incident handling. Regulatory commendation."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The original phishing email is discovered to contain a zero-day exploit in addition to the credential harvesting link. Patching is not yet available.",
+        "An internal investigation reveals that mandatory phishing awareness training completion rates were only 62%, and the board had not been informed of this gap.",
+        "The journalist's source is identified as a disgruntled former employee who learned of the incident through contacts still at the organisation.",
+        "The cyber insurance policy excess is £500,000 and the insurer is disputing the claim, leaving the organisation to cover all incident response costs in the interim."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Were email security controls adequate to detect and block the phishing campaign?",
+      "Was the incident escalation pathway clear and timely?",
+      "Were credential compromise procedures effective — including MFA enforcement and password rotation?",
+      "How effective was internal communication to staff during the incident?",
+      "Were regulatory notification obligations understood and met within required timelines?",
+      "What improvements to phishing awareness training are needed?"
+    ]
+  }
+}
