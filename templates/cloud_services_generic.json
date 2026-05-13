@@ -1,0 +1,304 @@
+{
+  "id": "cloud_services_generic",
+  "campaign": "digital_operational_resilience",
+  "verticals": [
+    "generic"
+  ],
+  "title": "The Vanishing Citadel",
+  "subtitle": "Loss of Access to Cloud Services",
+  "description": "The ethereal towers that house your realm's most vital operations have vanished into the mist. Your cloud fortress — once thought impervious — has become unreachable. Whether by sabotage, sorcery, or the failings of a distant ally, your organisation's ability to function hangs by a thread as the fog refuses to lift.",
+  "severity": "P1 — Critical",
+  "theme_color": "#0dcaf0",
+  "icon": "🔷",
+  "estimated_duration_minutes": 45,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 14,
+  "compliance_frameworks": [
+    "NIST CSF ID.AM",
+    "ISO 27001 A.14",
+    "NIS2 Art.21"
+  ],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the response team, coordinates business continuity decisions",
+      "required": true
+    },
+    {
+      "name": "IT Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Assesses technical impact, manages failover procedures, liaises with cloud provider",
+      "required": true
+    },
+    {
+      "name": "Business Continuity Manager",
+      "title": "Keeper of the Contingency",
+      "description": "Activates business continuity plans, manages manual workarounds and fallback procedures",
+      "required": true
+    },
+    {
+      "name": "Compliance / DPO",
+      "title": "Keeper of the Codex",
+      "description": "Assesses regulatory impact, manages notification obligations",
+      "required": true
+    },
+    {
+      "name": "Customer Relations",
+      "title": "Herald of the Realm",
+      "description": "Manages customer communication, handles complaints, coordinates service updates",
+      "required": false
+    },
+    {
+      "name": "Vendor / Procurement Lead",
+      "title": "Alliance Keeper",
+      "description": "Manages cloud provider relationship, reviews SLA commitments, escalates through contractual channels",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive decision authority, manages board communication and strategic risk",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "E1",
+      "title": "The Fog Descends — Services Unreachable",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "It is 08:00 UTC on a Wednesday morning. Staff begin reporting that they cannot access core business applications. The organisation's primary cloud-hosted services — including Microsoft 365 (email, Teams, SharePoint), the cloud-based CRM platform, and the customer-facing online portal — are all unresponsive.\n\nThe IT Operations team confirms that the organisation's primary cloud region is experiencing a major outage. The cloud provider's status page shows a 'service degradation' notice but provides no estimated time to recovery. Internal monitoring confirms that connectivity to the cloud environment is down — it is not a local network issue.\n\nThe organisation's internet-facing services are all hosted in this cloud region. Client-facing online services, the mobile app API, and the secure messaging portal are all offline. Customers are unable to log in, access their accounts, or complete transactions through digital channels.\n\nThe phone lines to the customer service centre are already seeing a 300% spike in call volume.",
+      "facilitator_prompts": [
+        "What is our immediate response? Do we activate the Business Continuity Plan?",
+        "What services can we continue to deliver without cloud access? What manual workarounds exist?",
+        "How do we communicate with staff if email and Teams are both down?",
+        "What is our customer communication strategy? How do we inform customers that digital services are unavailable?",
+        "Do we have a secondary cloud region or on-premises failover for critical services?",
+        "What are our regulatory obligations if customer-facing services are offline for an extended period?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "failover_assessment",
+          "description": "Roll to determine the state of the bank's failover and business continuity capabilities",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [
+                1,
+                1
+              ],
+              "title": "No Viable Failover",
+              "description": "The disaster recovery environment was decommissioned six months ago as a cost-saving measure and never replaced. There is no secondary cloud region, no on-premises fallback, and no tested manual procedures. The organisation is completely dependent on the cloud provider's recovery.",
+              "modifier": "Total dependency on cloud provider. No alternative service delivery capability."
+            },
+            "fail": {
+              "range": [
+                2,
+                7
+              ],
+              "title": "Failover Exists But Untested",
+              "description": "A secondary cloud region exists but has never been tested with a full failover. When activated, critical configuration differences are discovered — the database replication is 36 hours behind and the SSL certificates have expired. Partial failover is possible but with significant data gaps.",
+              "modifier": "Failover partially functional. 36-hour data gap. Customer transactions from yesterday may be lost."
+            },
+            "partial": {
+              "range": [
+                8,
+                14
+              ],
+              "title": "Partial Failover Successful",
+              "description": "The secondary region activates successfully for the online portal and mobile app. However, the CRM and Microsoft 365 services have no failover — staff remain without email, Teams, and client relationship tools. Customer-facing services are restored but internal operations are severely hampered.",
+              "modifier": "Customer services partially restored. Internal communications still down."
+            },
+            "success": {
+              "range": [
+                15,
+                19
+              ],
+              "title": "Good Failover Capability",
+              "description": "The disaster recovery plan activates smoothly. Customer-facing services fail over to the secondary region within 45 minutes. Microsoft 365 is restored via the provider's global redundancy. The CRM requires a manual cutover but is operational within 2 hours.",
+              "modifier": "Services restored within acceptable timeframes. Minimal customer impact."
+            },
+            "critical_success": {
+              "range": [
+                20,
+                20
+              ],
+              "title": "Critical Success — Seamless Transition",
+              "description": "The organisation's investment in active-active multi-region deployment pays off. Automated failover detects the outage and switches all services to the secondary region within 3 minutes. Most clients experience no disruption. The organisation's resilience planning is vindicated.",
+              "modifier": "Near-zero downtime. Customers unaffected. Operations continue normally."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The cloud provider's support line has a 4-hour wait time due to the volume of affected customers. The organisation's designated technical account manager is on leave.",
+        "The organisation's BCP documentation is stored in SharePoint — which is hosted on the same cloud platform that is down. No offline copies exist.",
+        "The organisation's VoIP telephone system is also cloud-hosted and begins dropping calls as the outage extends, cutting off the customer service centre.",
+        "A competitor competitor tweets that their services are 'fully operational and ready to help customers who need reliable service' — a clear dig at your outage."
+      ]
+    },
+    {
+      "id": "E2",
+      "title": "The Prolonged Siege — Hours Without Resolution",
+      "phase": 2,
+      "time_offset": "T+20 Minutes",
+      "narrative": "Four hours have passed. The cloud provider has upgraded the incident to a 'major outage' but still provides no estimated time to recovery. Their latest communication states: 'We have identified the root cause as a cascading failure in our storage subsystem. Engineering teams are working to restore service. We will provide an update in 2 hours.'\n\nThe organisation now faces mounting pressure from multiple directions:\n\n1. The FCA's operational resilience framework requires the organisation to remain within its impact tolerances for important business services. The online portal has now exceeded its 4-hour maximum tolerable downtime.\n\n2. Approximately 200 customer transactions that were in-flight when the outage occurred are in an unknown state. It is unclear whether payments were processed, partially processed, or failed.\n\n3. Staff productivity has dropped to near zero. Without email, Teams, CRM, or document access, most departments cannot function. Some staff have begun using personal email and WhatsApp to communicate, raising data protection concerns.\n\n4. The organisation's social media channels are being flooded with complaints from customers unable to access their accounts.",
+      "facilitator_prompts": [
+        "We have exceeded our impact tolerance for online services. What is the regulatory escalation process?",
+        "200 transactions are in an unknown state. How do we reconcile these and what do we tell affected customers?",
+        "Staff are using personal devices and email for work communications. How do we manage this shadow IT risk?",
+        "What is our social media response strategy? Do we acknowledge the outage publicly?",
+        "Should we consider the cloud provider relationship strategically? Is this a contractual SLA breach?",
+        "What is the board communication? Do we convene an emergency board call?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "transaction_reconciliation",
+          "description": "Roll to determine the state of the 200 in-flight transactions",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [
+                1,
+                1
+              ],
+              "title": "Data Corruption Discovered",
+              "description": "When services are eventually restored, the storage subsystem failure has caused data corruption in the transaction database. 47 transactions were duplicated — meaning customers were charged twice. 12 transactions were lost entirely with no record in any system. Reconciliation will take weeks.",
+              "modifier": "Data corruption confirmed. Duplicate charges and lost transactions. Manual reconciliation required."
+            },
+            "fail": {
+              "range": [
+                2,
+                7
+              ],
+              "title": "Significant Gaps",
+              "description": "Of the 200 in-flight transactions, 156 can be confirmed as either completed or failed. The remaining 44 are in an indeterminate state and require manual investigation with correspondent banks and payment processors. Several are high-value corporate transfers.",
+              "modifier": "44 transactions unresolved. High-value transfers in limbo."
+            },
+            "partial": {
+              "range": [
+                8,
+                14
+              ],
+              "title": "Mostly Recoverable",
+              "description": "The payment processor's independent records allow reconciliation of most transactions. 15 remain uncertain and require customer confirmation. No duplicate charges detected but 8 payments will need to be resubmitted.",
+              "modifier": "Most transactions reconciled. 15 require customer engagement. 8 need resubmission."
+            },
+            "success": {
+              "range": [
+                15,
+                19
+              ],
+              "title": "Clean Recovery",
+              "description": "The bank's payment processing architecture includes idempotency controls that prevent duplicate transactions. All 200 transactions can be definitively reconciled using the payment processor's records. No customer funds are at risk.",
+              "modifier": "All transactions reconciled. No financial impact to customers."
+            },
+            "critical_success": {
+              "range": [
+                20,
+                20
+              ],
+              "title": "Critical Success — Resilience Validated",
+              "description": "The bank's transaction queuing system held all 200 transactions in a local buffer. When cloud services restore, the queue processes automatically with full integrity checks. Not a single transaction is lost or duplicated. The architecture team's resilience design is validated.",
+              "modifier": "Zero transaction loss. Queuing system performed flawlessly."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A national news outlet runs a story: 'Major organisation's systems down for hours as customers locked out of accounts.' The story trends on social media.",
+        "The sector regulator contacts the organisation directly to ask about the operational resilience impact and whether the organisation can meet its end-of-day settlement obligations.",
+        "An enterprising staff member sets up a shared Google Docs spreadsheet to track customer queries — using their personal Google account, exposing customer data to a third-party cloud provider.",
+        "The cloud provider's status page goes down as well, leaving the bank with no official channel for updates on the recovery progress."
+      ]
+    },
+    {
+      "id": "E3",
+      "title": "The Aftermath — Recovery and Reckoning",
+      "phase": 3,
+      "time_offset": "T+35 Minutes",
+      "narrative": "After 14 hours, cloud services are fully restored. The immediate crisis is over, but the aftermath presents its own challenges.\n\nThe cloud provider has issued a preliminary root cause analysis: a routine maintenance operation triggered a cascading failure in their storage infrastructure that affected multiple customers. They acknowledge the outage exceeded their SLA commitments and offer service credits.\n\nThe organisation must now deal with several consequential matters:\n\n1. The sector regulator has requested a formal report on the organisation's operational resilience during the incident, including an assessment of whether impact tolerances were breached and what remedial actions are planned.\n\n2. The organisation received 2,400 customer complaints during the outage. 34 customers have indicated they intend to move their accounts to other providers.\n\n3. The board is questioning the organisation's cloud strategy and whether critical services should be brought back on-premises or distributed across multiple providers.\n\n4. The organisation's operational resilience framework and third-party risk management policies are now under scrutiny from internal audit.",
+      "facilitator_prompts": [
+        "What is the structure and content of our regulator report? How do we demonstrate we are within our resilience framework?",
+        "How do we retain the 34 customers threatening to leave? What remediation or goodwill gesture is appropriate?",
+        "Is the cloud provider's service credit adequate compensation? What are our contractual remedies?",
+        "Should the organisation adopt a multi-cloud strategy? What are the cost, complexity, and risk trade-offs?",
+        "What changes to our BCP and disaster recovery plans are needed based on this experience?",
+        "How do we ensure our operational resilience framework accounts for extended third-party outages?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "regulatory_outcome",
+          "description": "Roll to determine the regulatory outcome of the incident",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [
+                1,
+                1
+              ],
+              "title": "Regulatory Action",
+              "description": "The sector regulator determines that the organisation failed to meet its operational resilience obligations and had no adequate third-party exit strategy. A formal investigation is launched, and the organisation is required to commission an independent skilled persons review (Section 166) of its operational resilience framework at significant cost.",
+              "modifier": "Section 166 review ordered. Significant regulatory scrutiny and cost."
+            },
+            "fail": {
+              "range": [
+                2,
+                7
+              ],
+              "title": "Supervisory Concerns",
+              "description": "The sector regulator raises concerns about the organisation's concentration risk with a single cloud provider and the untested failover arrangements. The bank is required to submit a remediation plan within 30 days and faces enhanced supervisory attention for the next 12 months.",
+              "modifier": "Remediation plan required. Enhanced supervision for 12 months."
+            },
+            "partial": {
+              "range": [
+                8,
+                14
+              ],
+              "title": "Noted With Recommendations",
+              "description": "The sector regulator acknowledges the organisation's response was broadly appropriate but notes areas for improvement, particularly around impact tolerance monitoring and third-party exit planning. Recommendations are included in the next supervisory letter.",
+              "modifier": "Recommendations received. No formal action but expectations raised."
+            },
+            "success": {
+              "range": [
+                15,
+                19
+              ],
+              "title": "Positive Regulatory Assessment",
+              "description": "The sector regulator is satisfied that the organisation's response was proportionate and that the incident was caused by an extraordinary third-party failure. The organisation's proactive communication and rapid failover are noted positively. No further action required.",
+              "modifier": "Regulatory confidence maintained. Response commended."
+            },
+            "critical_success": {
+              "range": [
+                20,
+                20
+              ],
+              "title": "Critical Success — Industry Leadership",
+              "description": "The sector regulator invites the organisation to participate in an industry working group on cloud resilience. The organisation's handling of the incident is cited as a best practice example in the regulator's next communication on operational resilience. The CISO is invited to speak at an regulatory conference.",
+              "modifier": "Industry recognition. Regulatory relationship strengthened."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The cloud provider's preliminary root cause analysis reveals the organisation's data was stored in a single availability zone despite the contract specifying multi-AZ deployment — a provider error.",
+        "Internal audit discovers that the cloud provider contract was never reviewed by the organisation's third-party risk management function and lacks adequate exit provisions.",
+        "A staff member's use of personal WhatsApp during the outage resulted in client data being shared outside the corporate environment. A GDPR incident may need to be reported.",
+        "The organisation's insurance broker advises that business interruption losses from cloud outages may not be covered under the current cyber insurance policy."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Were business continuity plans adequate for an extended cloud outage?",
+      "Were failover and disaster recovery capabilities tested and functional?",
+      "Were regulatory notification obligations understood and met?",
+      "How effective was customer communication during the outage?",
+      "What changes to the cloud strategy and third-party risk management are needed?",
+      "Were staff adequately prepared to operate without cloud services?"
+    ]
+  }
+}

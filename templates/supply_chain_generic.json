@@ -1,0 +1,193 @@
+{
+  "id": "supply_chain_generic",
+  "campaign": "third_party_supply_chain",
+  "verticals": ["generic"],
+  "title": "The Poisoned Alliance",
+  "subtitle": "Third-Party Supply Chain Compromise",
+  "description": "A trusted ally has been compromised. Your realm's managed services provider — once a stalwart guardian of your fortress walls — has fallen to dark forces. The enemy now holds the keys to your kingdom, and the true extent of the betrayal remains shrouded in fog.",
+  "severity": "P1 — Critical",
+  "theme_color": "#0d6efd",
+  "icon": "🔵",
+  "estimated_duration_minutes": 45,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 14,
+  "compliance_frameworks": ["NIST CSF ID.SC", "ISO 27001 A.15", "NIS2 Art.21"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the response team, makes containment and escalation decisions",
+      "required": true
+    },
+    {
+      "name": "IT Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Provides technical context, manages vendor access, proposes containment",
+      "required": true
+    },
+    {
+      "name": "SOC Analyst",
+      "title": "Shadow Watcher",
+      "description": "Conducts threat hunting, reviews authentication logs, monitors for compromise indicators",
+      "required": true
+    },
+    {
+      "name": "Compliance / DPO",
+      "title": "Keeper of the Codex",
+      "description": "Assesses regulatory implications, manages compliance obligations",
+      "required": true
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Reviews vendor contracts, advises on liability and legal remedies",
+      "required": false
+    },
+    {
+      "name": "Third-Party / Vendor Manager",
+      "title": "Alliance Keeper",
+      "description": "Manages vendor relationship, coordinates incident response with SecureOps",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive decision authority, manages systemic risk implications",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "C1",
+      "title": "Vendor Notification — A Raven Bearing Dark Tidings",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "The organisation's managed IT services provider, 'SecureOps Ltd' (fictitious), has issued an urgent notification to all clients. SecureOps provides privileged remote access for system administration, patch management, and monitoring of the organisation's on-premises infrastructure.\n\nSecureOps reports that their internal environment was compromised approximately 14 days ago. The attacker gained access to SecureOps' remote management tooling, which holds administrative credentials for client environments, including your organisation. SecureOps cannot yet confirm whether the attacker used these credentials to access client systems.\n\nSecureOps has engaged a third-party forensics firm, but initial findings will not be available for 48–72 hours.",
+      "facilitator_prompts": [
+        "What is our immediate response to this notification? Do we sever all SecureOps remote access immediately?",
+        "If we cut SecureOps access, what operational services do we lose, and do we have the internal capability to cover them?",
+        "What credentials does SecureOps hold for our environment, and can we rotate them unilaterally?",
+        "Do our contractual arrangements with SecureOps include mandatory breach notification timelines and indemnities?",
+        "Should we treat our own environment as compromised until proven otherwise?",
+        "What threat hunting activities should we initiate on our own systems?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "vendor_access_review",
+          "description": "Roll to determine the state of vendor access controls",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Total Exposure",
+              "description": "The review reveals that SecureOps has unrestricted domain admin access with no PAM controls, no session recording, and shared credentials across all client environments. The credentials haven't been rotated in 18 months.",
+              "modifier": "Maximum exposure. All systems must be considered compromised."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Significant Gaps",
+              "description": "SecureOps has elevated privileges beyond what was contractually agreed. Their service account has access to systems including the payment processing gateway that were not in scope of their managed services agreement.",
+              "modifier": "Scope creep identified. Payment infrastructure potentially exposed."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Moderate Controls",
+              "description": "PAM is in place but session recording was disabled three months ago due to storage issues. SecureOps access is scoped but credential rotation is overdue by six months.",
+              "modifier": "Some controls in place but gaps exist. Partial visibility."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Good Posture",
+              "description": "PAM controls are active with full session recording. SecureOps access is properly scoped. Credential rotation was last performed 45 days ago. There is a clear audit trail to review.",
+              "modifier": "Strong controls. Clear audit trail available for investigation."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Prepared Defence",
+              "description": "Not only are controls robust, but the security team recently implemented just-in-time access for all vendor accounts. Logs show SecureOps' compromised credentials were used to attempt access three days ago — but the JIT policy blocked the attempt. The attack was prevented.",
+              "modifier": "Attack prevented by controls. No compromise of organisation systems."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "SecureOps' notification email was caught by the organisation's spam filter and only discovered when a peer organisation called to discuss the incident.",
+        "The vendor management team cannot locate the current contract with SecureOps — it was managed by a team member who left six months ago.",
+        "SecureOps is also the organisation's SIEM managed service provider, meaning cutting their access also cuts the organisation's primary monitoring capability.",
+        "Another client of SecureOps (a major organisation) has already gone public about being compromised, and the press is now calling all SecureOps clients."
+      ]
+    },
+    {
+      "id": "C2",
+      "title": "Evidence of Access — The Enemy Was Already Inside",
+      "phase": 2,
+      "time_offset": "T+20 Minutes",
+      "narrative": "Internal threat hunting has identified suspicious activity. Authentication logs show that a SecureOps service account authenticated to three of the organisation's domain controllers at 04:30 UTC, six days ago. The session duration was approximately 90 minutes.\n\nDuring this session, the account queried Active Directory for all service accounts, exported the NTDS.dit file (the Active Directory database containing password hashes), and accessed the payment processing gateway server.\n\nThe payment gateway server audit logs show a query of the transaction log archive but no evidence of fraudulent payment instructions being submitted. However, the integrity of the logs themselves cannot be assured if the threat actor had administrative access.",
+      "facilitator_prompts": [
+        "The NTDS.dit file has been exfiltrated. What is the scope of credential compromise, and what is the remediation plan?",
+        "Payment processing infrastructure has been accessed. What are our obligations to notify payment processors and card networks?",
+        "Do we halt all payment processing until the integrity of the gateway can be assured?",
+        "What is the financial exposure if fraudulent payment instructions were submitted but the logs were tampered with?",
+        "How do we communicate this to the sector regulator given the systemic risk implications?",
+        "What are the contractual and legal remedies available to us against SecureOps?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "payment_investigation",
+          "description": "Roll to determine the payment gateway integrity assessment outcome",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Fraudulent Transactions Discovered",
+              "description": "Deep forensic analysis reveals two fraudulent payment instructions were submitted four days ago, totalling £3.2 million. The transactions were routed through intermediary processors in jurisdictions with limited cooperation agreements. The funds have already been withdrawn.",
+              "modifier": "£3.2 million in fraudulent transfers. Recovery unlikely. Payment processing suspension imminent."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Integrity Compromised",
+              "description": "The payment gateway logs have been tampered with. Six hours of transaction logs are missing. Without independent verification from payment processors, it is impossible to confirm whether fraudulent transactions were processed during this window.",
+              "modifier": "Log gap identified. Must contact all payment processors for reconciliation."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Inconclusive",
+              "description": "Logs appear intact but cannot be cryptographically verified. No obvious fraudulent transactions found, but the investigation cannot provide absolute assurance. Compliance obligations require notification regardless.",
+              "modifier": "No fraud confirmed but cannot be ruled out. Compliance notification required."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Gateway Integrity Confirmed",
+              "description": "Independent forensic analysis confirms the payment gateway logs are intact and unmodified. The threat actor accessed the system but did not submit any fraudulent transactions. The reconnaissance suggests preparation for a future attack that was prevented by discovery.",
+              "modifier": "No fraudulent transactions. Attack was in reconnaissance phase."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Counter-Intelligence",
+              "description": "The forensics team discovers the threat actor's tooling on the payment gateway, which includes pre-staged fraudulent payment instructions totalling £12 million that were scheduled for execution tomorrow. The attack has been prevented just in time. National cybersecurity centre and law enforcement are engaged.",
+              "modifier": "£12 million attack prevented. Threat actor infrastructure identified. Multi-agency response initiated."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "Payment processors contact the organisation directly after receiving reports from other SecureOps clients. They are considering a temporary suspension of the organisation's payment processing access.",
+        "The organisation's cyber insurance provider states that supply chain attacks may not be covered under the current policy wording.",
+        "SecureOps' forensics firm contacts the organisation requesting access to the organisation's logs to support their investigation — raising concerns about evidence sharing and liability.",
+        "A payment processor freezes all incoming payment instructions from your organisation as a precautionary measure, halting critical transactions."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Were vendor access controls adequate?",
+      "Was the threat hunting response timely and effective?",
+      "Were compliance obligations understood and met?",
+      "Were contractual protections with SecureOps adequate?",
+      "What improvements should be made to third-party risk management?",
+      "How should vendor access be restructured going forward?"
+    ]
+  }
+}

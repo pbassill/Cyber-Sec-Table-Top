@@ -1,0 +1,253 @@
+{
+  "id": "remote_working_generic",
+  "campaign": "cyber_attack",
+  "verticals": ["generic"],
+  "title": "The Scattered Legion",
+  "subtitle": "Targeting Staff Working From Home",
+  "description": "Your realm's defenders have been dispersed across distant lands, working from keeps and homesteads far from the central fortress. The enemy has seized upon this scattered formation, targeting the weakest outposts to find a way past the castle walls. When the guardians are far from home, every hearth becomes a potential breach point.",
+  "severity": "P2 — High",
+  "theme_color": "#e83e8c",
+  "icon": "🩷",
+  "estimated_duration_minutes": 45,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 12,
+  "compliance_frameworks": ["NIST CSF PR.AC", "ISO 27001 A.6.2", "NCSC Home Working Guidance"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the response team, coordinates containment across distributed workforce",
+      "required": true
+    },
+    {
+      "name": "IT Operations Lead",
+      "title": "Arcane Engineer",
+      "description": "Manages remote access infrastructure, endpoint security, and network containment",
+      "required": true
+    },
+    {
+      "name": "SOC Analyst",
+      "title": "Shadow Watcher",
+      "description": "Analyses threat indicators, monitors remote endpoints, investigates compromise scope",
+      "required": true
+    },
+    {
+      "name": "Compliance / DPO",
+      "title": "Keeper of the Codex",
+      "description": "Assesses data protection implications of home working compromise, regulatory obligations",
+      "required": true
+    },
+    {
+      "name": "HR Representative",
+      "title": "Guild Master",
+      "description": "Manages staff welfare, addresses conduct matters, coordinates with affected employees",
+      "required": false
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Town Crier",
+      "description": "Drafts staff advisories, manages external communication if breach is confirmed",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive decision authority, approves policy changes to remote working arrangements",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "G1",
+      "title": "The Outpost Breached — A Remote Worker Compromised",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "It is 14:00 UTC on a Friday afternoon. The organisation operates a hybrid working model, with approximately 60% of staff working from home on any given day. The SOC receives an alert from the EDR platform: a corporate laptop belonging to a senior operations manager has exhibited suspicious behaviour.\n\nThe EDR telemetry shows that the laptop connected to an unsecured public Wi-Fi network at a coffee shop earlier today. While connected, the user accessed the organisation's corporate VPN. During this session, a man-in-the-middle attack intercepted the user's connection to an internal HR portal, which uses certificate pinning that was disabled on this device during a troubleshooting exercise three months ago.\n\nSubsequently, the laptop downloaded and executed a malicious payload disguised as a software update. The malware has established a persistent reverse shell connection to an external command-and-control server. The laptop is currently connected to the user's home Wi-Fi network and has an active VPN tunnel into the corporate network.\n\nThe user's role provides access to payment operations systems, interbank settlement processes, and payment processing interfaces.",
+      "facilitator_prompts": [
+        "What is the immediate containment action? Do we remotely isolate the laptop or revoke the VPN connection?",
+        "If we isolate the device, the user loses all access — how do we communicate with them and manage their workload?",
+        "The user connected to public Wi-Fi and had certificate pinning disabled. What policy failures enabled this?",
+        "Given the user's access to payment systems, what is the potential financial exposure?",
+        "Should we assume the user's home network is also compromised and could affect other household devices?",
+        "Do we need to check whether other corporate devices have connected to unsecured networks recently?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "malware_analysis",
+          "description": "Roll to determine the nature and capability of the malware on the compromised laptop",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Advanced Persistent Threat",
+              "description": "The malware is a sophisticated trojan specifically designed for organisations. It has captured the user's stored credentials, browser sessions, and VPN tokens. It has already used the VPN tunnel to scan the internal network, identified the payment gateway, and attempted to authenticate using the user's cached credentials. A fraudulent payment instruction may have been queued.",
+              "modifier": "Trojan with payment access capability. Possible fraudulent payment in queue."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Credential Stealer Active",
+              "description": "The malware is a credential harvesting tool that has captured the user's corporate password, VPN certificate, and browser-stored passwords for 14 internal applications. The stolen credentials have been exfiltrated to the C2 server. The attacker now has the ability to impersonate this user remotely.",
+              "modifier": "Full credential compromise. Attacker can impersonate the user. All stored passwords exposed."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Standard RAT Deployed",
+              "description": "The malware is a common remote access trojan (RAT) providing the attacker with remote desktop control, keylogging, and file access. The attacker has had approximately 2 hours of access. Keylogger output likely includes any passwords typed during this period but stored credentials may not be directly compromised.",
+              "modifier": "Remote access trojan with keylogger. 2-hour window of exposure."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Limited Malware Capability",
+              "description": "The malware is a basic dropper that established a reverse shell but has limited functionality. The EDR agent detected and quarantined the secondary payload before it could execute. The attacker has shell access but no credential theft tools were deployed.",
+              "modifier": "Malware partially contained by EDR. No credential theft confirmed."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Threat Blocked",
+              "description": "The EDR platform's AI-based detection identified the malware during download and blocked execution. The reverse shell was never established. The malicious payload has been captured for analysis, providing valuable threat intelligence. The user's device needs reimaging but no compromise occurred.",
+              "modifier": "Malware blocked before execution. No compromise. Threat intelligence captured."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The operations manager is the sole person authorised to process a critical payment worth £45 million due by end of day. If they cannot access their workstation, the payment may fail.",
+        "The user reports that their teenage child also uses the same home Wi-Fi network on a personal device for online gaming — the home network may have additional compromised devices.",
+        "The troubleshooting exercise that disabled certificate pinning was performed by an IT contractor who has since left the organisation. No documentation exists and the change was never reversed.",
+        "Three other employees report receiving similar 'software update' prompts on their home-connected laptops, suggesting a wider campaign targeting remote workers."
+      ]
+    },
+    {
+      "id": "G2",
+      "title": "The Widening Storm — Multiple Outposts Under Attack",
+      "phase": 2,
+      "time_offset": "T+20 Minutes",
+      "narrative": "The investigation has revealed that the attack on the operations manager was not an isolated incident. The SOC has identified a coordinated campaign targeting the organisation's remote workers.\n\nOver the past week, 12 employees received highly personalised phishing emails to their personal email addresses — not their corporate addresses. The emails referenced specific details about the employees' roles and recent work projects. This suggests the attacker had prior reconnaissance, possibly from a previous data breach or from LinkedIn and other open-source intelligence.\n\nOf the 12 targeted employees, 5 clicked links and entered credentials on fake Microsoft 365 login pages. Two of these employees reused their corporate passwords for personal accounts — a policy violation that has now given the attacker valid credentials.\n\nAdditionally, the SOC discovers that one employee has been accessing corporate resources from a personal device that is not managed by the organisation's MDM (Mobile Device Management) solution. This device has no EDR agent, no disk encryption, and is running an outdated operating system with known vulnerabilities.",
+      "facilitator_prompts": [
+        "We now have a coordinated campaign targeting 12 employees. How does this change our response posture?",
+        "Personal email addresses were targeted — how did the attacker obtain this information, and is this a GDPR concern?",
+        "Two employees reused corporate passwords on personal accounts. How do we handle this from a policy and HR perspective?",
+        "An unmanaged personal device is accessing corporate resources. How was this possible and how do we prevent it?",
+        "Should we mandate a company-wide password reset for all remote workers as a precaution?",
+        "Do we need to reassess our entire remote working security architecture?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "scope_assessment",
+          "description": "Roll to determine the full scope of the remote working compromise",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Widespread Compromise",
+              "description": "The investigation reveals that the attacker has been operating inside the network for three weeks, using compromised remote worker credentials as entry points. They have accessed the HR system, the payroll platform, and the customer database. A data exfiltration channel was discovered tunnelling data out through DNS queries, bypassing the corporate firewall. The full extent of data loss is unknown.",
+              "modifier": "Three-week undetected compromise. HR, payroll, and customer data potentially exfiltrated."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Multiple Access Points",
+              "description": "Four of the five compromised accounts were used to access corporate resources from attacker-controlled infrastructure. Each account accessed different systems — spreading the attacker's reach across finance, operations, compliance, and customer services. Containment requires revoking access for all five accounts simultaneously.",
+              "modifier": "Four departments breached via separate compromised accounts."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Contained Spread",
+              "description": "Only two of the five compromised accounts were successfully used by the attacker. Conditional access policies blocked the other three due to unrecognised device profiles. The two compromised sessions accessed email and SharePoint but no core business systems.",
+              "modifier": "Two accounts exploited. Access limited to email and document repositories."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Early Detection",
+              "description": "The SOC's user behaviour analytics (UBA) flagged anomalous login patterns for three of the compromised accounts before the attacker could use them. These accounts were proactively locked. Only two brief sessions from unrecognised locations were recorded, with minimal data access.",
+              "modifier": "UBA detected anomalies early. Most compromised accounts locked before exploitation."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Campaign Disrupted",
+              "description": "The organisation's zero-trust architecture means that even with valid credentials, the attacker could not access any internal resources without passing device compliance checks, continuous authentication, and micro-segmentation policies. All five compromised accounts were flagged and locked automatically. The attacker gained nothing despite the credential theft.",
+              "modifier": "Zero-trust architecture proved effective. No internal access despite credential theft."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The employee using an unmanaged personal device is a senior director who insisted on an exception to the MDM policy for 'privacy reasons.' HR and compliance are conflicted on how to handle this.",
+        "One of the compromised employees is currently on annual leave in a country with limited mobile connectivity. They cannot be reached to confirm suspicious activity on their account.",
+        "The organisation's MDM solution provider announces that a vulnerability in their platform was exploited to harvest enrolled device information — the attacker may have used this to identify which employees were remote working.",
+        "A union representative raises concerns that monitoring employees' home network activity could violate their privacy rights and employment agreements."
+      ]
+    },
+    {
+      "id": "G3",
+      "title": "The New Order — Rebuilding Defences",
+      "phase": 3,
+      "time_offset": "T+35 Minutes",
+      "narrative": "The immediate incident is contained. All compromised accounts have been disabled and re-credentialed. Affected devices have been reimaged or quarantined. The attacker has been ejected from the network.\n\nHowever, the incident has exposed fundamental weaknesses in the organisation's remote working security posture. The CISO presents a frank assessment to the executive committee:\n\n1. The organisation's remote access architecture relies heavily on VPN with limited zero-trust controls. Once a remote device is on the VPN, it has broad network access.\n\n2. Endpoint compliance for remote devices is inconsistent. Patching, configuration management, and EDR coverage have degraded since the initial remote working rollout.\n\n3. Staff security awareness for home working is inadequate. Employees are connecting to unsecured networks, reusing passwords, and using personal devices without authorisation.\n\n4. The organisation has limited visibility into threats targeting employees through personal channels (personal email, social media, messaging apps).\n\n5. The investigation confirmed that customer personal data was exposed. The DPO has determined this is a notifiable breach under GDPR, and the 72-hour notification clock is ticking.",
+      "facilitator_prompts": [
+        "What is the GDPR breach notification strategy? What information do we include in the ICO notification?",
+        "Should we mandate that all staff return to the office until remote working security is improved?",
+        "What is the business case for implementing a zero-trust architecture? What is the timeline and cost?",
+        "How do we address the cultural challenges — employees resisting MDM, using personal devices, reusing passwords?",
+        "What enhanced security controls should be implemented for remote workers with access to sensitive systems?",
+        "How do we balance employee privacy with the need for enhanced monitoring of remote access?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "remediation_programme",
+          "description": "Roll to determine how the organisation responds to the required security improvements",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Organisational Resistance",
+              "description": "The executive committee is divided. The COO opposes any restrictions on remote working, citing productivity concerns and staff retention. The CISO's recommendations are deferred to a working group that is not expected to report for six months. Meanwhile, the ICO notification receives an inadequate response, and the regulator opens a formal investigation.",
+              "modifier": "Security improvements blocked by internal politics. ICO investigation opened."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Partial Commitment",
+              "description": "Budget is approved for some security improvements but not the full zero-trust programme. A company-wide password reset is mandated but enforcement is patchy. Some departments comply; others push back. The MDM exception for the senior director remains in place.",
+              "modifier": "Partial improvements funded. Inconsistent enforcement. Key gaps remain."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Phased Approach Approved",
+              "description": "The executive committee approves a phased remediation programme. Phase 1 (immediate): mandatory MFA for all remote access, no exceptions. Phase 2 (3 months): full MDM enrollment. Phase 3 (6 months): zero-trust architecture pilot. The ICO notification is handled professionally.",
+              "modifier": "Structured remediation plan approved. MFA enforced immediately."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Strong Organisational Response",
+              "description": "The incident catalyses genuine change. The board fast-tracks budget for zero-trust architecture. All remote workers are enrolled in MDM within 30 days. Enhanced security awareness training is mandatory. The remote working policy is completely rewritten with clear security requirements.",
+              "modifier": "Comprehensive security overhaul approved and fast-tracked."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Transformation",
+              "description": "The board fully supports the CISO's vision. A zero-trust transformation programme is funded as a strategic priority. The organisation becomes an early adopter of advanced remote working security controls. The sector regulator highlights the organisation's response as an example of good practice. Staff engagement with security training reaches 98%.",
+              "modifier": "Full transformation programme. Regulatory commendation. Industry-leading security posture."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A national newspaper publishes an opinion piece titled 'Working from home is a security nightmare for organisations' with the organisation's incident cited as the primary example (despite non-disclosure, the journalist has insider sources).",
+        "The IT department estimates the zero-trust architecture programme will cost £4.2 million and take 18 months. The CFO demands a cost-benefit analysis proving the investment is justified.",
+        "Three high-performing employees hand in their notice, citing the new mandatory MDM enrollment as 'invasive surveillance' of their personal lives.",
+        "The ICO acknowledges the breach notification and requests a full audit of the organisation's data protection measures for remote workers within 28 days."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Were remote access security controls adequate to protect against targeted attacks?",
+      "How effective was the detection and response for compromised remote endpoints?",
+      "Were policies around personal device usage, password reuse, and public Wi-Fi adequate?",
+      "How well did the organisation balance security with employee privacy and experience?",
+      "Were GDPR breach notification procedures clear and timely?",
+      "What strategic changes to remote working security architecture are needed?"
+    ]
+  }
+}
