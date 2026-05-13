@@ -157,7 +157,7 @@ Point your document root to the repository directory and ensure `mod_rewrite` an
 
 ## 🎮 How to Run an Exercise
 
-1. **Event Setup** (`setup.php`) — Name your event, select campaign category, choose scenarios, add participants, and generate a session code.
+1. **Event Setup** (`setup.php`) — Name your event, choose the **industry vertical** for your players (banking, healthcare, retail, etc.), select campaign category, choose scenarios, add participants, and generate a session code. The vertical you pick controls which adventures the DM is offered — see *Industry Verticals* below.
 2. **Share the Link** — Share the session code or QR code with participants. They join via `player.php`.
 3. **Enter the War Room** (`session.php`) — The facilitator reads each inject aloud, uses the timer, and guides discussion using the prompts.
 4. **Roll the Dice** — At key moments, click the dice buttons. Outcomes range from Critical Failure (💀) to Critical Success (👑).
@@ -183,6 +183,7 @@ Add new JSON files to the `templates/` directory following the existing schema. 
 
 - `id` — Unique identifier (matches filename)
 - `campaign` — Campaign category ID (from `campaigns.json`)
+- `verticals` — Array of industry vertical IDs (from `verticals.json`) the scenario is appropriate for. Use the literal `["all"]` to make the scenario available regardless of which vertical the DM picks. A scenario without a `verticals` field is treated as `["all"]` for backwards compatibility.
 - `title` / `subtitle` / `description` — Flavour text
 - `severity`, `theme_color`, `icon` — Display properties
 - `compliance_frameworks[]` — Regulatory framework tags (e.g., `["GDPR Art.33", "NIST CSF RS.RP"]`)
@@ -195,6 +196,12 @@ Add new JSON files to the `templates/` directory following the existing schema. 
   - `random_complications[]` — Possible complication cards
   - `compliance_frameworks[]` — Per-inject regulatory tags
 - `debrief` — Post-scenario review questions
+
+### Industry Verticals
+
+Verticals are defined in `templates/verticals.json` (one entry per vertical with `id`, `title`, `icon`, `theme_color`, and `description`). The shipped list covers banking, healthcare, retail, manufacturing, government, technology/SaaS, energy & utilities, education, legal & professional services, plus a `generic` "any industry" catch-all.
+
+When the DM picks a vertical at event setup, the campaign category cards and the available-adventures list are filtered to scenarios whose `verticals` array contains either that vertical's ID or the literal sentinel `"all"`. Picking `generic` shows every scenario. To add a new industry, add an entry to `verticals.json`; to make an existing scenario available there, add the new ID to that scenario's `verticals` array.
 
 ## 🏢 Corporate Deployment Guide
 

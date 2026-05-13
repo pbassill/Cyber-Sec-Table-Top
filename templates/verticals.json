@@ -1,0 +1,72 @@
+{
+    "generic": {
+        "id": "generic",
+        "title": "Generic / Any Industry",
+        "icon": "🌐",
+        "theme_color": "#6c757d",
+        "description": "A sector-agnostic framing suitable for any organisation. Scenarios will not be filtered to a specific industry. Use this when running a mixed-industry exercise or when the players' organisation does not fit one of the named verticals."
+    },
+    "banking": {
+        "id": "banking",
+        "title": "Banking & Financial Services",
+        "icon": "🏦",
+        "theme_color": "#0d6efd",
+        "description": "Retail, commercial, private and investment banking, payments, and capital markets. Scenarios assume regulators such as the FCA/PRA/ECB, frameworks like DORA and PS21/3, and concerns such as SWIFT/payment fraud, KYC/AML, and client confidentiality."
+    },
+    "healthcare": {
+        "id": "healthcare",
+        "title": "Healthcare & Life Sciences",
+        "icon": "🏥",
+        "theme_color": "#dc3545",
+        "description": "Hospitals, clinics, insurers, pharmaceuticals, and medical devices. Concerns include patient safety, electronic health records, HIPAA / NHS Data Security and Protection Toolkit, clinical trial integrity, and medical device security."
+    },
+    "retail": {
+        "id": "retail",
+        "title": "Retail & E-commerce",
+        "icon": "🛒",
+        "theme_color": "#fd7e14",
+        "description": "Bricks-and-mortar retailers, e-commerce platforms, hospitality and consumer goods. Concerns include PCI DSS, point-of-sale malware, loyalty/account takeover, peak-trading availability, and customer-facing reputational impact."
+    },
+    "manufacturing": {
+        "id": "manufacturing",
+        "title": "Manufacturing & Industrial",
+        "icon": "🏭",
+        "theme_color": "#6f42c1",
+        "description": "Discrete and process manufacturing, automotive, aerospace, and heavy industry. Concerns include OT/ICS security, IP theft, production line continuity, supply chain integrity, and safety-critical control systems."
+    },
+    "government": {
+        "id": "government",
+        "title": "Government & Public Sector",
+        "icon": "🏛️",
+        "theme_color": "#198754",
+        "description": "Central and local government, defence, law enforcement, and public services. Concerns include citizen data, classified information handling, NCSC/CISA guidance, FOI obligations, and high-visibility political and media impact."
+    },
+    "tech_saas": {
+        "id": "tech_saas",
+        "title": "Technology & SaaS",
+        "icon": "💻",
+        "theme_color": "#0dcaf0",
+        "description": "Software vendors, SaaS providers, cloud platforms, and digital-native businesses. Concerns include multi-tenant data isolation, customer breach notification under SLAs, source-code and CI/CD pipeline security, and downstream supply chain impact."
+    },
+    "energy_utilities": {
+        "id": "energy_utilities",
+        "title": "Energy & Utilities",
+        "icon": "⚡",
+        "theme_color": "#ffc107",
+        "description": "Electricity, gas, water and renewables. Concerns include critical national infrastructure obligations (NIS2 / CAF), SCADA and OT security, grid stability, public safety impact, and coordinated regulator engagement."
+    },
+    "education": {
+        "id": "education",
+        "title": "Education & Research",
+        "icon": "🎓",
+        "theme_color": "#20c997",
+        "description": "Schools, colleges, universities and research institutes. Concerns include student data, research IP, federated identity, BYOD environments, and limited security budgets relative to attack surface."
+    },
+    "legal_professional_services": {
+        "id": "legal_professional_services",
+        "title": "Legal & Professional Services",
+        "icon": "⚖️",
+        "theme_color": "#adb5bd",
+        "description": "Law firms, accountancies, consultancies and other professional service firms. Concerns include privileged client data, conflict-of-interest walls, regulator (SRA / ICAEW) obligations, and trust-driven reputational damage."
+    }
+}

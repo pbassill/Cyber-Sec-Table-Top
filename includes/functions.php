@@ -43,18 +43,55 @@ function loadScenarios(): array {
     $templateDir = __DIR__ . '/../templates/';
     $files = glob($templateDir . '*.json');
 
+    // Files that live in templates/ but are not playable scenarios
+    $skip = ['random_events', 'campaigns', 'verticals'];
+
     foreach ($files as $file) {
         $filename = basename($file, '.json');
-        if ($filename === 'random_events') continue;
+        if (in_array($filename, $skip, true)) continue;
 
         $content = file_get_contents($file);
         $data = json_decode($content, true);
         if ($data && isset($data['id'])) {
+            // Backwards compatibility: any scenario without an explicit
+            // verticals tag is treated as applicable to all verticals.
+            if (!isset($data['verticals']) || !is_array($data['verticals']) || empty($data['verticals'])) {
+                $data['verticals'] = ['all'];
+            }
             $scenarios[$data['id']] = $data;
         }
     }
 
     return $scenarios;
+}
+
+/**
+ * Load industry vertical definitions from templates/verticals.json
+ */
+function loadVerticals(): array {
+    $file = __DIR__ . '/../templates/verticals.json';
+    if (!file_exists($file)) return [];
+
+    $content = file_get_contents($file);
+    $data = json_decode($content, true);
+    return is_array($data) ? $data : [];
+}
+
+/**
+ * Decide whether a scenario is applicable to the chosen industry vertical.
+ * A scenario tagged with the literal "all" is shown for every vertical.
+ * Scenarios with no verticals tag are treated as "all" by loadScenarios().
+ */
+function scenarioMatchesVertical(array $scenario, string $verticalId): bool {
+    $tags = $scenario['verticals'] ?? ['all'];
+    if (!is_array($tags) || empty($tags)) return true;
+    if (in_array('all', $tags, true)) return true;
+    if ($verticalId === '' || $verticalId === 'generic') {
+        // No vertical chosen yet, or the catch-all "generic" framing —
+        // show every scenario the DM might want to pick.
+        return true;
+    }
+    return in_array($verticalId, $tags, true);
 }
 
 /**
@@ -262,6 +299,7 @@ function saveSharedSession(array $data): void {
         'session_code' => $data['session_code'],
         'event_name' => $data['event_name'] ?? '',
         'selected_campaign' => $data['selected_campaign'] ?? '',
+        'selected_vertical' => $data['selected_vertical'] ?? 'generic',
         'scenarios' => $data['scenarios'] ?? [],
         'current_scenario' => $data['current_scenario'] ?? 0,
         'current_inject' => $data['current_inject'] ?? 0,
@@ -316,8 +354,14 @@ function getSessionData(): array {
             'notes' => [],
             'participants' => [],
             'session_code' => '',
+            'selected_vertical' => 'generic',
             'started' => false
         ];
+    }
+
+    // Backwards compatibility for sessions saved before verticals existed
+    if (!isset($_SESSION['campaign']['selected_vertical']) || $_SESSION['campaign']['selected_vertical'] === '') {
+        $_SESSION['campaign']['selected_vertical'] = 'generic';
     }
 
     return $_SESSION['campaign'];

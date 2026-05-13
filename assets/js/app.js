@@ -4,6 +4,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+    initVerticalSelector();
     initCampaignSelector();
     initCampaignBuilder();
     initSetupPage();
@@ -12,6 +13,149 @@ document.addEventListener('DOMContentLoaded', function() {
     initComplicationCards();
     initQuickDiceRoller();
 });
+
+/* ════════════════════════════════════════════
+   Industry Vertical Selector (Setup Page)
+   ════════════════════════════════════════════ */
+function initVerticalSelector() {
+    var verticalGrid = document.getElementById('verticalGrid');
+    var verticalInput = document.getElementById('selectedVerticalInput');
+
+    if (!verticalGrid || !verticalInput) return;
+
+    var verticalCards = verticalGrid.querySelectorAll('.vertical-select-card');
+
+    verticalCards.forEach(function(card) {
+        card.addEventListener('click', function() {
+            var verticalId = this.dataset.verticalId;
+            if (!verticalId || verticalId === verticalInput.value) return;
+
+            // Visually deselect all and select this one
+            verticalCards.forEach(function(c) {
+                c.classList.remove('campaign-selected');
+                var inner = c.querySelector('.campaign-card-inner');
+                if (inner) inner.style.background = '';
+                var checkIcon = c.querySelector('.bi-check-circle-fill');
+                if (checkIcon) checkIcon.parentElement.removeChild(checkIcon);
+            });
+
+            this.classList.add('campaign-selected');
+            var inner = this.querySelector('.campaign-card-inner');
+            var themeColor = this.style.borderColor;
+            if (inner && themeColor) {
+                inner.style.background = 'linear-gradient(135deg, ' + themeColor + '22, transparent)';
+            }
+            var titleDiv = this.querySelector('.flex-grow-1');
+            if (titleDiv) {
+                var check = document.createElement('i');
+                check.className = 'bi bi-check-circle-fill text-success ms-2';
+                check.style.fontSize = '1.3rem';
+                titleDiv.parentElement.appendChild(check);
+            }
+
+            verticalInput.value = verticalId;
+            applyVerticalFilter(verticalId);
+        });
+    });
+}
+
+/**
+ * Returns true if the scenario card (or scenario data object) is applicable
+ * to the chosen industry vertical. Mirrors PHP scenarioMatchesVertical().
+ */
+function scenarioMatchesVerticalJs(verticalsList, verticalId) {
+    if (!verticalsList || verticalsList.length === 0) return true;
+    if (verticalsList.indexOf('all') !== -1) return true;
+    if (!verticalId || verticalId === 'generic') return true;
+    return verticalsList.indexOf(verticalId) !== -1;
+}
+
+/**
+ * Re-apply the campaign / scenario filtering when the vertical changes.
+ * - Updates each campaign card's adventure count and visibility.
+ * - Hides scenarios in the available list that don't match.
+ * - Removes any already-selected scenarios that no longer match, with a warning.
+ * - Updates the small "lens" badge on the campaign step.
+ */
+function applyVerticalFilter(verticalId) {
+    var scenarios = window.scenarioData || {};
+    var verticals = window.verticalData || {};
+
+    // Update lens badge
+    var lensBadge = document.getElementById('verticalLensBadge');
+    if (lensBadge && verticals[verticalId]) {
+        lensBadge.textContent = verticals[verticalId].icon + ' ' + verticals[verticalId].title;
+    }
+
+    // Recompute per-campaign counts and grey out empties
+    var campaignCards = document.querySelectorAll('#campaignGrid .campaign-select-card');
+    campaignCards.forEach(function(card) {
+        var cId = card.dataset.campaignId;
+        var count = 0;
+        Object.keys(scenarios).forEach(function(sId) {
+            var s = scenarios[sId];
+            if ((s.campaign || '') !== cId) return;
+            if (scenarioMatchesVerticalJs(s.verticals || ['all'], verticalId)) count++;
+        });
+        var badge = card.querySelector('.campaign-count-badge');
+        if (badge) {
+            badge.textContent = count + ' adventure' + (count === 1 ? '' : 's');
+        }
+        if (count === 0) {
+            card.classList.add('campaign-empty');
+            card.style.opacity = '0.5';
+        } else {
+            card.classList.remove('campaign-empty');
+            card.style.opacity = '';
+        }
+    });
+
+    // Hide non-matching scenarios in the available list
+    var availableContainer = document.getElementById('availableScenarios');
+    if (availableContainer) {
+        var selectedCampaignInput = document.getElementById('selectedCampaignInput');
+        var selectedCampaign = selectedCampaignInput ? selectedCampaignInput.value : '';
+        var anyVisible = false;
+        availableContainer.querySelectorAll('.scenario-card-mini').forEach(function(card) {
+            var raw = card.dataset.verticals || 'all';
+            var verticalsList = raw.split(',').filter(Boolean);
+            var matchesVertical = scenarioMatchesVerticalJs(verticalsList, verticalId);
+            var matchesCampaign = (selectedCampaign !== '' && (card.dataset.campaign || '') === selectedCampaign);
+            if (matchesVertical && matchesCampaign) {
+                card.style.display = '';
+                anyVisible = true;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        var hint = document.getElementById('noCampaignHint');
+        if (hint) {
+            hint.style.display = anyVisible ? 'none' : '';
+        }
+    }
+
+    // Drop already-selected scenarios that no longer match the vertical
+    var selectedContainer = document.getElementById('selectedScenarios');
+    if (selectedContainer) {
+        var dropped = [];
+        selectedContainer.querySelectorAll('.campaign-item').forEach(function(item) {
+            var s = scenarios[item.dataset.id];
+            if (!s) return;
+            if (!scenarioMatchesVerticalJs(s.verticals || ['all'], verticalId)) {
+                dropped.push(s.title || item.dataset.id);
+                item.remove();
+            }
+        });
+        if (dropped.length > 0) {
+            // Recompute order and duration (functions defined later in initSetupPage scope)
+            if (typeof window.cyberQuestUpdateSetup === 'function') {
+                window.cyberQuestUpdateSetup();
+            }
+            var verticalLabel = (verticals[verticalId] && verticals[verticalId].title) || verticalId;
+            alert('Removed ' + dropped.length + ' adventure(s) not appropriate for ' + verticalLabel + ':\n\n• ' + dropped.join('\n• '));
+        }
+    }
+}
 
 /* ════════════════════════════════════════════
    Campaign Category Selector (Setup Page)
@@ -407,6 +551,17 @@ function initSetupPage() {
         });
         durationBadge.textContent = total + ' min';
     }
+
+    // Expose a single helper for the vertical selector to call after it has
+    // pruned scenarios that no longer match the chosen vertical.
+    window.cyberQuestUpdateSetup = function() {
+        var selectedContainer = document.getElementById('selectedScenarios');
+        if (selectedContainer && selectedContainer.querySelectorAll('.campaign-item').length === 0) {
+            selectedContainer.innerHTML = '<p class="dropzone-text text-muted text-center py-4"><i class="bi bi-arrow-left"></i> Add quests from the available list</p>';
+        }
+        updateSetupOrderInput();
+        updateSetupDuration();
+    };
 }
 
 /* ════════════════════════════════════════════
