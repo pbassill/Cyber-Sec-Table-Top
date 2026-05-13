@@ -1,0 +1,193 @@
+{
+  "id": "healthcare_reputational_crisis",
+  "campaign": "reputational_crisis",
+  "verticals": ["healthcare"],
+  "title": "The Whispering Plague",
+  "subtitle": "Viral Patient-Harm Allegation and Trial by Social Media",
+  "description": "There is no breach, no fire, no enemy at the gate. There is a forty-second video, posted before dawn, in which a young mother holds up her phone and tells her followers that her daughter was harmed in your wards. By the time the senior team gathers, it has eleven million views. By lunchtime, three former patients have come forward with stories of their own. By tomorrow, the country knows your name.",
+  "severity": "P2 — High",
+  "theme_color": "#ffc107",
+  "icon": "📢",
+  "estimated_duration_minutes": 40,
+  "recommended_players": 4,
+  "max_players": 10,
+  "difficulty_class": 14,
+  "compliance_frameworks": ["Duty of Candour (Regulation 20)", "CQC Fundamental Standards", "NHS England Patient Safety Strategy", "PHSO Standards"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the crisis response and chairs the strategic communications group",
+      "required": true
+    },
+    {
+      "name": "Communications Director",
+      "title": "Herald of the Realm",
+      "description": "Owns media strategy, social monitoring, statement drafting and stakeholder messaging",
+      "required": true
+    },
+    {
+      "name": "Chief Executive",
+      "title": "High Council Elder",
+      "description": "Provides the public face of the trust and authorises the strategic position",
+      "required": true
+    },
+    {
+      "name": "Medical Director",
+      "title": "Grand Healer",
+      "description": "Owns the clinical narrative, fact-finding from the wards, and clinician welfare",
+      "required": true
+    },
+    {
+      "name": "Director of Patient Experience",
+      "title": "Voice of the Wounded",
+      "description": "Owns engagement with the patient and family, duty of candour, and complaints triage",
+      "required": true
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on litigation risk, defamation, and the boundaries of public commentary",
+      "required": false
+    },
+    {
+      "name": "Caldicott Guardian",
+      "title": "Warden of the Inner Sanctum",
+      "description": "Owns the patient confidentiality line where the trust cannot say what the family can",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "RC1",
+      "title": "The Forty-Second Video",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "At 06:14 a 28-year-old mother posts a TikTok from her car in the trust's main car park. In the video — viewed by eleven million people within four hours — she alleges that her three-year-old daughter was 'left in a corridor for nine hours, ignored, screaming in pain, with a broken arm', that 'a nurse rolled her eyes' when the mother asked for help, and that 'the doctor told her to stop crying or she'd go home untreated'. She closes by asking her followers to share if they have ever been 'treated like dirt by the NHS'.\n\nThe video does not name a clinician. It does name the trust. By 09:00 the family-and-friends helpline has fielded 240 calls. The communications team has drafted a holding statement but Legal have flagged the duty of candour interplay and the patient confidentiality boundaries. The medical director is in the ED reviewing the case with the consultant: the clinical picture is more complex than the video suggests, but it is not yet clear that the clinical picture exonerates the trust.\n\nA national breakfast TV programme is leading with the story at 09:30. The local MP has tweeted that 'NHS bullying must end'. The trust's chair is on a train and asking, by text, whether the CEO is 'getting in front of this'.",
+      "facilitator_prompts": [
+        "What does 'getting in front of this' actually mean — and is it the right strategy?",
+        "What can we say publicly without breaching patient confidentiality, and what can we only say with consent from the family?",
+        "How do we reach the family — and at what point, in what way, by whom?",
+        "What is our position on the clinicians involved — not named in the video, but already being doxxed in TikTok comments?",
+        "Do we engage with the broadcast media this morning, or hold until we have a verified clinical picture?",
+        "How do we look after the staff who were on duty, two of whom have already left the building in tears?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "facts_emerging",
+          "description": "Roll to determine the clinical and operational facts that emerge from a rapid review",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "The Allegations Are Substantially True",
+              "description": "A timely clinical review confirms the child waited eight hours longer than she should have, that documentation refers to her in dismissive terms, and that a CCTV review shows two staff members behaving exactly as alleged. A Serious Incident is declared and a regulatory referral becomes inevitable.",
+              "modifier": "Truth-telling and apology required. CQC and PHSO engagement. National story for weeks."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Substantially True With Mitigations",
+              "description": "The clinical wait was long and the experience was poor, but there were systemic reasons (a co-occurring trauma call) that explain — not justify — the wait. Two staff did make inappropriate remarks. The trust must acknowledge fault without making excuses.",
+              "modifier": "Honest acknowledgement required. Sustained reputational damage."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Partly True, Partly Misremembered",
+              "description": "The wait was four hours, not nine, and the child was assessed at triage and twice subsequently. The remarks alleged were not made by any clinician identifiable from records or witnesses, but the experience was nonetheless distressing. The truth is harder to convey than the allegation.",
+              "modifier": "Nuance hard to communicate. Reputational damage moderate but sticky."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Materially Inaccurate",
+              "description": "Records and CCTV show the child was seen within 25 minutes of arrival, x-rayed within an hour, plastered, given pain relief and discharged with the mother present throughout. The remarks were not made. The video is materially inaccurate.",
+              "modifier": "Strong factual position. Communicating it without 'attacking the mother' is the challenge."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Compassionate Correction",
+              "description": "The mother, contacted compassionately by the director of patient experience, accepts that her memory of timings was distorted by stress and exhaustion. She agrees to post a correcting video. The trust gently surfaces what actually happened, with her consent, and the national story changes character.",
+              "modifier": "Story turns from accusation to reconciliation. Reputational recovery rapid."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The mother is also a popular 'parenting influencer' with brand sponsorship deals; her commercial advisers reportedly want her to 'keep the story going for a week'.",
+        "The triage nurse on duty has identified herself in TikTok comments and apologised personally — Legal and HR did not know she had done so.",
+        "A Member of Parliament whose own child was a patient at the trust last year offers to publicly defend the trust — but the patient experience director knows that family complained at the time.",
+        "An old, deleted tweet from a current trust executive about 'helicopter parents' resurfaces and starts trending."
+      ]
+    },
+    {
+      "id": "RC2",
+      "title": "The Tide Turns — Or Doesn't",
+      "phase": 2,
+      "time_offset": "T+48 Hours",
+      "narrative": "Two days in, the trust has held its line. The CEO has done two broadcast interviews, calmly, without breaching confidentiality. The medical director has briefed regulators. The family have been visited and have, for now, agreed to pause public posts while a formal review takes place. The trust's social media is being run on a 'compassion, facts, action' template.\n\nAnd yet. Three more patients have come forward publicly with stories of poor care — two of which appear to be substantially valid based on initial review. A junior doctor has resigned via Twitter, citing 'a culture that lets this happen'. The CQC has confirmed an unannounced focused inspection within the week. A national tabloid has paid for a former trust employee's exclusive interview, set to run on Sunday. Inside the trust, staff morale is reportedly at the lowest in living memory and sickness on the affected wards is climbing.\n\nThe board is meeting in two days. The chair has asked for a paper that is both 'fully honest' and 'reputationally defensible' — the CEO must explain to her, gently, that those are not the same thing.",
+      "facilitator_prompts": [
+        "How do we respond to the three further patients' stories without re-traumatising them or appearing dismissive?",
+        "How do we engage staff in a way that acknowledges what is wrong without throwing the front-line under the bus?",
+        "Do we proactively brief the CQC on what they will find, or wait for them to find it?",
+        "What do we say in public about the resigning junior doctor — without attacking him, and without appearing to ignore him?",
+        "How do we prepare for the Sunday tabloid story when we do not know what it will allege?",
+        "What is the right balance for the board paper between honesty and defensibility, and who signs it off?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "narrative_trajectory",
+          "description": "Roll to determine how the story evolves over the following week",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Cultural Inquiry Called",
+              "description": "The Sunday tabloid alleges institutional bullying with named former staff testimony. The Secretary of State commissions an independent inquiry. The chair stands down. The CEO is asked to consider her position. A culture programme begins under independent oversight.",
+              "modifier": "Independent inquiry. Leadership change. Two-year culture programme."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Sustained Crisis",
+              "description": "Coverage continues for two weeks. The CQC inspection finds the trust 'Requires Improvement' on caring and well-led. The board commissions an external culture review. Several executive directors face individual scrutiny.",
+              "modifier": "Sustained damage. Regulator action. Internal change required."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Story Fades Slowly",
+              "description": "The story remains live for ten days, then fades. The CQC notes specific concerns but credits the response. The trust commits to a public improvement plan. The Sunday story turns out to be less damaging than feared.",
+              "modifier": "Bruised but intact. Improvement plan in place."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Recovery Anchored in Action",
+              "description": "Visible, credible action — a published apology, a concrete improvement plan with patient and staff involvement, leadership visibility — turns the story by the end of the second week. The CQC notes 'strong response under pressure'.",
+              "modifier": "Reputation broadly restored within a month. Patient confidence steady."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — From Crisis to Reform",
+              "description": "The trust uses the crisis as a genuine inflection point: patient leaders co-design a new complaints and experience model, staff voice mechanisms are strengthened, and the trust hosts a national learning event a year later. The original mother becomes an unpaid advisor.",
+              "modifier": "Net reputational gain over the medium term. Sector leadership role."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "An overseas patient advocacy group, unrelated to the local story, picks it up as part of a campaign on Black maternal health, broadening the narrative significantly.",
+        "A leaked internal email from a divisional manager — saying 'we need this to die down before the elective restart' — is published by the tabloid.",
+        "A senior consultant offers to do a heartfelt interview on national TV but their record at the trust includes two upheld complaints; the medical director must steer carefully.",
+        "Two members of the trust's communications team resign citing burnout; the agency support being brought in has not been security-cleared for access to clinical detail."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Did our duty of candour, complaints and patient experience processes work in the first hours and days?",
+      "Did we tell the truth as well as we could, given confidentiality, and did we acknowledge what we could not yet know?",
+      "Did we look after the patient, the family, the staff and the public — in that order, or in a different one we can defend?",
+      "Was our relationship with the CQC, NHS England and political stakeholders an asset or a liability under pressure?",
+      "Did we recognise when a clinical incident had become a cultural one — and respond at the right level?",
+      "What investment in patient experience, staff voice, social listening and crisis-communication capability is now justified?"
+    ]
+  }
+}

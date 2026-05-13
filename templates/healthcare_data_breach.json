@@ -1,0 +1,193 @@
+{
+  "id": "healthcare_data_breach",
+  "campaign": "data_breach",
+  "verticals": ["healthcare"],
+  "title": "The Open Apothecary",
+  "subtitle": "Misconfigured Cloud Storage Exposes Patient Records",
+  "description": "A door was left ajar in the apothecary, and the apothecary was a library. For weeks, perhaps months, the realm's most sensitive scrolls — diagnoses, results, the names of those who came for tests they hoped no-one would learn of — sat indexed and searchable on the open web. A researcher in another kingdom has noticed. So, you suspect, have others.",
+  "severity": "P1 — Critical",
+  "theme_color": "#6f42c1",
+  "icon": "📂",
+  "estimated_duration_minutes": 40,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 14,
+  "compliance_frameworks": ["UK GDPR Art.32-34", "HIPAA Privacy & Security Rules", "NHS DSPT", "ICO Personal Data Breach", "Caldicott Principles"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the breach response and coordinates technical and regulatory workstreams",
+      "required": true
+    },
+    {
+      "name": "Data Protection Officer",
+      "title": "Keeper of the Codex",
+      "description": "Owns ICO/regulator engagement, breach assessment, and notification decisions",
+      "required": true
+    },
+    {
+      "name": "Caldicott Guardian",
+      "title": "Warden of the Inner Sanctum",
+      "description": "Advises on patient confidentiality, special-category data, and ethical disclosure",
+      "required": true
+    },
+    {
+      "name": "Cloud Engineering Lead",
+      "title": "Sky-Forger",
+      "description": "Owns the cloud platform, IAM, logging, and remediation of the misconfiguration",
+      "required": true
+    },
+    {
+      "name": "SOC Analyst",
+      "title": "Shadow Watcher",
+      "description": "Investigates access logs and determines what was actually read or downloaded",
+      "required": true
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Herald of the Realm",
+      "description": "Manages patient notification, press lines, and clinician briefings",
+      "required": false
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on litigation risk, regulator engagement, and contract obligations with research partners",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "DB1",
+      "title": "The Researcher's Email — A Discovery in Daylight",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "At 09:14 on Tuesday morning the DPO receives an email forwarded by the trust's research office. A postdoctoral researcher at a German university has written, in careful and embarrassed English, to report that whilst evaluating a third-party radiology AI tool she discovered an open Amazon S3 bucket. The bucket — named with the trust's initials — contains an unprotected directory of DICOM images and accompanying CSV files listing patient names, dates of birth, NHS numbers, scan dates, and free-text radiologist notes.\n\nThe researcher estimates there are 'tens of thousands' of records and notes that the bucket also appears in at least one public dataset index used by AI researchers. She is offering to share what she found in the spirit of responsible disclosure and asks who she should speak to.\n\nThe bucket is real. It was set up two years ago by a since-departed engineer to share a small test set with a research collaborator. Someone, at some point, changed the bucket policy to public-read and the export job that fed it has been running nightly ever since.",
+      "facilitator_prompts": [
+        "What is the first technical action — and who is authorised to take it without disturbing forensic evidence?",
+        "How do we determine how long the bucket has been public and who has accessed it?",
+        "Under UK GDPR Article 33, what is the clock — when did we become 'aware', and when must the ICO be told?",
+        "What is our position on the German researcher: thank her, ask her to delete what she has, or formalise her cooperation?",
+        "Do we contact the AI dataset indexers proactively, or does that publicise the breach further?",
+        "Who must be told inside the trust before the wider organisation — Caldicott Guardian, Medical Director, CEO, Chair?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "access_log_completeness",
+          "description": "Roll to determine the completeness of the cloud access logs",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "No Logs",
+              "description": "S3 server access logging was never enabled on this bucket. CloudTrail data events were disabled across the account to save cost in 2022. There is no record of who accessed the data, how often, or from where. The trust must notify on a worst-case assumption.",
+              "modifier": "Cannot scope exfiltration. Must assume mass exposure. ICO will note the absence of controls."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Logs Show Mass Indexing",
+              "description": "Access logs cover the last 90 days only and show automated crawling by search-engine bots, AI dataset harvesters, and several thousand unique IP addresses from over 40 countries. There is no way to determine which downloads were benign curiosity and which were malicious.",
+              "modifier": "Confirmed mass access. Worst-case notification required."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Limited Visibility",
+              "description": "Logs are available for the last 30 days. They show modest access — under 200 unique IPs — but the bucket has existed for two years and there is no visibility into the prior period. Notification scope is uncertain.",
+              "modifier": "Recent access limited. Historic exposure unprovable."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Full Logs, Limited Access",
+              "description": "Logging has been continuous since the bucket's creation. Analysis shows only six external IPs ever accessed any object. Five are identifiable as security researchers and dataset crawlers; the sixth is the German researcher. No bulk download is recorded.",
+              "modifier": "Targeted notification feasible. Scope defensibly small."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Honeytoken Tripped",
+              "description": "A canary file placed in the bucket by the security team a year ago has never been accessed by anyone other than the German researcher. The data was technically public, but in practice unread. Notification will still be required, but the harm narrative is strong.",
+              "modifier": "Strong evidence of minimal real-world exposure."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The export job that fed the bucket also wrote a copy of the AI training dataset to a partner university's storage, governed by a data-sharing agreement nobody can currently locate.",
+        "An internal audit two years ago flagged 'public S3 buckets' as a finding. The remediation was marked closed with the comment 'covered by new CSPM tool' — the CSPM tool was decommissioned six months later.",
+        "A junior security engineer mentions on the team Slack that she 'thought that bucket looked weird last August' but no ticket was raised.",
+        "The trust's media monitoring service flags a Reddit thread from three months ago in which someone posted DICOM images 'from a UK hospital' as a curiosity. The post has 4,000 upvotes."
+      ]
+    },
+    {
+      "id": "DB2",
+      "title": "Mapping the Damage — Who Was in the Library?",
+      "phase": 2,
+      "time_offset": "T+8 Hours",
+      "narrative": "Engineering have confirmed the bucket policy is now private, the export job has been disabled, and the bucket contents are being inventoried under forensic preservation. The inventory is grim: 184,000 records spanning seven years, including 11,000 cancer-pathway patients, 3,400 records relating to sexual health and HIV testing, and 92 records flagged as 'sensitive — VIP / safeguarding'. Free-text radiologist notes include references to suspected non-accidental injury in paediatric scans.\n\nThe ICO has been informed within the 72-hour window. They have replied within the hour requesting a full DPIA, an explanation of the export job's lawful basis, and a timeline. A national broadsheet has filed a Freedom of Information request asking the trust to confirm or deny any 'recent data exposure incidents'. The German researcher's university press office has, helpfully, agreed to delay any publication for ten days.\n\nMeanwhile, in the trust's mailbox, a self-described 'data privacy consultancy' has emailed offering to manage 'patient outreach and compensation' for a percentage of any settlement.",
+      "facilitator_prompts": [
+        "How do we sequence notification to: (a) the 92 VIP/safeguarding cases, (b) sexual-health patients, (c) the broader cohort? What channel for each?",
+        "Do we notify before or after we have a fully staffed helpline ready to receive distressed calls?",
+        "What is our public position — proactive press release, hold until ICO concludes, or respond only to the FOI?",
+        "How do we handle the paediatric safeguarding cases where some adults named in notes may not be the lawful guardians of those children?",
+        "The 'data privacy consultancy' email looks like ambulance-chasing. Do we ignore, respond, or report it?",
+        "What is the financial and reputational exposure, and what reserve should be flagged to the Board and auditors?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "media_and_litigation_response",
+          "description": "Roll to determine how the press and litigation environment evolves over the first 72 hours of notification",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Story Goes Global",
+              "description": "The broadsheet runs a front-page story citing a leaked internal memo. Three claimant law firms announce group litigation within 48 hours. The story is picked up by BBC, CNN and Der Spiegel. The trust's helpline receives 38,000 calls in 24 hours and collapses.",
+              "modifier": "Global story. Group litigation. Helpline failure compounds harm."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Sustained National Coverage",
+              "description": "The story runs for a week across UK media. A claimant firm assembles a 4,000-strong group action. The ICO indicates an intention to issue a substantial monetary penalty. Two senior executives are named in coverage.",
+              "modifier": "Sustained reputational damage. Significant ICO fine likely."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Local Story, Manageable Scrutiny",
+              "description": "Coverage is largely local and balanced. The ICO indicates a reprimand rather than a fine, contingent on remediation. A small group action is filed but is contained. The trust's narrative of 'discovered, contained, notified' largely holds.",
+              "modifier": "Reputational damage limited. Regulator engagement constructive."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Story Stays Off the Front Pages",
+              "description": "Notification is calm, well-handled, and the helpline is staffed by trained clinicians. The press story runs once and fades. The ICO issues a non-financial reprimand. Two patients write to thank the trust for the honesty of the disclosure.",
+              "modifier": "Trust narrative preserved. Regulator constructive."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Sector Case Study",
+              "description": "The trust's response is held up by the ICO and NHS England as a case study in good practice. The German researcher publishes a joint paper on responsible disclosure with the trust's DPO. Two other trusts contact the DPO to copy the response playbook.",
+              "modifier": "Reputational recovery is net-positive within the sector."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "Translation: 8% of affected patients have a recorded preferred language other than English. The contact centre script is English-only.",
+        "Six of the 92 VIP/safeguarding records relate to women whose ex-partners are subject to non-molestation orders. Sending letters to last known addresses risks revealing their location.",
+        "The radiology AI tool that originally needed the dataset is now used in production at the trust. Pausing it would impact 600 scans a week.",
+        "The trust's cyber insurer requires that all patient notification letters be reviewed by their panel solicitors before issue, adding 48 hours to the process."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Did our cloud governance, CSPM and IAM controls match the sensitivity of the data we put in the cloud?",
+      "Was the lawful basis for the original export job ever documented, and did anyone own its lifecycle?",
+      "Did we meet the GDPR 72-hour clock — and was the assessment of severity defensible?",
+      "Were the Caldicott Guardian and clinical leaders meaningfully part of the response, or consulted only after key decisions?",
+      "Was patient notification trauma-informed, particularly for sensitive cohorts (sexual health, safeguarding, VIPs)?",
+      "What investment in cloud guardrails, data minimisation, and de-identification of research datasets is now justified?"
+    ]
+  }
+}

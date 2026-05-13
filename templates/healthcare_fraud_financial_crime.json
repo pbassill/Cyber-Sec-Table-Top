@@ -1,0 +1,193 @@
+{
+  "id": "healthcare_fraud_financial_crime",
+  "campaign": "fraud_financial_crime",
+  "verticals": ["healthcare"],
+  "title": "The Forged Ledger of Cures",
+  "subtitle": "Invoice Fraud and Insurance Billing Manipulation",
+  "description": "Gold has moved by the stroke of a counterfeit quill. A trusted supplier's payment details have been changed at the last minute, an insurer's portal is paying claims for procedures that were never performed, and somewhere in the finance ledger the threads of two frauds are quietly twisting together. Every cure on the books may be real — but the coins for them are flowing to the wrong purse.",
+  "severity": "P2 — High",
+  "theme_color": "#e83e8c",
+  "icon": "💰",
+  "estimated_duration_minutes": 40,
+  "recommended_players": 4,
+  "max_players": 10,
+  "difficulty_class": 14,
+  "compliance_frameworks": ["NHS Counter Fraud Authority Standards", "Fraud Act 2006", "False Claims Act (US, if applicable)", "Bribery Act 2010", "ISO 37001"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Leads the multi-stream response and bridges finance, fraud, IT and clinical teams",
+      "required": true
+    },
+    {
+      "name": "Director of Finance",
+      "title": "Master of the Treasury",
+      "description": "Owns the financial control response, ledger reconciliation, and bank recall efforts",
+      "required": true
+    },
+    {
+      "name": "Local Counter Fraud Specialist",
+      "title": "Hunter of False Coin",
+      "description": "Leads the counter-fraud investigation and engages NHS CFA / national counterparts",
+      "required": true
+    },
+    {
+      "name": "Revenue / Billing Lead",
+      "title": "Keeper of the Ledger",
+      "description": "Owns insurer billing and patient invoicing, identifies anomalous claim patterns",
+      "required": true
+    },
+    {
+      "name": "IT Security Lead",
+      "title": "Shadow Watcher",
+      "description": "Investigates account compromise, mailbox rules, and access patterns",
+      "required": true
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on recovery, civil and criminal action, and regulator notification",
+      "required": false
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Herald of the Realm",
+      "description": "Manages messaging to suppliers, insurers, staff and (if needed) media",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "F1",
+      "title": "A Supplier Calls — 'Where Is Our Money?'",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "At 10:30 the trust's finance director takes a call from the managing director of a long-standing medical equipment supplier. He is calling because the supplier has not received the £148,000 payment due on the 1st of the month, and his accounts team have tried the usual finance contact without reply.\n\nA quick check confirms the payment was made on the 30th of last month — but to a different sort code and account number, supported by what appears to be a legitimate request from the supplier's finance email address to update the bank details. The amount cleared three working days ago. The supplier confirms they sent no such email.\n\nWithin the hour, the picture worsens. A search of the finance team's mailboxes reveals nine other payments — totalling £612,000 — have been redirected by similar means over the last six weeks. In four cases the supplier's email account appears to have been compromised; in the others, the trust's own accounts payable analyst's mailbox shows a rule that auto-deletes incoming messages containing the word 'unpaid' or 'overdue'. The analyst is on annual leave.",
+      "facilitator_prompts": [
+        "What is the immediate sequence: contact the bank, freeze the accounts payable run, isolate the analyst's mailbox, or all three at once?",
+        "Do we treat the accounts payable analyst as a victim of compromise, a suspect, or both — and how do we preserve evidence either way?",
+        "What is the recovery prospect via Confirmation of Payee, bank fraud recovery, and indemnity, and what is the window?",
+        "Who do we notify externally first: the police, the NHS Counter Fraud Authority, our insurer, or our suppliers?",
+        "How do we contact the other suppliers whose details were 'updated' without tipping off the perpetrator?",
+        "What is our immediate control change: no bank detail changes by email, callback verification, dual-authorisation?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "fund_recovery_window",
+          "description": "Roll to determine the financial recovery position after the first 72 hours",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Money Gone",
+              "description": "All £760,000 has been moved onward through a chain of money mule accounts, withdrawn at ATMs and converted to cryptocurrency. The receiving banks confirm the accounts were emptied within hours of receipt. No funds are recoverable.",
+              "modifier": "Total loss. Material write-off. Insurer claim required."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Significant Loss",
+              "description": "Around £180,000 is recovered. The remaining £580,000 has been laundered and is unrecoverable. The trust's banking relationship comes under critical review and an indemnity claim is filed.",
+              "modifier": "£580k unrecoverable. Insurer claim contested on grounds of weak controls."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Partial Recovery",
+              "description": "Around £400,000 is frozen at the receiving banks. Recovery will be possible after a 6–8 week legal process. The remainder is lost.",
+              "modifier": "Net loss ~£360k. Lengthy recovery process. Reputational impact manageable."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Most Funds Recovered",
+              "description": "The bank's fraud team, alerted within hours, freezes the receiving accounts. Around £670,000 of the £760,000 is recoverable. Suppliers are paid in full from working capital while recovery completes.",
+              "modifier": "Net loss ~£90k. Strong banking partnership demonstrated."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Full Recovery and Arrests",
+              "description": "Confirmation of Payee data is enough to identify a known mule network. The National Economic Crime Centre coordinates a freeze across all banks within 12 hours, recovers the funds, and makes two arrests in the UK and one abroad.",
+              "modifier": "Full recovery. Public credit for partnership response."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "Three of the redirected payments related to invoices for cataract lenses for next week's high-volume operating lists; without alternative arrangements within 72 hours, 90 patient procedures are at risk of cancellation.",
+        "The accounts payable analyst's home is a few miles from the trust. Counter fraud specialists advise her family should not be approached until evidence is preserved.",
+        "An ITV journalist contacts the trust press office stating that 'an NHS finance team has been hacked' and asks for comment on a story going to air this evening.",
+        "The trust's bank is undergoing a separate, public service incident — its fraud team is operating with reduced capacity for the next 48 hours."
+      ]
+    },
+    {
+      "id": "F2",
+      "title": "The Billing Anomaly — Phantom Procedures",
+      "phase": 2,
+      "time_offset": "T+6 Days",
+      "narrative": "Whilst the supplier fraud is still being unwound, the private patients team has noticed something else. A quarterly reconciliation against a major private medical insurer has flagged 38 claims for endoscopic procedures, totalling £214,000, billed in the trust's name but for which there is no corresponding clinical record. Some patient IDs cited on the claims do not match any patient ever registered at the trust.\n\nDigging into the access logs reveals the trust's insurer billing portal — used by a small team of three — has been accessed from an unfamiliar IP address at unusual hours over the past four months. The IP traces to a coworking space in another city. The credentials used belong to a billing officer who left the trust 14 months ago and whose account was never disabled. The portal does not have multi-factor authentication.\n\nThe insurer wants to know whether to suspend the trust's claim submissions while this is investigated. The MD of a competing private hospital group has, separately, sent a Companies House-style inquiry about a director of a 'medical billing intermediary' who appears to be linked to one of the trust's outsourced billing partners — and to the former billing officer.",
+      "facilitator_prompts": [
+        "Do we treat the supplier fraud and the billing fraud as one connected investigation or two — and on what evidence?",
+        "What is our notification to the insurer, and do we accept the suspension of claims (worth £4m a quarter) whilst the investigation runs?",
+        "How do we handle the outsourced billing partner — pause the contract, audit, terminate, sue?",
+        "What is the criminal referral path: NHS Counter Fraud Authority, City of London Police, both?",
+        "How do we communicate to the private patients team without contaminating witnesses or signalling to perpetrators?",
+        "What is the financial exposure if the insurer demands repayment of claims paid in error, including for legitimate procedures historically?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "investigation_pivot",
+          "description": "Roll to determine how the two threads converge as investigation progresses",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Organised Network",
+              "description": "Counter fraud uncover a network operating across four trusts, with the former billing officer at the centre. Total fraud losses in the network exceed £3m. The trust is one of the larger contributors. NHS CFA opens a national operation.",
+              "modifier": "Multi-trust fraud. National story. Significant additional exposure."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Two-Person Conspiracy",
+              "description": "The former billing officer and an accounts payable analyst (the one on leave) are confirmed as a conspiracy. Both are arrested. The losses are substantial but the operation is bounded.",
+              "modifier": "Two arrests. Substantial loss. Insurer relationship strained."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Connected, Bounded",
+              "description": "The two frauds are linked — the same set of compromised credentials enabled both — but appear to be the work of a small external group exploiting weak controls rather than organised internal collusion.",
+              "modifier": "External exploitation. Single criminal referral. Controls overhaul required."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Coincidental Pattern",
+              "description": "The supplier fraud and billing fraud turn out to be unrelated, exploiting different control weaknesses. Both are bounded, both are containable, both lead to clear control improvements.",
+              "modifier": "Two parallel cases, each manageable. Combined improvement plan possible."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Cooperative Recovery",
+              "description": "Investigation reveals the perpetrators submitted claims they could trace and the insurer's anti-fraud team has been quietly evidencing the activity for months. A coordinated recovery and prosecution is executed, with the trust positioned as a cooperating victim rather than the source.",
+              "modifier": "Insurer relationship strengthened. Public narrative favourable."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The former billing officer is now employed at a competing trust as a senior finance officer; the investigation must be sealed from her current employer until the right moment.",
+        "The insurer's compliance team requests three years of historical claims data for audit, which will absorb 0.6 FTE for six weeks.",
+        "An external auditor planning fieldwork next month asks whether 'any matters of fraud have arisen since our last sign-off' — answering anything other than 'yes, here is the picture' would itself be a breach.",
+        "The local MP writes to ask whether NHS money has been lost and whether constituents' premiums have been affected."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Were our basic finance controls (bank-detail change verification, dual authorisation, MFA, leaver process) actually working?",
+      "Did we treat counter fraud as a core function or a tick-box appendage to the finance team?",
+      "Did we have the cyber and finance teams working as one, or did they operate in separate worlds?",
+      "Was our relationship with the bank and with insurers strong enough to recover funds and reputation under pressure?",
+      "How well did we balance speed of investigation with preservation of evidence and protection of innocent parties?",
+      "What investment in fraud analytics, leaver controls, MFA on financial systems, and counter-fraud capacity is now justified?"
+    ]
+  }
+}

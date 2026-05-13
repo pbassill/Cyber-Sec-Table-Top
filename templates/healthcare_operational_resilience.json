@@ -1,0 +1,193 @@
+{
+  "id": "healthcare_operational_resilience",
+  "campaign": "digital_operational_resilience",
+  "verticals": ["healthcare"],
+  "title": "When the Healers' Tools Failed",
+  "subtitle": "Botched EHR Upgrade Meets Major Trauma Surge",
+  "description": "No enemy laid siege to your walls — and yet the healing halls fell quiet. A long-planned upgrade to the electronic health record has stumbled, and as the screens turn white, a coach crash on the motorway sends forty casualties hurtling toward your gates. The realm is undone not by a foe, but by its own hand.",
+  "severity": "P1 — Critical",
+  "theme_color": "#0dcaf0",
+  "icon": "🏗️",
+  "estimated_duration_minutes": 40,
+  "recommended_players": 4,
+  "max_players": 12,
+  "difficulty_class": 14,
+  "compliance_frameworks": ["NHS DSPT", "DCB0129 / DCB0160 Clinical Risk Management", "MHRA Software as Medical Device", "ISO 22301", "CQC Regulation 17"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Owns the major incident response and bridges clinical and IT command structures",
+      "required": true
+    },
+    {
+      "name": "Chief Clinical Information Officer",
+      "title": "Sage of Two Worlds",
+      "description": "Speaks for both clinicians and IT; owns clinical safety decisions under DCB0160",
+      "required": true
+    },
+    {
+      "name": "IT Change Manager",
+      "title": "Architect of Rituals",
+      "description": "Owns the change record, rollback plan, and post-implementation review",
+      "required": true
+    },
+    {
+      "name": "Vendor Engagement Lead",
+      "title": "Alliance Keeper",
+      "description": "Manages the EHR vendor's incident response and contractual obligations",
+      "required": true
+    },
+    {
+      "name": "Emergency Department Lead",
+      "title": "Captain of the Outer Gate",
+      "description": "Owns the ED clinical response and downtime procedures during the trauma surge",
+      "required": true
+    },
+    {
+      "name": "Communications Lead",
+      "title": "Herald of the Realm",
+      "description": "Manages internal staff communications, GP and ambulance liaison, and patient-facing messaging",
+      "required": false
+    },
+    {
+      "name": "Senior Management",
+      "title": "High Council Elder",
+      "description": "Provides executive authority for major incident declaration and external escalation",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "R1",
+      "title": "The Upgrade That Would Not Heal",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "The trust has spent eighteen months preparing for the EHR vendor's mandatory v9.2 upgrade. The cutover began at 22:00 last night during a planned four-hour maintenance window. At 02:00 the vendor's deployment engineer reported the upgrade 'complete with warnings'. The ops team accepted the warnings and opened the system to clinical traffic.\n\nBy 07:30 it is clear something is badly wrong. Drug allergy alerts are not firing. Some patients' allergy lists appear truncated. The medicines reconciliation module is returning errors when clinicians try to prescribe controlled drugs. Order Communications is intermittent: about one in five pathology requests is silently dropped. Two near-miss events have already been logged in the last hour, including a penicillin prescription for a patient whose allergy record now reads only 'see notes'.\n\nIt is 07:42 on a Monday morning. There are 2,400 staff logging on. The vendor's UK support desk opens at 08:00.",
+      "facilitator_prompts": [
+        "Do we roll back the upgrade immediately, knowing rollback was estimated at six hours and has never been tested at this scale?",
+        "Do we revert to paper downtime procedures across the trust, or only in the highest-risk areas?",
+        "Who has authority under DCB0160 to declare the upgraded system clinically unsafe, and what evidence do they need?",
+        "What is our communication to the 2,400 staff arriving for the day shift — and how do we reach them in 18 minutes?",
+        "How do we handle prescribing for controlled drugs and high-risk medications until allergy alerts are reliable?",
+        "Do we activate Mutual Aid agreements with neighbouring trusts now, or wait to see if we can stabilise?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "rollback_feasibility",
+          "description": "Roll to determine the outcome of the team's attempt to assess rollback viability",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Rollback Impossible",
+              "description": "Investigation reveals the v9.2 database schema migration was one-way. The rollback procedure documented by the vendor was never tested and references a 'pre-migration snapshot' that the deployment engineer skipped because storage was low. There is no path back to v9.1.",
+              "modifier": "Must operate on broken upgrade until vendor produces a fix. Estimated 5–10 days."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Painful Rollback",
+              "description": "Rollback is technically possible but requires 14 hours of downtime, manual reconciliation of every record created since 22:00, and explicit clinical sign-off that the rollback itself is a greater patient safety risk than continuing on v9.2 with workarounds.",
+              "modifier": "Rollback feasible but costly. Significant clinical safety burden either way."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Rollback With Data Loss",
+              "description": "Rollback is possible within six hours but the last eight hours of clinical documentation — including 11 admissions and 340 medication administrations — will be lost from the EHR and must be re-entered from paper records.",
+              "modifier": "Rollback achievable. Significant manual re-entry required."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Clean Rollback Available",
+              "description": "Snapshots were taken correctly. Rollback can be completed in four hours with no data loss. The vendor engineer who ran the deployment is reachable and willing to perform the rollback under change control.",
+              "modifier": "Service restorable to known-good state by lunchtime."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Hotfix Available",
+              "description": "The vendor confirms two other UK trusts have hit the same issue overnight. A validated hotfix was pushed to the vendor's portal at 05:00 and resolves the allergy and Order Comms defects without requiring rollback. It can be applied with a 45-minute outage.",
+              "modifier": "45-minute fix-forward path. Service safe by 09:00."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "A consultant tweets a screenshot of the failed allergy alert with the words 'this will kill someone today'. The tweet is picked up by a national health correspondent within fifteen minutes.",
+        "The ED registrar reports that the coach crash on the M-something motorway has just been declared a Major Incident by the ambulance service. ETA of first patients: 25 minutes. Expected casualties: 40, including 12 paediatric.",
+        "The trust's clinical safety officer is on annual leave. Her deputy completed DCB0160 training but has never signed off a live clinical safety case.",
+        "The vendor's UK incident manager confirms that under the SLA, their formal response time for a P1 is four hours, and the contract has no specific provision for upgrade-induced incidents."
+      ]
+    },
+    {
+      "id": "R2",
+      "title": "The Trauma Surge — Forty Souls at the Gate",
+      "phase": 2,
+      "time_offset": "T+90 Minutes",
+      "narrative": "The first ambulances arrive at 09:12. The ED has activated its Major Incident plan and the trauma team is mobilised. But the EHR is still unreliable: registrars are using a mix of paper trauma sheets and the EHR depending on which workstation they are at, and the Pathology LIMS is now refusing to accept orders for any new patient who has not yet been registered in the upgraded EHR.\n\nA patient pre-alerted as a paediatric head injury arrives without ID. The radiology team request an urgent CT but the PACS worklist is showing only a handful of cases — it appears the upgraded EHR is failing to push orders to PACS for any patient with a temporary trust number. The paediatric ICU has only two beds available, and the regional paediatric trauma centre says it can take three.\n\nIn the middle of all this, the trust's CEO has been called by NHS England Regional, who want to know within the hour whether the impact tolerance for 'emergency clinical services' has been breached and whether this should be reported to the Department of Health.",
+      "facilitator_prompts": [
+        "What is our stated impact tolerance for emergency clinical services, and how do we know whether we have breached it?",
+        "Do we close the ED to ambulances and divert everything to the regional centre, accepting that this will breach the major incident plan for the region?",
+        "How do we handle the paediatric head injury when imaging orders are not reaching PACS — can we work around safely, or do we transfer immediately?",
+        "Who is the single source of clinical truth right now: paper, the EHR, or the registrar's memory? How do we reconcile?",
+        "What is our message to NHS England — and what is our message to the parents of the 12 paediatric casualties?",
+        "When this is over, who owns the lessons under DCB0129/0160 and what evidence are we capturing now?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "clinical_workaround_outcome",
+          "description": "Roll to determine the outcome of the trauma response under degraded systems",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Serious Incident Resulting in Harm",
+              "description": "A paediatric patient receives a contrast dose calculated against an incorrect weight that was carried forward from a previous admission of a different child with a similar name. The error is caught in recovery but causes acute kidney injury. A Serious Incident Requiring Investigation is declared and reported to the CQC and the coroner is pre-notified.",
+              "modifier": "SIRI declared. CQC and coroner engaged. Clinical safety case must be rebuilt."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Near-Miss Cascade",
+              "description": "Three medication errors are caught by ward pharmacists before harm occurs. A diverted patient deteriorates in transit but is stabilised. The trust must report a series of near-misses and accept that without the pharmacists' vigilance there would have been harm.",
+              "modifier": "No harm, but multiple near-misses. Regulator confidence shaken."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Held Together by Heroics",
+              "description": "Clinicians manage the surge using paper, runners and verbal handovers. No patient is harmed but staff describe the morning as the most stressful of their careers. Documentation backlog is severe — it will take three weeks to reconcile.",
+              "modifier": "Service held. Significant staff wellbeing impact and documentation debt."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Effective Downtime Working",
+              "description": "The downtime procedures the trust rehearsed last year actually work. Paper trauma packs are pulled, a single ED coordinator owns the patient list on a whiteboard, and PACS is fed via a manual order desk. All 40 casualties are triaged and stabilised within target times.",
+              "modifier": "Service within tolerance. Strong evidence of resilience under stress."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Mutual Aid Activated",
+              "description": "Pre-existing mutual aid agreements activate flawlessly. The regional trauma centre takes the most serious paediatric cases. A neighbouring trust seconds two trauma consultants by helicopter. The hotfix arrives at 10:30 and the EHR is stable by 11:15. Impact tolerance is not breached.",
+              "modifier": "Coordinated regional response demonstrably effective. Public confidence preserved."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The trust's communications director discovers that the planned 'business as usual' patient appointment text messages have gone out as normal — 4,500 patients are being told to come to outpatient clinics that have been cancelled.",
+        "Industrial action by junior doctors begins tomorrow morning. The medical director must decide whether to invoke derogations, which itself requires EHR data the team cannot currently produce.",
+        "The vendor's account director arrives unannounced at the CEO's office offering 'a goodwill credit' and a press statement — Legal wants any such statement reviewed before the trust accepts anything.",
+        "A local councillor live-streams from the ED waiting room, claiming patients are 'being treated on the floor with no records'."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Was the upgrade change properly risk-assessed under DCB0129/0160 — and was the clinical safety case current?",
+      "Were rollback and downtime procedures tested at realistic scale before go-live?",
+      "Did we stay within our defined impact tolerances, and if not, did we know in time to act?",
+      "Was the relationship with the EHR vendor sufficient to drive a fast resolution, and what contractual changes are needed?",
+      "How well did clinical and IT command structures integrate during a concurrent technology and clinical major incident?",
+      "What investment in downtime tooling, mutual aid, and clinical-safe deployment processes is now justified?"
+    ]
+  }
+}

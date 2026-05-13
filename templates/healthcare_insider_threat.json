@@ -1,0 +1,193 @@
+{
+  "id": "healthcare_insider_threat",
+  "campaign": "insider_threat",
+  "verticals": ["healthcare"],
+  "title": "The Whisper in the Ward",
+  "subtitle": "Clinical Insider Snooping and Data Theft",
+  "description": "Not all betrayal comes from beyond the walls. A healer who took the same oath as every other healer has been quietly opening the wrong scrolls — and, perhaps, selling them. The records show curiosity at first, then pattern, then purpose. The question is no longer whether, but how far, how long, and who else.",
+  "severity": "P2 — High",
+  "theme_color": "#fd7e14",
+  "icon": "🎭",
+  "estimated_duration_minutes": 40,
+  "recommended_players": 4,
+  "max_players": 10,
+  "difficulty_class": 13,
+  "compliance_frameworks": ["UK GDPR Art.5/32", "Common Law Duty of Confidentiality", "GMC / NMC Professional Standards", "Computer Misuse Act 1990", "NHS DSPT"],
+  "roles": [
+    {
+      "name": "Incident Commander",
+      "title": "War Chief",
+      "description": "Coordinates HR, Legal, IT and clinical leadership in a discreet, evidence-led response",
+      "required": true
+    },
+    {
+      "name": "HR Lead",
+      "title": "Master of Names",
+      "description": "Owns the employment investigation, suspension decisions, and union liaison",
+      "required": true
+    },
+    {
+      "name": "Caldicott Guardian",
+      "title": "Warden of the Inner Sanctum",
+      "description": "Owns patient confidentiality and authorises proportionate access to records during investigation",
+      "required": true
+    },
+    {
+      "name": "Information Governance Lead",
+      "title": "Keeper of the Codex",
+      "description": "Reviews audit logs, scopes affected patients, and manages ICO notification",
+      "required": true
+    },
+    {
+      "name": "SOC / Insider Risk Analyst",
+      "title": "Shadow Watcher",
+      "description": "Performs forensic analysis of EHR audit trails, device usage, and exfiltration indicators",
+      "required": true
+    },
+    {
+      "name": "Legal Counsel",
+      "title": "Loremaster",
+      "description": "Advises on employment law, criminal referral, and patient notification duties",
+      "required": false
+    },
+    {
+      "name": "Medical Director",
+      "title": "Grand Healer",
+      "description": "Owns professional regulator engagement (GMC/NMC) and clinical fitness-to-practise decisions",
+      "required": false
+    }
+  ],
+  "injects": [
+    {
+      "id": "I1",
+      "title": "An Anonymous Note — A Pattern in the Logs",
+      "phase": 1,
+      "time_offset": "T+0 Minutes",
+      "narrative": "The Information Governance team has received an anonymous letter, posted to the trust's PO Box, alleging that Dr K — a locum doctor working across the emergency department and the urgent care centre — has been 'looking at the records of patients she has no clinical reason to see, including a well-known footballer admitted last month and the writer's ex-partner'. The letter is unsigned but contains specific patient identifiers.\n\nA preliminary audit-log query, run carefully and only on the cited patient records, confirms that Dr K accessed both records outside of any documented clinical encounter. A broader query against her account shows 1,840 record accesses over the past four months — roughly four times the average for her peer group. A sample suggests at least 12% of those accesses are to patients with no apparent connection to her clinical work.\n\nDr K is on shift this evening. The footballer's admission was widely reported in the tabloids. The letter is dated three weeks ago and has only just been opened from the holiday backlog.",
+      "facilitator_prompts": [
+        "Who is allowed to know this is happening at this moment — and crucially, who is not?",
+        "Do we let Dr K complete her shift, send her home, or formally suspend her tonight? What is the patient-safety calculus?",
+        "What evidence preservation is needed before she logs out at the end of shift — workstation, mobile device, EHR session?",
+        "Do we treat this as a confidentiality breach, a Computer Misuse Act offence, or both?",
+        "What is our notification position for the named patients, particularly the footballer and the letter-writer's ex-partner?",
+        "How do we conduct the audit without ourselves breaching the confidentiality of the patients whose records we are now scrutinising?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "audit_log_quality",
+          "description": "Roll to determine the quality and depth of the EHR audit logs available to the investigation",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Logs Inadequate",
+              "description": "The EHR audit module records 'view' events but does not distinguish viewing a summary from viewing detailed sections, and does not log printing or screenshotting. Mobile EHR access is logged only at the session level. The forensic picture will be circumstantial at best.",
+              "modifier": "Cannot prove specific content viewed. HR case weakened; criminal case very weak."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Partial Logs",
+              "description": "Logs are good for the in-hospital EHR but the urgent care centre uses a separate system with logs retained only 30 days. Half of the alleged access window is unrecoverable. The pattern from the in-hospital system is, however, clear.",
+              "modifier": "Strong evidence for last 30 days only. Older accesses unprovable."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Adequate Logs",
+              "description": "Logs are sufficient to show which records were accessed and at what times. Printing and exports are logged. There is no record of mobile screenshotting but document downloads are visible. The case for unauthorised access is well-evidenced.",
+              "modifier": "Solid HR case. Criminal referral feasible with caution."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Detailed Forensic Trail",
+              "description": "Logs include section-level access, print events, exports, and clipboard activity. The trust can demonstrate exactly which clinical sections of which records were viewed and for how long.",
+              "modifier": "Strong evidential basis for HR and criminal action."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Behavioural Analytics",
+              "description": "The trust's UEBA tool flagged Dr K's behaviour six weeks ago but the alert was deprioritised by an analyst as 'locum, expected variance'. The full alerted timeline, with risk scores and peer comparisons, is reconstructible and turns out to identify two further individuals exhibiting similar patterns.",
+              "modifier": "Strong evidence plus discovery of two further suspects. Tooling validated."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "Dr K is the only registrar-grade locum on the rota tonight. Removing her without notice will leave the ED single-consultant-covered, breaching staffing guidance.",
+        "Dr K's BMA representative emails the medical director within 30 minutes of any conversation — and her partner is a senior staff-side union official at the trust.",
+        "The letter-writer has subsequently emailed the chief executive directly, threatening to go to the tabloids if 'nothing is done by Friday'.",
+        "Dr K's husband is a sergeant in the local police's economic crime unit. Any law-enforcement referral must be handled by a different force."
+      ]
+    },
+    {
+      "id": "I2",
+      "title": "The Marketplace — When Curiosity Becomes Trade",
+      "phase": 2,
+      "time_offset": "T+5 Days",
+      "narrative": "The investigation has progressed under careful HR and Legal supervision. Dr K has been suspended on full pay pending investigation, with her access revoked the moment she left her shift. Forensic imaging of her trust laptop and personal mobile (volunteered) is in progress. The first findings are far worse than expected.\n\nThe laptop contains a folder of screenshots of patient records, organised by celebrity, by the name of a national tabloid journalist, and by a username on a 'celebrity health' subscription site. Searches by the journalist's name appear in her browser history. WhatsApp messages — preserved only because she had iCloud backup enabled and consented to review — show payments of approximately £14,000 over eighteen months from the journalist via a foreign-currency app. Two further trust clinicians appear on the periphery of the conversation, including a senior nurse on the cardiac unit.\n\nThe ICO has been informed of the breach. The GMC has been pre-notified. The Royal College has asked, informally, whether this is one rogue clinician or 'something cultural'. A national newspaper — unrelated to the alleged buyer — has filed an FOI asking whether the trust has any 'ongoing data misuse investigations involving clinical staff'.",
+      "facilitator_prompts": [
+        "Two further clinicians are now implicated. Do we suspend now, gather more evidence, or interview under caution?",
+        "What is our duty to the patients whose records were sold to the tabloid — and how do we contact them without making it worse?",
+        "Do we refer to the police now, or wait for the internal investigation to complete? Who decides?",
+        "How do we answer the FOI honestly without prejudicing investigation, employment proceedings, or potential prosecution?",
+        "What is our position to the Royal College on the 'cultural' question — and is it actually a fair question?",
+        "How do we look after the rest of the workforce, who will hear about this and feel collectively accused?"
+      ],
+      "dice_events": [
+        {
+          "trigger": "scope_of_conspiracy",
+          "description": "Roll to determine the true scope of the conspiracy as further forensics complete",
+          "dice": "d20",
+          "outcomes": {
+            "critical_fail": {
+              "range": [1, 1],
+              "title": "Organised Ring",
+              "description": "Forensics uncover a wider ring: seven clinicians across three trusts have been selling celebrity and family-of-victim health information to a network of journalists and 'kiss and tell' brokers for over four years. A national investigation is launched and the story breaks across all major outlets within 48 hours.",
+              "modifier": "Multi-trust scandal. National investigation. Severe reputational damage."
+            },
+            "fail": {
+              "range": [2, 7],
+              "title": "Three-Person Conspiracy",
+              "description": "Dr K, the senior cardiac nurse, and a third party — a hospital administrator — are confirmed as a small conspiracy operating over two years. The financial trail is clear. All three are dismissed and referred for prosecution. Coverage is sustained but bounded.",
+              "modifier": "Three dismissals. CPS referral. Sustained national coverage."
+            },
+            "partial": {
+              "range": [8, 14],
+              "title": "Lone Actor With Bystanders",
+              "description": "The evidence supports Dr K as the principal. The other clinicians appear to have known something was happening and failed to escalate, but were not paid participants. They face disciplinary action for failure to report rather than misconduct in office.",
+              "modifier": "One dismissal, two disciplinary cases. Story manageable."
+            },
+            "success": {
+              "range": [15, 19],
+              "title": "Single Bad Actor",
+              "description": "Forensics confirm Dr K acted alone. The other clinicians in the messages were drawn in incidentally and reported their concerns to a previous employer. Their files corroborate the trust's investigation rather than implicate them.",
+              "modifier": "Single bad actor. Clean dismissal. Story contained."
+            },
+            "critical_success": {
+              "range": [20, 20],
+              "title": "Critical Success — Cooperation and Resolution",
+              "description": "Dr K, under legal advice, cooperates fully, identifies the journalist's broker, and consents to evidence being shared with the police. The journalist's title issues a public apology and the broker is arrested. The trust's handling is held up as a model.",
+              "modifier": "Cooperation closes the case quickly. Source of demand disrupted."
+            }
+          }
+        }
+      ],
+      "random_complications": [
+        "The tabloid journalist has been a contact of the trust's own communications office for years. Several routine 'background briefings' may need to be reviewed.",
+        "Dr K's solicitor argues that some of the forensic evidence was obtained without proper consent and should be inadmissible.",
+        "One of the patients whose record was sold has died in the intervening months. The family discovers the breach through press coverage rather than from the trust.",
+        "An MP raises the case in Parliament before the trust has briefed its commissioners or NHS England Regional."
+      ]
+    }
+  ],
+  "debrief": {
+    "title": "Post-Battle Assessment",
+    "questions": [
+      "Did our audit, alerting and behavioural analytics give us a fighting chance of catching this earlier?",
+      "Was the balance between confidentiality of the investigation and protection of patients struck appropriately?",
+      "Did HR, Legal, IG, IT and clinical leadership work as one team, or did each pull in a different direction?",
+      "Were our policies and contracts (including for locums and agency staff) fit for this kind of incident?",
+      "What is the right balance between celebrity-patient protections and avoiding two-tier care?",
+      "What investment in role-based access, just-in-time access, and a positive speak-up culture is now justified?"
+    ]
+  }
+}
